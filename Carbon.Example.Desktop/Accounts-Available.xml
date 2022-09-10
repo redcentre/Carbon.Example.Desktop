@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<accounts>
+  <account name="client1rcs">
+    <job name="demo"/>
+  </account>
+  <account name="rcspublic">
+    <job name="aemo"/>
+    <job name="firstfleet"/>
+  </account>
+</accounts>
