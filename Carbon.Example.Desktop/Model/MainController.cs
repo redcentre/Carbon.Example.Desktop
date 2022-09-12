@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using System.Xml.Linq;
 using Orthogonal.NSettings;
@@ -26,6 +27,7 @@ namespace Carbon.Example.Desktop
 		public ISettingsProcessor Settings { get; private set; }
 		public event PropertyChangedEventHandler PropertyChanged;
 		DispatcherTimer appTimer;
+		BindNode lastOpenedJobNode;
 
 		#region Lifetime
 
@@ -110,14 +112,14 @@ namespace Carbon.Example.Desktop
 			{
 				Lic = await Engine.LoginId(id, password);
 				StatusAccount = $"Account {_lic.Id} ({_lic.Name})";
-				LoginError = null;
-				BusyMessage = null;
+				AppError = null;
 				LoadNavigationTree();
 				return true;
 			}
 			catch (Exception ex)
 			{
-				LoginError = ex;
+				ErrorTitle = "Login Error";
+				AppError = ex;
 				Trace.WriteLine(ex.Message);
 				BusyMessage = null;
 				return false;
@@ -126,7 +128,8 @@ namespace Carbon.Example.Desktop
 
 		public void DismissError()
 		{
-			ErrorTitle = ErrorMessage = null;
+			ErrorTitle = null;
+			AppError = null;
 		}
 
 		/// <summary>
@@ -135,92 +138,134 @@ namespace Carbon.Example.Desktop
 		/// added as branches under the job node. This helps illustrate what full information is
 		/// aavailable about a job.
 		/// </summary>
-		public bool OpenJob()
+		public async Task<bool> OpenJob()
 		{
-			return WrapCall($"Open cloud job {_selectedCust.Name}:{_selectedJob.Name}", () =>
+			BusyMessage = $"Open cloud job {_selectedCust.Name}:{_selectedJob.Name}";
+			try
 			{
-				_engine.OpenJob(_selectedCust.Name, _selectedJob.Name);
-				DProps = _engine.GetProps();
-				VartreeNames = _engine.ListVartreeNames().ToArray();
-				AxisTreeNames = _engine.ListAxisNames().ToArray();
-				TocNewRootGenNodes = _engine.ListSavedReports();
-				TocOldRootGenNodes = _engine.GetLegacyTocAsNodes();
-				JobIniRootNodes = _engine.GetJobIniAsNodes();
+				await Task.Run(() => Engine.OpenJob(_selectedCust.Name, _selectedJob.Name));
+				var t1 = Task.Run(() => Engine.GetProps());
+				var t2 = Task.Run(() => Engine.ListVartreeNames().ToArray());
+				var t3 = Task.Run(() => Engine.ListAxisNames().ToArray());
+				var t4 = Task.Run(() => Engine.ListSavedReports());
+				var t5 = Task.Run(() => Engine.GetLegacyTocAsNodes());
+				var t6 = Task.Run(() => Engine.GetJobIniAsNodes());
+				await Task.WhenAll(t1, t2, t3, t4, t5, t6);
+				DProps = t1.Result;
+				VartreeNames = t2.Result;
+				AxisTreeNames = t3.Result;
+				TocNewRootGenNodes = t4.Result;
+				TocOldRootGenNodes = t5.Result;
+				JobIniRootNodes = t6.Result;
 				StatusMessage = $"{_selectedCust.Name} + {_selectedJob.Name}";
-				OpenError = null;
+				AppError = null;
 				CommandManager.InvalidateRequerySuggested();    // Makes the GenTab Run button enable
-			}, (ex) =>
+				return true;
+			}
+			catch (CarbonException ex)
 			{
 				DProps = null;
 				TocOldRootGenNodes = null;
 				AxisTreeNames = null;
-				OpenError = ex;
-			});
+				ErrorTitle = "Open cloud job failed";
+				AppError = ex;
+				return false;
+			}
+			finally
+			{
+				BusyMessage = null;
+			}
 		}
 
 		/// <summary>
 		/// A names variable tree is returned as a 'tree' of generic nodes
 		/// which are converted into bindable nodes for display.
 		/// </summary>
-		public bool LoadVartree()
+		public async Task<bool> LoadVartree()
 		{
-			return WrapCall($"Load vartree {_selectedVartreeName}", () =>
+			BusyMessage = $"Load vartree {_selectedVartreeName}";
+			try
 			{
-				var gnodes = _engine.GetVartreeAsNodes(_selectedVartreeName);
+				var gnodes = await Task.Run(() => Engine.GetVartreeAsNodes(_selectedVartreeName));
 				var broots = GenToBindNodes(gnodes, null).ToArray();
 				ObsVartreeNodes = new ObservableCollection<BindNode>(broots);
-				VtError = null;
-				Trace.WriteLine($"Vartree root node count -> {ObsVartreeNodes.Count}");
-			}, (ex) =>
+				AppError = null;
+				return true;
+			}
+			catch (CarbonException ex)
 			{
-				VtError = ex;
+				ErrorTitle = "Load variable tree failed";
+				AppError = ex;
 				ObsVartreeNodes = null;
-			});
+				return false;
+			}
+			finally
+			{
+				BusyMessage = null;
+			}
 		}
 
 		/// <summary>
 		/// A named axis collection of variables is returned as a 'tree' of generic nodes
 		/// which are converted into bindable nodes for display.
 		/// </summary>
-		public bool LoadAxisTree()
+		public async Task<bool> LoadAxisTree()
 		{
-			return WrapCall($"Load axis tree {_selectedAxisTreeName}", () =>
+			BusyMessage = $"Load axis tree {_selectedAxisTreeName}";
+			try
 			{
-				var gnodes = _engine.GetAxisAsNodes(_selectedAxisTreeName);
+				var gnodes = await Task.Run(() => Engine.GetAxisAsNodes(_selectedAxisTreeName));
 				var broots = GenToBindNodes(gnodes, null).ToArray();
 				ObsVartreeNodes = new ObservableCollection<BindNode>(broots);
-				VtError = null;
-				Trace.WriteLine($"Axis tree root node count -> {ObsVartreeNodes.Count}");
-			}, (ex) =>
+				AppError = null;
+				return true;
+			}
+			catch (CarbonException ex)
 			{
-				VtError = ex;
+				ErrorTitle = "Load axis tree failed";
+				AppError = ex;
 				ObsVartreeNodes = null;
-			});
+				return false;
+			}
+			finally
+			{
+				BusyMessage = null;
+			}
 		}
 
 		/// <summary>
-		/// TODO
+		/// Variable metadata and child variables and codes are loaded for the selected variable.
 		/// </summary>
-		public bool LoadVarmeta()
+		public async Task<bool> LoadVarmeta()
 		{
 			if (_selectedVartreeNode?.Type != "Variable") return false;
-			return WrapCall($"Loading varmeta {_selectedVartreeNode.Text}", () =>
+			BusyMessage = $"Loading varmeta {_selectedVartreeNode.Text}";
+			try
 			{
-				VMeta = _engine.GetVarMetaParsed(_selectedVartreeNode.Text);
-				VmetaError = null;
-			}, (ex) =>
+				VMeta = await Task.Run(() => Engine.GetVarMetaParsed(_selectedVartreeNode.Text));
+				AppError = null;
+				return true;
+			}
+			catch (CarbonException ex)
 			{
+				ErrorTitle = "Load variable metadata failed";
 				VMeta = null;
-				VmetaError = ex;
-			});
+				AppError = ex;
+				return false;
+			}
+			finally
+			{
+				BusyMessage = null;
+			}
 		}
 
 		/// <summary>
 		/// TODO
 		/// </summary>
-		public bool RunSpec()
+		public async Task<bool> RunSpecAsync()
 		{
-			return WrapCall("Run Report", () =>
+			BusyMessage = "Generate Report";
+			try
 			{
 				DProps.Output.Format = _selectedOutputFormat;
 				Settings.Put(null, nameof(ReportTop), _reportTop);
@@ -230,24 +275,27 @@ namespace Carbon.Example.Desktop
 				string reportBody = null;
 				string filter = _useFilter ? ReportFilter : null;
 				string weight = _useWeight ? ReportWeight : null;
+				ReportTitle = $"{lastOpenedJobNode.Text} {_dProps.Output.Format}";
 				switch (_selectedOutputFormat)
 				{
 					case XOutputFormat.XML:
-						XDocument doc = _engine.GenTabAsXML(null, _reportTop, _reportSide, filter, weight, _sProps, _dProps);
+						XDocument doc = await Task.Run(() => Engine.GenTabAsXML(null, _reportTop, _reportSide, filter, weight, _sProps, _dProps));
 						reportBody = doc.ToString();
+						GenTabLines = TextToLines(reportBody).ToArray();
 						break;
 					case XOutputFormat.XLSX:
-						byte[] workbook = _engine.GenTabAsXLSX(null, _reportTop, _reportSide, filter, weight, _sProps, _dProps);
+						byte[] workbook = await Task.Run(() => Engine.GenTabAsXLSX(null, _reportTop, _reportSide, filter, weight, _sProps, _dProps));
 						LastXlsxSaveFile = new FileInfo(Path.Combine(Path.GetTempPath(), "_carbon_example_desktop.xlsx"));
 						File.WriteAllBytes(LastXlsxSaveFile.FullName, workbook);
+						ReportTitle = $"{lastOpenedJobNode.Text} Excel Workbook ({workbook.Length} bytes)";
 						GenTabLines = HexToLines(workbook).ToArray();
 						break;
 					default:
-						reportBody = _engine.GenTab(null, _reportTop, _reportSide, filter, weight, _sProps, _dProps);
+						reportBody = await Task.Run(() => Engine.GenTab(null, _reportTop, _reportSide, filter, weight, _sProps, _dProps));
 						GenTabLines = TextToLines(reportBody).ToArray();
 						break;
 				}
-				GenTabError = null;
+				AppError = null;
 				switch (_selectedOutputFormat)
 				{
 					case XOutputFormat.HTML:
@@ -258,44 +306,66 @@ namespace Carbon.Example.Desktop
 						break;
 				}
 				CommandManager.InvalidateRequerySuggested();
-			}, (ex) =>
+				return true;
+			}
+			catch (CarbonException ex)
 			{
 				GenTabLines = null;
-				GenTabError = ex;
-			});
-		}
-
-		/// <summary>
-		/// TODO
-		/// </summary>
-		public bool ListSavedReports()
-		{
-			return false;
-			//return await WrapCall($"List Saved Reports", async () =>
-			//{
-			//	// The list of saved reports may be useful in some future save UI
-			//	SavedReportList = await _client.ListReports();
-			//	ListSavedReportsError = null;
-			//}, (ex) =>
-			//{
-			//	SavedReportList = null;
-			//	ListSavedReportsError = ex;
-			//});
-		}
-
-		/// <summary>
-		/// TODO
-		/// </summary>
-		public bool SaveReport(string path, string name)
-		{
-			return WrapCall($"Save Report", () =>
+				ErrorTitle = "Generate report failed";
+				AppError = ex;
+				return false;
+			}
+			finally
 			{
-				_engine.TableSaveCBT(path, name);
-				TocNewRootGenNodes = _engine.ListSavedReports();
+				BusyMessage = null;
+			}
+		}
+
+		/// <summary>
+		/// NOT IMPLEMENTED YET
+		/// </summary>
+		public BindNode[] ListSavedReports()
+		{
+			var tocnode = lastOpenedJobNode?.Children.FirstOrDefault(n => n.Type == BindNode.TypeTocNew);
+			return null;
+		}
+
+		/// <summary>
+		/// The last run report is saved. It can be a simple name like 'My Report' or
+		/// it can be path qualified like 'January/Invoices/My Report'.
+		/// </summary>
+		public async Task<bool> SaveReport(string name)
+		{
+			BusyMessage = "Save Report";
+			try
+			{
+				await Task.Run(() => Engine.TableSaveCBT(name));
+				TocNewRootGenNodes = Engine.ListSavedReports();
 				RefreshOpenJobToc();
-			}, (ex) =>
+				return true;
+			}
+			catch (CarbonException ex)
 			{
-			});
+				ErrorTitle = "Save report failed";
+				AppError = ex;
+				return false;
+			}
+			finally
+			{
+				BusyMessage = null;
+			}
+		}
+
+		/// <summary>
+		/// The name of a saved report as it appears in the navigation tree is deleted.
+		/// It can be a simple name like 'My Report' or it can be path qualified like
+		/// 'January/Invoices/My Report'.
+		/// </summary>
+		public void DeleteReport(string name)
+		{
+			Engine.DeleteCBT(name);
+			TocNewRootGenNodes = Engine.ListSavedReports();
+			RefreshOpenJobToc();
 		}
 
 		/// <summary>
@@ -303,14 +373,12 @@ namespace Carbon.Example.Desktop
 		/// </summary>
 		public string[] ReadFileAsLines(string name)
 		{
-			return _engine.ReadFileAsLines(name);
+			return Engine.ReadFileAsLines(name);
 		}
 
 		#endregion
 
 		#region Node Selection Handlers
-
-		BindNode lastOpenedJobNode;
 
 		/// <summary>
 		/// A variety of processing in response to clicks on certain navigation tree node types.
@@ -318,7 +386,7 @@ namespace Carbon.Example.Desktop
 		/// node that was selected and take appropriate action. The comments within the method
 		/// hopefully provide a summary of what happens for different nodes.
 		/// </summary>
-		void PostNavSelect()
+		async Task<bool> PostNavSelect()
 		{
 			if (_selectedNavNode == null)
 			{
@@ -327,7 +395,7 @@ namespace Carbon.Example.Desktop
 				SelectedVartreeName = null;
 				SelectedAxisTreeName = null;
 				ObsVartreeNodes = null;
-				return;
+				return false;
 			}
 			if (_selectedNavNode.Type == BindNode.TypeCust)
 			{
@@ -348,33 +416,33 @@ namespace Carbon.Example.Desktop
 				SelectedVartreeName = null;
 				SelectedAxisTreeName = null;
 				ObsVartreeNodes = null;
-				if (!OpenJob()) return;
+				if (!await OpenJob()) return false;
 				if (!_selectedNavNode.AnyChildren)
 				{
 					RefreshOpenJobToc();
 					if (_tocOldRootGenNodes != null)
 					{
-						var tocnode = new BindNode(BindNode.TypeTocOld, "TOC (Legacy)", 3, null, _selectedNavNode);
+						var tocnode = new BindNode(BindNode.TypeTocOld, "TOC (Legacy)", null, _selectedNavNode);
 						GenToBindNodes(_tocOldRootGenNodes, tocnode);
 						_selectedNavNode.AddChild(tocnode);
 					}
 					if (_vartreeNames?.Length > 0)
 					{
-						var vtsnode = new BindNode(BindNode.TypeVartees, "Vartrees", 3, null, _selectedNavNode);
-						var vtnodes = _vartreeNames.Select(v => new BindNode(BindNode.TypeVt, v, 4, v, _selectedNavNode)).ToArray();
+						var vtsnode = new BindNode(BindNode.TypeVartees, "Vartrees", null, _selectedNavNode);
+						var vtnodes = _vartreeNames.Select(v => new BindNode(BindNode.TypeVt, v, v, _selectedNavNode)).ToArray();
 						vtsnode.AddChildRange(vtnodes);
 						_selectedNavNode.AddChild(vtsnode);
 					}
 					if (_axisTreeNames?.Length > 0)
 					{
-						var axsnode = new BindNode(BindNode.TypeAxTrees, "Axis Trees", 3, null, _selectedNavNode);
-						var axnodes = _axisTreeNames.Select(v => new BindNode(BindNode.TypeAx, v, 4, v, _selectedNavNode)).ToArray();
+						var axsnode = new BindNode(BindNode.TypeAxTrees, "Axis Trees", null, _selectedNavNode);
+						var axnodes = _axisTreeNames.Select(v => new BindNode(BindNode.TypeAx, v, v, _selectedNavNode)).ToArray();
 						axsnode.AddChildRange(axnodes);
 						_selectedNavNode.AddChild(axsnode);
 					}
 					if (_jobIniRootNodes?.Length > 0)
 					{
-						var jininode = new BindNode(BindNode.TypeIni, "Job INI", 3, null, _selectedNavNode);
+						var jininode = new BindNode(BindNode.TypeIni, "Job INI", null, _selectedNavNode);
 						GenToBindNodes(_jobIniRootNodes, jininode);
 						_selectedNavNode.AddChild(jininode);
 					}
@@ -393,11 +461,11 @@ namespace Carbon.Example.Desktop
 				SelectedJob = jobdata;
 				if (jobchange)
 				{
-					if (!OpenJob()) return;
+					if (!await OpenJob()) return false;
 				}
 				SelectedVartreeName = (string)_selectedNavNode.Data;
 				SelectedAxisTreeName = null;
-				LoadVartree();
+				await LoadVartree();
 			}
 			else if (_selectedNavNode.Type == BindNode.TypeAx)
 			{
@@ -411,19 +479,20 @@ namespace Carbon.Example.Desktop
 				SelectedJob = jobdata;
 				if (jobchange)
 				{
-					if (!OpenJob()) return;
+					if (!await OpenJob()) return false;
 				}
 				SelectedAxisTreeName = (string)_selectedNavNode.Data;
 				SelectedVartreeName = null;
-				LoadAxisTree();
+				await LoadAxisTree();
 			}
 			else if (_selectedNavNode.Type == "File")
 			{
 				// ┌───────────────────────────────────────────────────────────────────┐
 				// │ Clicking an arbitrary 'File' with no specific meaning under the   │
-				// │ legacy TOC now simply loads the contents of the file/blob as a .  │
+				// │ legacy TOC now simply loads the contents of the file/blob as a    │
 				// │ string into the report display window.                            │
 				// └───────────────────────────────────────────────────────────────────┘
+				ReportTitle = _selectedNavNode.Text;
 				GenTabLines = ReadFileAsLines(_selectedNavNode.Text);
 				SelectedReportTabIndex = 0;
 			}
@@ -432,10 +501,11 @@ namespace Carbon.Example.Desktop
 				// ┌───────────────────────────────────────────────────────────────────┐
 				// │ Legacy TOC file is also a simple lines display.                   │
 				// └───────────────────────────────────────────────────────────────────┘
-				string fullname = Path.Combine(_selectedNavNode.Description, Path.ChangeExtension(_selectedNavNode.Text, ".rpt"));
-				GenTabLines = ReadFileAsLines(fullname);
+				ReportTitle = Path.Combine(_selectedNavNode.Description, Path.ChangeExtension(_selectedNavNode.Text, ".rpt"));
+				GenTabLines = ReadFileAsLines(ReportTitle);
 				SelectedReportTabIndex = 0;
 			}
+			return true;
 		}
 
 		/// <summary>
@@ -445,10 +515,10 @@ namespace Carbon.Example.Desktop
 		/// </summary>
 		void RefreshOpenJobToc()
 		{
-			var tocnode = lastOpenedJobNode.Children.FirstOrDefault(n => n.Type == BindNode.TypeTocNew);
+			var tocnode = lastOpenedJobNode?.Children.FirstOrDefault(n => n.Type == BindNode.TypeTocNew);
 			if (tocnode == null)
 			{
-				tocnode = new BindNode(BindNode.TypeTocNew, "TOC", 3, null, _selectedNavNode);
+				tocnode = new BindNode(BindNode.TypeTocNew, "TOC", null, _selectedNavNode);
 				lastOpenedJobNode.AddChild(tocnode);
 			}
 			else
@@ -463,29 +533,39 @@ namespace Carbon.Example.Desktop
 		}
 
 		/// <summary>
-		/// TODO
+		/// Selecting a variable in the variable tree for the first time causes the meta data and codes for
+		/// that variable to be loaded and added a child branch under the variable. Note that there is a
+		/// small complication because there are two types of variable nodes and they have different child
+		/// node tree shapes. See the comments below.
 		/// </summary>
-		void PostVartreeSelect()
+		async Task<bool> PostVartreeSelect()
 		{
 			if (_selectedVartreeNode?.Type == "Variable")
 			{
 				if (_selectedVartreeNode.Children == null || _selectedVartreeNode.Children.Count == 0)
 				{
-					if (!LoadVarmeta()) return;
-					if (VMeta.RootNodes.FirstOrDefault()?.Children == null) return;     // There might be no children (eg Weights)
+					if (!await LoadVarmeta()) return false;
+					if (VMeta.RootNodes.FirstOrDefault()?.Children == null) return false;     // There might be no children (eg Weights)
 					if (VMeta.Metadata.Any(m => m.Name == "Type" && m.Value == "Hierarchic"))
 					{
+						// The varmeta returned for a 'hierarchic' variable has child
+						// variables which are added as children of the selected node.
 						GenToBindNodes(VMeta.RootNodes, _selectedVartreeNode);
 						_selectedVartreeNode.IsExpanded = true;
 					}
 					else
 					{
+						// The varmeta returned for a 'simple' variables has a single variable child
+						// which has child codes. We only want the 2nd level codea to be added as
+						// children of the selected node.
 						var codenodes = GenToBindNodes(VMeta.RootNodes[0].Children, null);
 						_selectedVartreeNode.AddChildRange(codenodes);
 						_selectedVartreeNode.IsExpanded = true;
 					}
 				}
+				return true;
 			}
+			return false;
 		}
 
 		#endregion
@@ -500,16 +580,16 @@ namespace Carbon.Example.Desktop
 		{
 			ObsNavNodes = new ObservableCollection<BindNode>();
 			var doc = XDocument.Load("Navigation-Tree.xml");
-			var rnode = new BindNode(BindNode.TypeCloud, "Cloud", 0, null, null);
+			var rnode = new BindNode(BindNode.TypeCloud, "Cloud", null, null);
 			foreach (var custelem in doc.Root.Elements("customer"))
 			{
 				var cust = new CustData() { Name = (string)custelem.Attribute("name") };
-				var cnode = new BindNode(BindNode.TypeCust, cust.Name, 0, cust, rnode);
+				var cnode = new BindNode(BindNode.TypeCust, cust.Name, cust, rnode);
 				rnode.AddChild(cnode);
 				foreach (var jelem in custelem.Elements("job"))
 				{
 					var job = new JobData((string)jelem.Attribute("name"), null, null, null);
-					var jnode = new BindNode(BindNode.TypeJob, job.Name, 1, job, cnode);
+					var jnode = new BindNode(BindNode.TypeJob, job.Name, job, cnode);
 					cnode.AddChild(jnode);
 				}
 				cnode.IsExpanded = true;
@@ -543,34 +623,6 @@ namespace Carbon.Example.Desktop
 			return nodelist.ToArray();
 		}
 
-		/// <summary>
-		/// This private helper method wraps around the repetitive processing of making a call and
-		/// trapping any failure. The caller provides optional callbacks for success or failure
-		/// (this technique is familiar in JavaScript coding). A failure causes some Error properties
-		/// to be set, which will cause a panel to visible in the UI.
-		/// </summary>
-		bool WrapCall(string title, Action callback, Action<Exception> errorCallback = null)
-		{
-			try
-			{
-				BusyMessage = $"{title}\u2026";
-				callback?.Invoke();
-				return true;
-			}
-			catch (CarbonException ex)
-			{
-				Trace.WriteLine(ex.ToString());
-				ErrorTitle = title;
-				ErrorMessage = ex.Message;
-				errorCallback?.Invoke(ex);
-				return false;
-			}
-			finally
-			{
-				BusyMessage = null;
-			}
-		}
-
 		static IEnumerable<string> TextToLines(string value)
 		{
 			if (value != null)
@@ -589,18 +641,31 @@ namespace Carbon.Example.Desktop
 
 		static IEnumerable<string> HexToLines(byte[] buffer)
 		{
+			const int Len = 64;
 			if (buffer != null)
 			{
-				int count = buffer.Length / 64;
+				int count = buffer.Length / Len;
+				int rem = buffer.Length % Len;
 				for (int i = 0; i < count; i++)
 				{
-					string line = Convert.ToBase64String(buffer, i * 64, 64);
+					int off = i * Len;
+					string hex = BitConverter.ToString(buffer, off, 64).Replace("-", "");
+					string line = $"{off:X6} {hex}";
+					yield return line;
+				}
+				if (rem > 0)
+				{
+					int off = count * Len;
+					string hex = BitConverter.ToString(buffer, off, rem).Replace("-", "");
+					string line = $"{off:X6} {hex}";
 					yield return line;
 				}
 			}
 		}
 
 		#endregion
+
+		#region Properties
 
 		CrossTabEngine _engine;
 		/// <summary>
@@ -614,8 +679,6 @@ namespace Carbon.Example.Desktop
 			StatusEngine = $"Carbon {eng.Version}";
 			return eng;
 		});
-
-		#region Binding Properties
 
 		public FileInfo LastXlsxSaveFile { get; set; }
 

@@ -33,13 +33,19 @@ namespace Carbon.Example.Desktop
 					{
 						_ = ShowHtml();
 					}
-					else if (Controller.SelectedOutputFormat == XOutputFormat.XLSX)
+					else
 					{
-						ShowExcel();
+						ClearHtml();
+					}
+					if (Controller.SelectedOutputFormat == XOutputFormat.XLSX)
+					{
+						LaunchExcel();
 					}
 				}
 			};
 		}
+
+		void ClearHtml() => WebViewCtl.Source = new Uri("https://rcsapps.azurewebsites.net/noreport.htm");
 
 		async Task ShowHtml()
 		{
@@ -50,7 +56,7 @@ namespace Carbon.Example.Desktop
 			}
 			if (Controller.GenTabLines == null)
 			{
-				WebViewCtl.Source = new Uri("https://rcsapps.azurewebsites.net/noreport.htm");
+				ClearHtml();
 			}
 			else
 			{
@@ -59,8 +65,9 @@ namespace Carbon.Example.Desktop
 			}
 		}
 
-		void ShowExcel()
+		void LaunchExcel()
 		{
+			if (Controller.LastXlsxSaveFile == null) return;
 			Process.Start(new ProcessStartInfo() { FileName = Controller.LastXlsxSaveFile.FullName, UseShellExecute = true });
 		}
 

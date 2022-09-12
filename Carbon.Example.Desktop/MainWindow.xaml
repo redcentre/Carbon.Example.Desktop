@@ -22,6 +22,7 @@
         <CommandBinding Command="main:MainCommands.OpenReport" Executed="ExecuteOpenReport" CanExecute="CanExecuteOpenReport"/>
         <CommandBinding Command="main:MainCommands.SaveReport" Executed="ExecuteSaveReport" CanExecute="CanExecuteSaveReport"/>
         <CommandBinding Command="main:MainCommands.RunSpec" Executed="ExecuteRunSpec" CanExecute="CanExecuteRunSpec"/>
+        <CommandBinding Command="main:MainCommands.DeleteReport" Executed="ExecuteDeleteReport" CanExecute="CanExecuteDeleteReport"/>
     </Window.CommandBindings>
 
     <Grid>
@@ -75,11 +76,21 @@
                         </Border>
                         <Grid Grid.Row="1">
                             <TreeView ItemsSource="{Binding ObsNavNodes}" FontSize="{Binding AppFontSize}"
-                                  IsEnabled="{Binding ObsNavNodes,Converter={StaticResource MainVerter},ConverterParameter=Some}"
-                                  SelectedItemChanged="NavTree_SelectionChanged" BorderThickness="0,1,1,1" Padding="0">
+                                      IsEnabled="{Binding ObsNavNodes,Converter={StaticResource MainVerter},ConverterParameter=Some}"
+                                      SelectedItemChanged="NavTree_SelectionChanged"
+                                      KeyUp="NavTree_KeyUp"
+                                      BorderThickness="0,1,1,1" Padding="0">
                                 <TreeView.ItemTemplate>
                                     <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                                         <StackPanel Orientation="Horizontal">
+                                            <StackPanel.ToolTip>
+                                                <MultiBinding Converter="{StaticResource MainMultiVerter}" ConverterParameter="BindNodeTip">
+                                                    <Binding Path="."/>
+                                                    <Binding Path="IsExpanded"/>
+                                                    <Binding Path="IsSelected"/>
+                                                    <Binding Path="Children.Count"/>
+                                                </MultiBinding>
+                                            </StackPanel.ToolTip>
                                             <Image Style="{StaticResource MainIconStyle}" Margin="0,0,4,0">
                                                 <Image.Source>
                                                     <MultiBinding Converter="{StaticResource MainMultiVerter}" ConverterParameter="NavIcon">
@@ -178,7 +189,7 @@
                                 </Button.Content>
                             </Button>
                             <Separator/>
-                            <Button Command="main:MainCommands.RunSpec" ToolTip="Run report">
+                            <Button Command="main:MainCommands.RunSpec" ToolTip="Run report (F5)">
                                 <Button.Content>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="Run" Margin="0,0,4,0"/>
@@ -224,7 +235,7 @@
                     </Grid>
                 </Grid>
             </kit:BusyIndicator>
-            <Border Background="DarkRed" VerticalAlignment="Bottom" Padding="6" Visibility="{Binding ErrorTitle,Converter={StaticResource MainVerter},ConverterParameter=SomeVisible}">
+            <Border Background="DarkRed" VerticalAlignment="Bottom" Padding="6" Visibility="{Binding AppError,Converter={StaticResource MainVerter},ConverterParameter=SomeVisible}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -239,7 +250,7 @@
                     <TextBlock Grid.Column="1" VerticalAlignment="Center" Foreground="Snow" FontSize="22" Margin="2" TextWrapping="Wrap"
                                Text="{Binding ErrorTitle}"/>
                     <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Foreground="LavenderBlush" FontSize="14" TextWrapping="Wrap" Margin="2"
-                               Text="{Binding ErrorMessage}"/>
+                               Text="{Binding AppError.Message}"/>
                     <Button Grid.RowSpan="2" Grid.Column="2" Content="Dismiss" VerticalAlignment="Center" Margin="12,0,4,0" Padding="10,4" Command="main:MainCommands.DismissError"/>
                 </Grid>
             </Border>

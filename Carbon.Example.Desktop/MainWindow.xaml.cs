@@ -114,5 +114,16 @@ namespace Carbon.Example.Desktop
 			var selnode = (BindNode)e.NewValue;
 			Controller.SelectedVartreeNode = selnode;
 		}
+
+		void NavTree_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+		{
+			if (e.Key == System.Windows.Input.Key.Delete)
+			{
+				if (Controller.SelectedNavNode?.Type == "File")
+				{
+					MainCommands.DeleteReport.Execute(Controller.SelectedNavNode, this);
+				}
+			}
+		}
 	}
 }

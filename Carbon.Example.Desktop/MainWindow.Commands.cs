@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -11,8 +12,9 @@ namespace Carbon.Example.Desktop
 		public static RoutedUICommand LoginPrompt = new RoutedUICommand("Login Prompt", "LoginPrompt", typeof(Window));
 		public static RoutedUICommand DismissError = new RoutedUICommand("Dismiss Error", "DismissError", typeof(Window));
 		public static RoutedUICommand OpenReport = new RoutedUICommand("Open Report", "OpenReport", typeof(Window));
-		public static RoutedUICommand RunSpec = new RoutedUICommand("Run Spec", "RunSpec", typeof(Window));
+		public static RoutedUICommand RunSpec = new RoutedUICommand("Run Spec", "RunSpec", typeof(Window), new InputGestureCollection(new InputGesture[] { new KeyGesture(Key.F5) }));
 		public static RoutedUICommand SaveReport = new RoutedUICommand("Save Report", "SaveReport", typeof(Window));
+		public static RoutedUICommand DeleteReport = new RoutedUICommand("Delete Report", "DeleteReport", typeof(Window));
 	}
 
 	partial class MainWindow
@@ -32,11 +34,14 @@ namespace Carbon.Example.Desktop
 		void CanExecuteOpenReport(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = Controller.DProps != null;
 		void ExecuteOpenReport(object target, ExecutedRoutedEventArgs e) => OpenReportUI();
 
-		void CanExecuteRunSpec(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = Controller.ReportTop != null && Controller.ReportSide != null && Controller.DProps != null;
-		void ExecuteRunSpec(object target, ExecutedRoutedEventArgs e) => Controller.RunSpec();
+		void CanExecuteRunSpec(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = Controller.ReportTop != null && Controller.ReportSide != null && Controller.DProps != null && Controller.SelectedOutputFormat != RCS.Carbon.Shared.XOutputFormat.None;
+		async void ExecuteRunSpec(object target, ExecutedRoutedEventArgs e) => await Controller.RunSpecAsync();
 
 		void CanExecuteSaveReport(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = Controller.GenTabLines != null;
-		void ExecuteSaveReport(object target, ExecutedRoutedEventArgs e) => SaveReportUI();
+		async void ExecuteSaveReport(object target, ExecutedRoutedEventArgs e) => await SaveReportUI();
+
+		void CanExecuteDeleteReport(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = Controller.SelectedNavNode?.Type == "File";
+		void ExecuteDeleteReport(object target, ExecutedRoutedEventArgs e) => DeleteReportUI((BindNode)e.Parameter);
 
 		/// <summary>
 		/// The login dialog prompt will only return true if authentication was successful.
@@ -44,11 +49,13 @@ namespace Carbon.Example.Desktop
 		/// </summary>
 		bool DoLoginPrompt()
 		{
-			var dialog = new SessionDialog();
-			dialog.DataContext = Controller;
-			dialog.AccountId = Controller.LoginId;
-			dialog.Password = Controller.LoginPassword;
-			dialog.Owner = this;
+			var dialog = new SessionDialog
+			{
+				DataContext = Controller,
+				AccountId = Controller.LoginId,
+				Password = Controller.LoginPassword,
+				Owner = this
+			};
 			if (dialog.ShowDialog() == true)
 			{
 				Controller.LoginId = dialog.AccountId;
@@ -64,15 +71,26 @@ namespace Carbon.Example.Desktop
 			MessageBox.Show(this, "Open report is not implemented yet. A pick list of local or cloud reports must be presented somehow.", "Open Report", MessageBoxButton.OK, MessageBoxImage.Warning);
 		}
 
-		void SaveReportUI()
+		async Task SaveReportUI()
 		{
 			// We could show the tree of saved reports here, but for now the user just
 			// names the optional path prefix and the name of the report.
-			var dialog = new SaveReportDialog();
-			dialog.Owner = this;
+			var dialog = new SaveReportDialog
+			{
+				Owner = this,
+				DataContext = DataContext
+			};
 			if (dialog.ShowDialog() == true)
 			{
-				Controller.SaveReport(dialog.ReportPath, dialog.ReportName);
+				await Controller.SaveReport(dialog.ReportName);
+			}
+		}
+
+		void DeleteReportUI(BindNode node)
+		{
+			if (MessageBox.Show(this, $"Do you want to delete the saved report?\n\n{node.Text}", Title, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+			{
+				Controller.DeleteReport(node.Text);
 			}
 		}
 	}

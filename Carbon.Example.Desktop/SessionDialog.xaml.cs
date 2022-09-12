@@ -30,13 +30,14 @@ namespace Carbon.Example.Desktop
 		{
 			if (!CanAuthenticate) return;
 			FeedInfo("Authenticating...");
+			await Task.Delay(500);
 			if (await Controller.LoginAsync(_accountId, _password))
 			{
 				FeedInfo("Success");
 				DialogResult = true;
 				return;
 			}
-			FeedAlert(Controller.LoginError.Message);
+			FeedAlert(Controller.AppError.Message);
 		}
 
 		void FeedInfo(string message)

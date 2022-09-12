@@ -8,69 +8,48 @@
 	string[] lines = new string[]
 	{
 		// type|name|default|send,send|Setting|PostMethod
-		"int|AppFontSize|13||Setting",
+		"Exception|AppError",
 		"string|StatusAccount",
 		"string|StatusEngine",
 		"string|StatusMessage",
 		"string|StatusTime|Loading...",
 		"string|BusyMessage",
-		//"CrossTabEngine|Engine",
 		"string|LoginId|||Setting",
 		"string|LoginPassword|||Setting",
-		"Licence|Lic",
-		"ObservableCollection<BindNode>|ObsNavNodes",
-		"BindNode|SelectedNavNode||||PostNavSelect",
-		"CustData|SelectedCust",
-		"JobData|SelectedJob",
-		"BindNode|SelectedVartreeNode||||PostVartreeSelect",
 		"string|SelectedAxisTreeName",
 		"string|SelectedVartreeName",
-		"ObservableCollection<BindNode>|ObsVartreeNodes",
-		"JobData[]|ConJobs",
-		"GenNode[]|TocNewRootGenNodes",
-		"GenNode[]|TocOldRootGenNodes",
-		"string[]|VartreeNames",
-		"string[]|AxisTreeNames",
-		"GenNode[]|JobIniRootNodes",
-		"int|SelectedReportTabIndex",
-		"string[]|GenTabLines",
 		"string|ErrorTitle",
-		"string|ErrorMessage",
-		"XDisplayProperties|DProps",
-		"XSpecProperties|SProps|new XSpecProperties()",
-		"Exception|LoginError",
-		"Exception|OpenError",
-		"Exception|VtError",
-		"Exception|VtsError",
-		"int|ReportFontSize|12||Setting",
-		"XOutputFormat|SelectedOutputFormat|XOutputFormat.CSV||Setting",
 		"string|ReportTop|Age(*)",
 		"string|ReportSide|Region(*)",
 		"string|ReportWeight",
 		"string|ReportFilter",
+		"string|ReportTitle",
+		"string[]|VartreeNames",
+		"string[]|AxisTreeNames",
+		"string[]|GenTabLines",
+		"int|AppFontSize|13||Setting",
+		"int|SelectedReportTabIndex",
+		"int|ReportFontSize|12||Setting",
 		"bool|UseFilter",
 		"bool|UseWeight",
-		"XSigType|SelectedSigType|XSigType.SingleCell",
-		"VarMetaResult|VMeta",
-		"Exception|VmetaError",
-		"Exception|GenTabError",
+		"Licence|Lic",
+		"CustData|SelectedCust",
+		"JobData|SelectedJob",
+		"JobData[]|ConJobs",
+		"GenNode[]|TocNewRootGenNodes",
+		"GenNode[]|TocOldRootGenNodes",
+		"GenNode[]|JobIniRootNodes",
+		"BindNode|SelectedNavNode||||PostNavSelect",
+		"BindNode|SelectedVartreeNode||||PostVartreeSelect",
 		"BindNode[]|TopRootNodes",
 		"BindNode[]|SideRootNodes",
-
-		//"ServiceInfo|ConnectInfo",
-		//"int|SelectedFormatIndex||SelectedOutputFormat",
-		//"string|ConnectStatus|Not connected",
-		//"string|BaseServiceUri",
-		//"string|SessionId",
-		//"string|PandasResponse",
-		//"string|DisplayString",
-		//"AccountData[]|AccDatas",
-		//"Exception|ConnectError",
-		//"Exception|LoadAccountsError",
-		//"Exception|LoadJobsError",
-		//"Exception|LoginError",
-		//"Exception|ListSavedReportsError",
-		//"GenNode[]|SavedReportList",
+		"ObservableCollection<BindNode>|ObsNavNodes",
+		"ObservableCollection<BindNode>|ObsVartreeNodes",
+		"XDisplayProperties|DProps",
+		"XSpecProperties|SProps|new XSpecProperties()",
+		"XOutputFormat|SelectedOutputFormat|XOutputFormat.CSV||Setting",
+		"XSigType|SelectedSigType|XSigType.SingleCell",
+		"VarMetaResult|VMeta",
 	};
 	string ttname = Host.GetType().Name;
 	Version ttver = Host.GetType().Assembly.GetName().Version;
@@ -84,10 +63,7 @@
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.ObjectModel;
-using System.Windows;
-using System.Windows.Media;
 using RCS.Carbon.Shared;
-using RCS.Carbon.Tables;
 using RCS.Carbon.Variables;
 
 namespace Carbon.Example.Desktop
@@ -162,7 +138,7 @@ namespace Carbon.Example.Desktop
 		if (postMethod != null)
 		{
 #>
-					<#=postMethod#>();
+					_ = <#=postMethod#>();
 <#
 		}
 #>

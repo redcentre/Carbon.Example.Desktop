@@ -78,6 +78,11 @@ namespace Carbon.Example.Desktop
 				var lines = value as string[];
 				return lines == null ? null : string.Join(Environment.NewLine, lines);
 			}
+			if (convarg == "ReportTitle")
+			{
+				var title = (string)value;
+				return title == null ? "Report (None)" : $"Report - {title}";
+			}
 			throw new NotImplementedException($"MainConverter Convert {parameter}");
 		}
 

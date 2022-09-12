@@ -58,6 +58,21 @@ namespace Carbon.Example.Desktop
 			{
 				return values.Any(v => v != null);
 			}
+			if (p == "BindNodeTip")
+			{
+				var node = values[0] as BindNode;
+				var exp = values[1] as bool?;
+				var sel = values[2] as bool?;
+				var ccount = values[3] as int?;
+				if (node == null) return null;
+				return string.Format("{0} • {1} • {2}\nLevel {3} • {4} • {5}\nChildren: {6}",
+					node.Id, node.Type, node.Text,
+					node.Level,
+					exp == true ? "Expanded" : "Collapsed",
+					sel == true ? "Selected" : "Unselected",
+					ccount == null ? "NULL" : ccount.ToString()
+				);
+			}
 			throw new NotImplementedException($"MainMultiConverter Convert {parameter}");
 		}
 

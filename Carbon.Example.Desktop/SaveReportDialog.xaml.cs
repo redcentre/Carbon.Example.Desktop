@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using RCS.Carbon.Shared;
@@ -39,33 +40,21 @@ namespace Carbon.Example.Desktop
 			}
 		}
 
-		string _reportPath;
-		public string ReportPath
-		{
-			get => _reportPath;
-			set
-			{
-				string newval = string.IsNullOrEmpty(value) ? null : value;
-				if (_reportPath != newval)
-				{
-					_reportPath = newval;
-					SendChanged(nameof(ReportPath));
-					SendChanged(nameof(CanSave));
-				}
-			}
-		}
-
 		public bool CanSave
 		{
 			get
 			{
 				if (_reportName == null) return false;
-				if (!CommonUtil.IsValidSimpleFilename(_reportName)) return false;
-				if (_reportPath != null)
-				{
-					string[] parts = _reportPath.Split('/', '\\');
-					if (parts.Any(p => !CommonUtil.IsValidSimpleFilename(p))) return false;
-				}
+				//if (!CommonUtil.IsValidSimpleFilename(_reportName)) return false;
+				//if (_reportPath != null)
+				//{
+				//	string[] parts = _reportPath.Split('/', '\\');
+				//	if (parts.Any(p => !CommonUtil.IsValidSimpleFilename(p))) return false;
+				//}
+				//return true;
+				string[] parts = _reportName.Split('/', '\\');
+				if (parts.Any(p => p.Length == 0)) return false;
+				if (parts.Any(p => Path.GetInvalidFileNameChars().Intersect(p).Any())) return false;
 				return true;
 			}
 		}

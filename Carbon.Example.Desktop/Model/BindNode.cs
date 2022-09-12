@@ -24,12 +24,12 @@ namespace Carbon.Example.Desktop
 
 		static int _id;
 
-		public BindNode(string type, string text, int level, object data, BindNode parent)
+		public BindNode(string type, string text, object data, BindNode parent)
 		{
 			Id = ++_id;
 			Type = type;
 			Text = text;
-			Level = level;
+			Level = parent?.Level + 1 ?? 0;
 			Data = data;
 			Parent = parent;
 		}
@@ -39,6 +39,7 @@ namespace Carbon.Example.Desktop
 			Id = node.Id;
 			Type = node.Type;
 			Text = node.Name;
+			Level = parent?.Level + 1 ?? 0;
 			Description = node.Description;
 			Data = data;
 			Parent = parent;
@@ -47,6 +48,7 @@ namespace Carbon.Example.Desktop
 		public string Type { get; }
 		public int Id { get; }
 		public BindNode Parent { get; set; }
+		public int Level { get; }
 
 		public void AddChild(BindNode child)
 		{
@@ -91,20 +93,6 @@ namespace Carbon.Example.Desktop
 		}
 
 		public bool AnyChildren => _children?.Count > 0;
-
-		int _level;
-		public int Level
-		{
-			get => _level;
-			set
-			{
-				if (_level != value)
-				{
-					_level = value;
-					OnPropertyChanged(nameof(Level));
-				}
-			}
-		}
 
 		string _text;
 		public string Text
