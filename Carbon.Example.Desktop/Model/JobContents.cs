@@ -7,7 +7,7 @@ namespace Carbon.Example.Desktop
 	/// <summary>
 	/// Data associated with the blob contents of a single container (job).
 	/// </summary>
-	public sealed class ContainerContents
+	public sealed class JobContents
 	{
 		public string Name { get; set; }
 		public DateTime? LastModified { get; set; }

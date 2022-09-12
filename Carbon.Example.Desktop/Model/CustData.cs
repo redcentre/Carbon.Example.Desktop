@@ -5,15 +5,15 @@ namespace Carbon.Example.Desktop
 	/// <summary>
 	/// Information about one storage account which corresponds to a customer.
 	/// </summary>
-	public sealed class AccountData
+	public sealed class CustData
 	{
 #pragma warning disable CS8618		// Empty ctor required for JSON serialization
-		public AccountData()
+		public CustData()
 		{
 		}
 #pragma warning restore CS8618
 
-		public AccountData(string name, DateTime? creationTime, string id, string kind, string region, DateTime? key1CreationTime, string accessTier, bool? allowSharedKeyAccess, bool? enableHttpsTrafficOnly, string minimumTlsVersion, string connectString)
+		public CustData(string name, DateTime? creationTime, string id, string kind, string region, DateTime? key1CreationTime, string accessTier, bool? allowSharedKeyAccess, bool? enableHttpsTrafficOnly, string minimumTlsVersion, string connectString)
 		{
 			Name = name;
 			CreationTime = creationTime;

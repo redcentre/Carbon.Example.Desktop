@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
+using System.Windows;
 using System.Windows.Data;
 
 namespace Carbon.Example.Desktop
@@ -13,12 +15,13 @@ namespace Carbon.Example.Desktop
 			{
 				var type = values[0] as string;
 				var exp = values[1] as bool?;
-				if (type == "CLOUD") return Images.IconCloud;
-				if (type == "CUST") return Images.IconAccount;
-				if (type == "JOB") return Images.IconJob;
-				if (type == "Folder" || type == "TOCNEW" || type == "TOCOLD" || type == "VTS" || type == "AXS" || type == "JOBINI") return exp == true ? Images.IconFolderOpen : Images.IconFolderClosed;
-				if (type == "VT") return Images.IconVartree;
-				if (type == "AX") return Images.IconAxisTree;
+				if (type == BindNode.TypeCloud) return Images.IconCloud;
+				if (type == BindNode.TypeCust) return Images.IconCust;
+				if (type == BindNode.TypeJob) return Images.IconJob;
+				if (type == BindNode.TypeFolder || type == BindNode.TypeTocNew || type == BindNode.TypeTocOld || type == BindNode.TypeVartees || type == BindNode.TypeAxTrees || type == BindNode.TypeIni) return exp == true ? Images.IconFolderOpen : Images.IconFolderClosed;
+				if (type == BindNode.TypeVt) return Images.IconVartree;
+				if (type == BindNode.TypeAx) return Images.IconAxisTree;
+				if (type == "Folder") return exp == true ? Images.IconFolderOpen : Images.IconFolderClosed;
 				if (type == "User") return Images.IconUser;
 				if (type == "Table") return Images.IconTable;
 				if (type == "Chart") return Images.IconChart;
@@ -27,6 +30,33 @@ namespace Carbon.Example.Desktop
 				if (type == "Data") return Images.IconData;
 				if (type == "Dir") return exp == true ? Images.IconDirOpen : Images.IconDirClosed;
 				return Images.IconVartree;
+			}
+			if (p == "VartreeIcon")
+			{
+				var type = values[0] as string;
+				var exp = values[1] as bool?;
+				if (type == "Folder") return exp == true ? Images.IconFolderOpen : Images.IconFolderClosed;
+				if (type == "Variable") return Images.IconVariable;
+				if (type == "Axis") return Images.IconAxisTree;
+				return Images.IconCode;
+			}
+			if (p == "JobHelpTextVisible")
+			{
+				// The job help text is only visible if the navigation
+				// tree is loaded but no job has been opened yet.
+				return values[0] != null && values[1] == null ? Visibility.Visible : Visibility.Collapsed;
+			}
+			if (p == "VartreeTitle")
+			{
+				var vtname = values[0] as string;
+				var axname = values[1] as string;
+				if (vtname != null) return $"Vartree \u2192 {vtname}";
+				if (axname != null) return $"Axis \u2192 {axname}";
+				return "Variables";
+			}
+			if (p == "AnySome")
+			{
+				return values.Any(v => v != null);
 			}
 			throw new NotImplementedException($"MainMultiConverter Convert {parameter}");
 		}

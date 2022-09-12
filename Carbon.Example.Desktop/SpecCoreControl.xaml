@@ -1,0 +1,97 @@
+﻿<UserControl x:Class="Carbon.Example.Desktop.SpecCoreControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Carbon.Example.Desktop"
+             mc:Ignorable="d" 
+             d:DesignHeight="550" d:DesignWidth="550">
+
+    <UserControl.Resources>
+        <Style x:Key="Tabitem1" TargetType="TabItem">
+            <Setter Property="Width" Value="110"/>
+            <Setter Property="Height" Value="30"/>
+        </Style>
+        <Style x:Key="SpecLabel1" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,3,0,3"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="SpecBox1" TargetType="TextBox">
+            <Setter Property="Margin" Value="8,3,0,3"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="2,2,2,3"/>
+        </Style>
+        <Style x:Key="SpecCheck1" TargetType="CheckBox">
+            <Setter Property="Margin" Value="0,3,0,3"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="4"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Border Padding="12,8" Background="GhostWhite" IsEnabled="{Binding DProps,Converter={StaticResource MainVerter},ConverterParameter=Some}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Top" Style="{StaticResource SpecLabel1}"/>
+                    <TextBox Grid.Column="1" Style="{StaticResource SpecBox1}" Text="{Binding ReportTop,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Grid.Row="1" Text="Side" Style="{StaticResource SpecLabel1}"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource SpecBox1}" Text="{Binding ReportSide,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                    <CheckBox Grid.Row="2" Content="Filter" Style="{StaticResource SpecCheck1}" x:Name="ChkFilter" IsChecked="{Binding UseFilter,Mode=TwoWay}"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource SpecBox1}" Text="{Binding ReportFilter,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=ChkFilter,Path=IsChecked}"/>
+                    <CheckBox Grid.Row="3" Content="Weight" Style="{StaticResource SpecCheck1}" x:Name="ChkWeight" IsChecked="{Binding UseWeight,Mode=TwoWay}"/>
+                    <TextBox Grid.Row="3" Grid.Column="1" Style="{StaticResource SpecBox1}" Text="{Binding ReportWeight,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding ElementName=ChkWeight,Path=IsChecked}"/>
+                </Grid>
+                <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" Margin="12,0,0,0">
+                    <TextBlock Text="Output Format" Margin="0,0,0,8"/>
+                    <ComboBox ItemsSource="{Binding FormatPicks}" SelectedItem="{Binding SelectedOutputFormat,Mode=TwoWay}" Margin="0,0,0,16"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Border Style="{StaticResource SubTitleBand}">
+                <TextBlock Text="Top" Style="{StaticResource SubTitleText}"/>
+            </Border>
+            <TreeView Grid.Row="1" IsEnabled="{Binding ObsVartreeNodes,Converter={StaticResource MainVerter},ConverterParameter=Some}"
+                    Background="{Binding ObsVartreeNodes,Converter={StaticResource MainVerter},ConverterParameter=TreeSomeBack,FallbackValue='Gainsboro'}">
+
+            </TreeView>
+        </Grid>
+        <GridSplitter Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <Grid Grid.Row="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Border Style="{StaticResource SubTitleBand}">
+                <TextBlock Text="Side" Style="{StaticResource SubTitleText}"/>
+            </Border>
+            <TreeView Grid.Row="1" IsEnabled="{Binding ObsVartreeNodes,Converter={StaticResource MainVerter},ConverterParameter=Some}"
+                    Background="{Binding ObsVartreeNodes,Converter={StaticResource MainVerter},ConverterParameter=TreeSomeBack,FallbackValue='Gainsboro'}">
+
+            </TreeView>
+        </Grid>
+    </Grid>
+</UserControl>

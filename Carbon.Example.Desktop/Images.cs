@@ -6,7 +6,7 @@ namespace Carbon.Example.Desktop
 	static class Images
 	{
 		public static BitmapImage IconCloud = new BitmapImage(new Uri("/Resources/Cloud16.png", UriKind.Relative));
-		public static BitmapImage IconAccount = new BitmapImage(new Uri("/Resources/Account16.png", UriKind.Relative));
+		public static BitmapImage IconCust = new BitmapImage(new Uri("/Resources/Cust16.png", UriKind.Relative));
 		public static BitmapImage IconJob = new BitmapImage(new Uri("/Resources/Job16.png", UriKind.Relative));
 		public static BitmapImage IconVartree = new BitmapImage(new Uri("/Resources/Vartree16.png", UriKind.Relative));
 		public static BitmapImage IconAxisTree = new BitmapImage(new Uri("/Resources/AxisTree16.png", UriKind.Relative));

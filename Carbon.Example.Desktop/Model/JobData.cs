@@ -7,15 +7,15 @@ namespace Carbon.Example.Desktop
 	/// <summary>
 	/// Data associated with a single container (job).
 	/// </summary>
-	public sealed class ContainerData
+	public sealed class JobData
 	{
 #pragma warning disable CS8618     // Empty ctor required for JSON serialization                                                   
-		public ContainerData()
+		public JobData()
 		{
 		}
 #pragma warning restore CS8618
 
-		public ContainerData(string name, DateTime? lastModified, string publicAccess, MetaData[] metadata)
+		public JobData(string name, DateTime? lastModified, string publicAccess, MetaData[] metadata)
 		{
 			Name = name;
 			LastModified = lastModified;

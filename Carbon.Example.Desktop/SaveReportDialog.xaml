@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         x:Name="SaveDialog"
         SizeToContent="WidthAndHeight"
-        FontSize="16" Title="Save Report" ResizeMode="NoResize" MaxWidth="440"
+        FontSize="14" Title="Save Report" ResizeMode="NoResize" MaxWidth="440"
         WindowStartupLocation="CenterOwner">
     <Border Padding="16,10">
         <Grid>

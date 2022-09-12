@@ -14,24 +14,13 @@
         <main:MainController/>
     </Window.DataContext>
 
-    <Window.Resources>
-        <Style x:Key="SubTitleBand" TargetType="Border">
-            <Setter Property="Background" Value="SlateGray"/>
-            <Setter Property="Padding" Value="4,2,4,4"/>
-        </Style>
-        <Style x:Key="SubTitleText" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-        </Style>
-    </Window.Resources>
-
     <Window.CommandBindings>
         <CommandBinding Command="main:MainCommands.AppExit" Executed="ExecuteAppExit" CanExecute="CanExecuteAppExit"/>
         <CommandBinding Command="main:MainCommands.HelpAbout" Executed="ExecuteHelpAbout" CanExecute="CanExecuteHelpAbout"/>
         <CommandBinding Command="main:MainCommands.DismissError" Executed="ExecuteDismissError" CanExecute="CanExecuteDismissError"/>
         <CommandBinding Command="main:MainCommands.LoginPrompt" Executed="ExecuteLoginPrompt" CanExecute="CanExecuteLoginPrompt"/>
         <CommandBinding Command="main:MainCommands.OpenReport" Executed="ExecuteOpenReport" CanExecute="CanExecuteOpenReport"/>
+        <CommandBinding Command="main:MainCommands.SaveReport" Executed="ExecuteSaveReport" CanExecute="CanExecuteSaveReport"/>
         <CommandBinding Command="main:MainCommands.RunSpec" Executed="ExecuteRunSpec" CanExecute="CanExecuteRunSpec"/>
     </Window.CommandBindings>
 
@@ -69,36 +58,96 @@
             <kit:BusyIndicator BusyContent="{Binding BusyMessage}" IsBusy="{Binding BusyMessage,Converter={StaticResource MainVerter},ConverterParameter=Some}">
                 <Grid IsEnabled="{Binding Lic,Converter={StaticResource MainVerter},ConverterParameter=Some}">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="220" MinWidth="180"/>
                         <ColumnDefinition Width="4"/>
-                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="220" MinWidth="180"/>
                         <ColumnDefinition Width="4"/>
-                        <ColumnDefinition/>
+                        <ColumnDefinition MinWidth="300"/>
                     </Grid.ColumnDefinitions>
+                    <!-- NAVIGATION TREE COLUMN -->
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Border Style="{StaticResource SubTitleBand}">
-                            <TextBlock Text="Accounts" Style="{StaticResource SubTitleText}"/>
+                            <TextBlock Text="Customers + Jobs" Style="{StaticResource SubTitleText}"/>
                         </Border>
-                        <!-- NAVIGATION TREE -->
-                        <TreeView Grid.Row="1" ItemsSource="{Binding ObsAccNodes}" FontSize="{Binding AppFontSize}"
-                                  IsEnabled="{Binding ObsAccNodes,Converter={StaticResource MainVerter},ConverterParameter=Some}"
+                        <Grid Grid.Row="1">
+                            <TreeView ItemsSource="{Binding ObsNavNodes}" FontSize="{Binding AppFontSize}"
+                                  IsEnabled="{Binding ObsNavNodes,Converter={StaticResource MainVerter},ConverterParameter=Some}"
                                   SelectedItemChanged="NavTree_SelectionChanged" BorderThickness="0,1,1,1" Padding="0">
+                                <TreeView.ItemTemplate>
+                                    <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Style="{StaticResource MainIconStyle}" Margin="0,0,4,0">
+                                                <Image.Source>
+                                                    <MultiBinding Converter="{StaticResource MainMultiVerter}" ConverterParameter="NavIcon">
+                                                        <Binding Path="Type"/>
+                                                        <Binding Path="IsExpanded"/>
+                                                    </MultiBinding>
+                                                </Image.Source>
+                                            </Image>
+                                            <TextBlock Text="{Binding Converter={StaticResource MainVerter},ConverterParameter=NavNodeText}"/>
+                                        </StackPanel>
+                                    </HierarchicalDataTemplate>
+                                </TreeView.ItemTemplate>
+                                <TreeView.ItemContainerStyle>
+                                    <Style TargetType="TreeViewItem">
+                                        <Setter Property="IsExpanded" Value="{Binding IsExpanded,Mode=TwoWay}"/>
+                                        <Setter Property="IsSelected" Value="{Binding IsSelected,Mode=TwoWay}"/>
+                                    </Style>
+                                </TreeView.ItemContainerStyle>
+                            </TreeView>
+                            <TextBlock Text="Click on job node to open the job and load its child variable names, reports and properties."
+                                       Foreground="SlateGray" TextWrapping="Wrap" Margin="8"
+                                       VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                                <TextBlock.Visibility>
+                                    <MultiBinding Converter="{StaticResource MainMultiVerter}" ConverterParameter="JobHelpTextVisible">
+                                        <Binding Path="ObsNavNodes"/>
+                                        <Binding Path="DProps"/>
+                                    </MultiBinding>
+                                </TextBlock.Visibility>
+                            </TextBlock>
+                        </Grid>
+                    </Grid>
+                    <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    <!-- VARIABLE TREE COLUMN -->
+                    <Grid Grid.Column="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Border Style="{StaticResource SubTitleBand}">
+                            <TextBlock Style="{StaticResource SubTitleText}">
+                                <TextBlock.Text>
+                                    <MultiBinding Converter="{StaticResource MainMultiVerter}" ConverterParameter="VartreeTitle">
+                                        <Binding Path="SelectedVartreeName"/>
+                                        <Binding Path="SelectedAxisTreeName"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </Border>
+                        <TreeView Grid.Row="1" ItemsSource="{Binding ObsVartreeNodes}" FontSize="{Binding AppFontSize}"
+                                  SelectedItemChanged="Vartree_SelectionChanged" BorderThickness="0,1,1,1" Padding="0">
+                            <TreeView.IsEnabled>
+                                <MultiBinding Converter="{StaticResource MainMultiVerter}" ConverterParameter="AnySome">
+                                    <Binding Path="SelectedVartreeName"/>
+                                    <Binding Path="SelectedAxisTreeName"/>
+                                </MultiBinding>
+                            </TreeView.IsEnabled>
                             <TreeView.ItemTemplate>
                                 <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                                     <StackPanel Orientation="Horizontal">
                                         <Image Style="{StaticResource MainIconStyle}" Margin="0,0,4,0">
                                             <Image.Source>
-                                                <MultiBinding Converter="{StaticResource MainMultiVerter}" ConverterParameter="NavIcon">
+                                                <MultiBinding Converter="{StaticResource MainMultiVerter}" ConverterParameter="VartreeIcon">
                                                     <Binding Path="Type"/>
                                                     <Binding Path="IsExpanded"/>
                                                 </MultiBinding>
                                             </Image.Source>
                                         </Image>
-                                        <TextBlock Text="{Binding Converter={StaticResource MainVerter},ConverterParameter=NavNodeText}"/>
+                                        <TextBlock Text="{Binding Converter={StaticResource MainVerter},ConverterParameter=VartreeNodeText}"/>
                                     </StackPanel>
                                 </HierarchicalDataTemplate>
                             </TreeView.ItemTemplate>
@@ -110,20 +159,8 @@
                             </TreeView.ItemContainerStyle>
                         </TreeView>
                     </Grid>
-                    <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-                    <Grid Grid.Column="2">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Border Style="{StaticResource SubTitleBand}">
-                            <TextBlock Text="Variables" Style="{StaticResource SubTitleText}"/>
-                        </Border>
-                        <TreeView Grid.Row="1">
-
-                        </TreeView>
-                    </Grid>
-                    <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    <GridSplitter Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    <!-- SPEC COLUMN -->
                     <Grid Grid.Column="4">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -156,22 +193,31 @@
                                     <Setter Property="Width" Value="110"/>
                                     <Setter Property="Height" Value="30"/>
                                 </Style>
+                                <Style x:Key="SpecLabel1" TargetType="TextBlock">
+                                    <Setter Property="Margin" Value="0,3,0,3"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
+                                <Style x:Key="SpecBox1" TargetType="TextBox">
+                                    <Setter Property="Margin" Value="8,3,0,3"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                    <Setter Property="Padding" Value="2,2,2,3"/>
+                                </Style>
+                                <Style x:Key="SpecCheck1" TargetType="CheckBox">
+                                    <Setter Property="Margin" Value="0,3,0,3"/>
+                                    <Setter Property="VerticalAlignment" Value="Center"/>
+                                </Style>
                             </TabControl.Resources>
                             <TabItem Style="{StaticResource Tabitem1}">
                                 <TabItem.Header>
                                     <TextBlock Text="Specification" FontSize="14"/>
                                 </TabItem.Header>
-                                <Grid>
-
-                                </Grid>
+                                <main:SpecCoreControl IsEnabled="{Binding DProps,Converter={StaticResource MainVerter},ConverterParameter=Some}"/>
                             </TabItem>
                             <TabItem Style="{StaticResource Tabitem1}">
                                 <TabItem.Header>
                                     <TextBlock Text="Properties" FontSize="14"/>
                                 </TabItem.Header>
-                                <Grid>
-
-                                </Grid>
+                                <main:SpecPropertiesControl IsEnabled="{Binding DProps,Converter={StaticResource MainVerter},ConverterParameter=Some}"/>
                             </TabItem>
 
                         </TabControl>
@@ -205,6 +251,7 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
@@ -213,12 +260,18 @@
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
             <StatusBarItem Grid.Column="0">
-                <TextBlock Text="{Binding StatusMessage}" Margin="3,0,0,0"/>
+                <TextBlock Text="{Binding StatusAccount}" Margin="3,0,0,0"/>
             </StatusBarItem>
-            <StatusBarItem Grid.Column="2">
-                <Slider Minimum="10" Maximum="20" Width="80" SmallChange="1" LargeChange="1" Value="{Binding AppFontSize,Mode=TwoWay}"/>
+            <StatusBarItem Grid.Column="1">
+                <TextBlock Text="{Binding StatusEngine}" Margin="12,0,0,0"/>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="2" HorizontalContentAlignment="Center">
+                <TextBlock Text="{Binding StatusMessage}" Margin="12,0,12,0" HorizontalAlignment="Center"/>
             </StatusBarItem>
             <StatusBarItem Grid.Column="3">
+                <Slider Minimum="10" Maximum="20" Width="80" SmallChange="1" LargeChange="1" Value="{Binding AppFontSize,Mode=TwoWay}"/>
+            </StatusBarItem>
+            <StatusBarItem Grid.Column="4">
                 <TextBlock Text="{Binding StatusTime}" Margin="8,0,3,0"/>
             </StatusBarItem>
         </StatusBar>

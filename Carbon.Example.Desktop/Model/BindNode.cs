@@ -10,6 +10,18 @@ namespace Carbon.Example.Desktop
 	/// </summary>
 	public sealed class BindNode : INotifyPropertyChanged
 	{
+		public const string TypeFolder = "FOLDER";
+		public const string TypeCloud = "CLOUD";
+		public const string TypeCust = "CUST";
+		public const string TypeJob = "JOB";
+		public const string TypeTocNew = "TOCNEW";
+		public const string TypeTocOld = "TOCOLD";
+		public const string TypeVartees = "VTS";
+		public const string TypeAxTrees = "AXS";
+		public const string TypeVt = "VT";
+		public const string TypeAx = "AX";
+		public const string TypeIni = "JOBINI";
+
 		static int _id;
 
 		public BindNode(string type, string text, int level, object data, BindNode parent)

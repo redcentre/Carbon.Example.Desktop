@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!-- A set of publicly available customers and jobs that are initially loaded into the app's navigation tree. -->
+<customers>
+  <customer name="client1rcs">
+    <job name="demo"/>
+  </customer>
+  <customer name="rcspublic">
+    <job name="aemo"/>
+    <job name="firstfleet"/>
+  </customer>
+</customers>

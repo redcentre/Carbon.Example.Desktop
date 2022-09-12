@@ -2,8 +2,10 @@
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Media;
 
 namespace Carbon.Example.Desktop
 {
@@ -40,6 +42,41 @@ namespace Carbon.Example.Desktop
 				if (node.Type == "File") return Path.GetFileNameWithoutExtension(node.Text);
 				if (node.Type == "Data") return $"{node.Text}={node.Description}";
 				return node.Text;
+			}
+			if (convarg == "VartreeNodeText")
+			{
+				var node = (BindNode)value;
+				if (node == null) return null;
+				if (node.Type == "Folder" || node.Type == "Variable") return node.Text;
+				if (node.Type == "Dir" || node.Type == "File") return Path.GetFileNameWithoutExtension(node.Text);
+				if (node.Description == null) return node.Text;
+				return $"{node.Text} = {node.Description}";
+			}
+			var m = Regex.Match(convarg, @"Int(>=|==|<=|!=|<|>)(\d+)$", RegexOptions.IgnoreCase);
+			if (m.Success)
+			{
+				int val = (int)value;
+				string op = m.Groups[1].Value;
+				int num = int.Parse(m.Groups[2].Value);
+				switch (op)
+				{
+					case ">=": return val >= num;
+					case "==": return val == num;
+					case "<=": return val <= num;
+					case "!=": return val != num;
+					case "<": return val < num;
+					case ">": return val > num;
+				}
+				return false;
+			}
+			if (convarg == "TreeSomeBack")
+			{
+				return value != null ? SystemColors.WindowBrush : Brushes.WhiteSmoke;
+			}
+			if (convarg == "LinesToBody")
+			{
+				var lines = value as string[];
+				return lines == null ? null : string.Join(Environment.NewLine, lines);
 			}
 			throw new NotImplementedException($"MainConverter Convert {parameter}");
 		}

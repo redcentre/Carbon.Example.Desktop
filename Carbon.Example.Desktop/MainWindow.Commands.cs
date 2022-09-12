@@ -32,12 +32,16 @@ namespace Carbon.Example.Desktop
 		void CanExecuteOpenReport(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = Controller.DProps != null;
 		void ExecuteOpenReport(object target, ExecutedRoutedEventArgs e) => OpenReportUI();
 
-		void CanExecuteRunSpec(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = false;// Controller.ReportTop != null && Controller.ReportSide != null && Controller.DProps != null;
+		void CanExecuteRunSpec(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = Controller.ReportTop != null && Controller.ReportSide != null && Controller.DProps != null;
 		void ExecuteRunSpec(object target, ExecutedRoutedEventArgs e) => Controller.RunSpec();
 
 		void CanExecuteSaveReport(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = Controller.GenTabLines != null;
 		void ExecuteSaveReport(object target, ExecutedRoutedEventArgs e) => SaveReportUI();
 
+		/// <summary>
+		/// The login dialog prompt will only return true if authentication was successful.
+		/// In that case the controller will have already put itself into a working state.
+		/// </summary>
 		bool DoLoginPrompt()
 		{
 			var dialog = new SessionDialog();
@@ -49,6 +53,7 @@ namespace Carbon.Example.Desktop
 			{
 				Controller.LoginId = dialog.AccountId;
 				Controller.LoginPassword = dialog.Password;
+				ShowReportWindow();
 				return true;
 			}
 			return false;
@@ -61,7 +66,8 @@ namespace Carbon.Example.Desktop
 
 		void SaveReportUI()
 		{
-			//if (!await Controller.ListSavedReports()) return;
+			// We could show the tree of saved reports here, but for now the user just
+			// names the optional path prefix and the name of the report.
 			var dialog = new SaveReportDialog();
 			dialog.Owner = this;
 			if (dialog.ShowDialog() == true)

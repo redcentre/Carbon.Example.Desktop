@@ -1,0 +1,90 @@
+﻿<UserControl x:Class="Carbon.Example.Desktop.SpecPropertiesControl"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:main="clr-namespace:Carbon.Example.Desktop"
+        xmlns:kit="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d" 
+        Background="GhostWhite"
+        d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <Style x:Key="Check1" TargetType="CheckBox">
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+        <Style x:Key="Spin1" TargetType="kit:IntegerUpDown">
+            <Setter Property="Width" Value="50"/>
+            <Setter Property="AllowTextInput" Value="False"/>
+            <Setter Property="Minimum" Value="0"/>
+            <Setter Property="Maximum" Value="6"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+        <Style x:Key="Spin2" TargetType="kit:DoubleUpDown">
+            <Setter Property="Width" Value="55"/>
+            <Setter Property="AllowTextInput" Value="False"/>
+            <Setter Property="Minimum" Value="0"/>
+            <Setter Property="Maximum" Value="100"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="6,6,0,0">
+            <GroupBox Header="Bands" Padding="10,8,10,8">
+                <StackPanel Orientation="Vertical">
+                    <CheckBox Content="Frequencies" IsChecked="{Binding DProps.Cells.Frequencies.Visible,Mode=TwoWay}" Style="{StaticResource Check1}"/>
+                    <CheckBox Content="Column %" IsChecked="{Binding DProps.Cells.ColumnPercents.Visible,Mode=TwoWay}" Style="{StaticResource Check1}"/>
+                    <CheckBox Content="Row %" IsChecked="{Binding DProps.Cells.RowPercents.Visible,Mode=TwoWay}" Style="{StaticResource Check1}"/>
+                    <CheckBox Content="Significance" IsChecked="{Binding DProps.Significance.Visible,Mode=TwoWay}" Style="{StaticResource Check1}"/>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Decimals" Padding="10,8,10,8" Margin="0,8,0,0">
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal" Margin="2">
+                        <kit:IntegerUpDown Value="{Binding DProps.Decimals.Frequencies,Mode=TwoWay}" Style="{StaticResource Spin1}"/>
+                        <TextBlock Text="Frequency" Margin="8,0,0,0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="2">
+                        <kit:IntegerUpDown Value="{Binding DProps.Decimals.Percents,Mode=TwoWay}" Style="{StaticResource Spin1}"/>
+                        <TextBlock Text="Percents" Margin="8,0,0,0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="2">
+                        <kit:IntegerUpDown Value="{Binding DProps.Decimals.Expressions,Mode=TwoWay}" Style="{StaticResource Spin1}"/>
+                        <TextBlock Text="Expressions" Margin="8,0,0,0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="2">
+                        <kit:IntegerUpDown Value="{Binding DProps.Decimals.Statistics,Mode=TwoWay}" Style="{StaticResource Spin1}"/>
+                        <TextBlock Text="Statistics" Margin="8,0,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="16,6,0,0">
+            <GroupBox Header="Significance" Padding="10,8,10,8">
+                <StackPanel Orientation="Vertical">
+                    <CheckBox Content="Visible" IsChecked="{Binding DProps.Significance.Visible,Mode=Default}" Style="{StaticResource Check1}"/>
+                    <CheckBox Content="Letters 64" IsChecked="{Binding DProps.Significance.Letters64,Mode=TwoWay}" Style="{StaticResource Check1}"/>
+                    <ComboBox ItemsSource="{Binding SigTypePicks}" HorizontalAlignment="Left" SelectedValue="{Binding SelectedSigType,Mode=TwoWay}" Width="90" Margin="0,0,0,6"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                        <kit:DoubleUpDown Value="{Binding DProps.Significance.SigLevel1.Threshold,Mode=TwoWay}" Style="{StaticResource Spin2}"/>
+                        <TextBlock Text="Sig 1" Margin="8,0,0,0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                        <kit:DoubleUpDown Value="{Binding DProps.Significance.SigLevel2.Threshold,Mode=TwoWay}" Style="{StaticResource Spin2}"/>
+                        <TextBlock Text="Sig 2" Margin="8,0,0,0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                        <kit:DoubleUpDown Value="{Binding DProps.Significance.SigLevel3.Threshold,Mode=TwoWay}" Style="{StaticResource Spin2}"/>
+                        <TextBlock Text="Sig 3" Margin="8,0,0,0"/>
+                    </StackPanel>
+                    <kit:WatermarkTextBox Watermark="Stats param" Text="{Binding DProps.Significance.StatsParam,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="200" Padding="2,2,2,3" Margin="0,0,0,6"/>
+                    <kit:WatermarkTextBox Watermark="Letters sequence" Text="{Binding DProps.Significance.LetterSequence,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="200" Padding="2,2,2,3"/>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -1,30 +1,46 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows;
+using wf = System.Windows.Forms;
 
 namespace Carbon.Example.Desktop
 {
+	/// <summary>
+	/// The code-behind for the main window tries to be thin and only related to UI matters.
+	/// Most of the business logic happens inside the DataContext controller class.
+	/// </summary>
 	public partial class MainWindow : Window, System.Windows.Forms.IWin32Window
 	{
+		ReportWindow _repwin;
+
 		public MainWindow()
 		{
 			InitializeComponent();
-			Loaded += MainWindow_Loaded;
-			Closed += MainWindow_Closed;
-			LoadWindowBounds();
+			if (!DesignerProperties.GetIsInDesignMode(this))
+			{
+				Loaded += MainWindow_Loaded;
+				Closed += MainWindow_Closed;
+				LoadWindowBounds();
+			}
 		}
 
 		public IntPtr Handle => new System.Windows.Interop.WindowInteropHelper(this).Handle;
 
 		public System.Windows.Forms.IWin32Window Win32Window => this;
 
+		MainController Controller => (MainController)DataContext;
+
 		void MainWindow_Loaded(object sender, RoutedEventArgs e)
 		{
 			Controller.Startup();
+			// Immediately show a login prompt. A successful login will cause the controller
+			// to continue and put itself into a state where business logic can begin.
 			MainCommands.LoginPrompt.Execute(null, this);
 		}
 
 		void MainWindow_Closed(object sender, EventArgs e)
 		{
+			_repwin?.Dispose();
 			SaveWindowBounds();
 			Controller.Shutdown();
 		}
@@ -51,12 +67,52 @@ namespace Carbon.Example.Desktop
 			}
 		}
 
-		MainController Controller => (MainController)DataContext;
+		void ShowReportWindow()
+		{
+			_repwin = new ReportWindow
+			{
+				DataContext = Controller,
+				Owner = this
+			};
+			_repwin.Closed += (s, e) =>
+			{
+				Controller.Settings.Put(null, nameof(WindowStartupLocation) + "Report", new Rect(_repwin.Left, _repwin.Top, _repwin.Width, _repwin.Height));
+			};
+			_repwin.Show();
+			var r = Controller.Settings.Get(null, nameof(WindowStartupLocation) + "Report", default(Rect));
+			if (r.Width != 0)
+			{
+				_repwin.Top = r.Top;
+				_repwin.Left = r.Left;
+				_repwin.Width = r.Width;
+				_repwin.Height = r.Height;
+			}
+			else
+			{
+				// The report window is placed vertial centre-align right of the main window.
+				_repwin.Top = Top + Height / 2 - _repwin.Height / 2;
+				if (_repwin.Top < 10)
+				{
+					_repwin.Top = 10;
+				}
+				_repwin.Left = Left + Width + 20;
+				if (_repwin.Left > wf.Screen.PrimaryScreen.WorkingArea.Width)
+				{
+					_repwin.Left = wf.Screen.PrimaryScreen.WorkingArea.Width - 100;
+				}
+			}
+		}
 
-		private void NavTree_SelectionChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+		void NavTree_SelectionChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
 		{
 			var selnode = (BindNode)e.NewValue;
 			Controller.SelectedNavNode = selnode;
+		}
+
+		void Vartree_SelectionChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+		{
+			var selnode = (BindNode)e.NewValue;
+			Controller.SelectedVartreeNode = selnode;
 		}
 	}
 }
