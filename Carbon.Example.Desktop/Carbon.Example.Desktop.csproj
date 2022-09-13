@@ -53,6 +53,9 @@
     <Reference Include="Azure.Storage.Common, Version=12.12.0.0, Culture=neutral, PublicKeyToken=92742159e12e44c8, processorArchitecture=MSIL">
       <HintPath>..\packages\Azure.Storage.Common.12.12.0\lib\netstandard2.0\Azure.Storage.Common.dll</HintPath>
     </Reference>
+    <Reference Include="Curiosity.SPSS, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Curiosity.SPSS.1.2.1\lib\netstandard2.0\Curiosity.SPSS.dll</HintPath>
+    </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=2.18.0.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
       <HintPath>..\packages\DocumentFormat.OpenXml.2.18.0\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
     </Reference>
@@ -63,6 +66,9 @@
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.6.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Data.Sqlite, Version=6.0.8.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Sqlite.Core.6.0.8\lib\netstandard2.0\Microsoft.Data.Sqlite.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Web.WebView2.Core, Version=1.0.1343.22, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.WebView2.1.0.1343.22\lib\net45\Microsoft.Web.WebView2.Core.dll</HintPath>
     </Reference>
@@ -81,17 +87,32 @@
     <Reference Include="Orthogonal.NSettings, Version=3.0.2.0, Culture=neutral, PublicKeyToken=22ee175eb272f8cb, processorArchitecture=MSIL">
       <HintPath>..\packages\Orthogonal.NSettings.3.0.2\lib\net471\Orthogonal.NSettings.dll</HintPath>
     </Reference>
-    <Reference Include="RCS.Carbon.Shared, Version=8.3.4.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
-      <HintPath>..\packages\RCS.Carbon.Shared.8.3.4\lib\netstandard2.0\RCS.Carbon.Shared.dll</HintPath>
+    <Reference Include="RCS.Carbon.Export, Version=8.3.5.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
+      <HintPath>..\packages\RCS.Carbon.Export.8.3.5\lib\netstandard2.0\RCS.Carbon.Export.dll</HintPath>
     </Reference>
-    <Reference Include="RCS.Carbon.Tables, Version=8.3.4.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
-      <HintPath>..\packages\RCS.Carbon.Tables.8.3.4\lib\netstandard2.0\RCS.Carbon.Tables.dll</HintPath>
+    <Reference Include="RCS.Carbon.Import, Version=8.3.5.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
+      <HintPath>..\packages\RCS.Carbon.Import.8.3.5\lib\netstandard2.0\RCS.Carbon.Import.dll</HintPath>
     </Reference>
-    <Reference Include="RCS.Carbon.Variables, Version=8.3.4.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
-      <HintPath>..\packages\RCS.Carbon.Variables.8.3.4\lib\netstandard2.0\RCS.Carbon.Variables.dll</HintPath>
+    <Reference Include="RCS.Carbon.Shared, Version=8.3.5.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
+      <HintPath>..\packages\RCS.Carbon.Shared.8.3.5\lib\netstandard2.0\RCS.Carbon.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="RCS.Carbon.Tables, Version=8.3.5.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
+      <HintPath>..\packages\RCS.Carbon.Tables.8.3.5\lib\netstandard2.0\RCS.Carbon.Tables.dll</HintPath>
+    </Reference>
+    <Reference Include="RCS.Carbon.Variables, Version=8.3.5.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
+      <HintPath>..\packages\RCS.Carbon.Variables.8.3.5\lib\netstandard2.0\RCS.Carbon.Variables.dll</HintPath>
     </Reference>
     <Reference Include="RCS.Licensing.Stdlib, Version=4.2.7.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
       <HintPath>..\packages\RCS.Licensing.Stdlib.4.2.7\lib\net471\RCS.Licensing.Stdlib.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLitePCLRaw.batteries_v2, Version=2.1.0.1603, Culture=neutral, PublicKeyToken=8226ea5df37bcae9, processorArchitecture=MSIL">
+      <HintPath>..\packages\SQLitePCLRaw.bundle_e_sqlite3.2.1.0\lib\net461\SQLitePCLRaw.batteries_v2.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLitePCLRaw.core, Version=2.1.0.1603, Culture=neutral, PublicKeyToken=1488e028ca7ab535, processorArchitecture=MSIL">
+      <HintPath>..\packages\SQLitePCLRaw.core.2.1.0\lib\netstandard2.0\SQLitePCLRaw.core.dll</HintPath>
+    </Reference>
+    <Reference Include="SQLitePCLRaw.provider.dynamic_cdecl, Version=2.1.0.1603, Culture=neutral, PublicKeyToken=b68184102cba0b3b, processorArchitecture=MSIL">
+      <HintPath>..\packages\SQLitePCLRaw.provider.dynamic_cdecl.2.1.0\lib\netstandard2.0\SQLitePCLRaw.provider.dynamic_cdecl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -190,6 +211,9 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="TSAPI.Public, Version=1.0.8.0, Culture=neutral, PublicKeyToken=9cf02b90ff93fbe5, processorArchitecture=MSIL">
+      <HintPath>..\packages\TSAPI.Public.1.0.8\lib\net472\TSAPI.Public.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -283,9 +307,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\LoginPrompt16.png" />
-    <None Include="Navigation-Tree.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <Content Include="Model\MainContoller.Generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>MainContoller.Generated.cs</LastGenOutput>

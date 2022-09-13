@@ -573,26 +573,24 @@ namespace Carbon.Example.Desktop
 		#region Private Helpers
 
 		/// <summary>
-		/// The navigation tree is initially loaded with some Cloud customers and
-		/// jobs that are public and provided by Red Centre Software.
+		/// A successful login returns a Red Centre Software <c>Licence</c> class with lots of public
+		/// information about the account. Important 
 		/// </summary>
 		void LoadNavigationTree()
 		{
 			ObsNavNodes = new ObservableCollection<BindNode>();
-			var doc = XDocument.Load("Navigation-Tree.xml");
 			var rnode = new BindNode(BindNode.TypeCloud, "Cloud", null, null);
-			foreach (var custelem in doc.Root.Elements("customer"))
+			foreach (var authcust in _lic.Customers)
 			{
-				var cust = new CustData() { Name = (string)custelem.Attribute("name") };
+				var cust = new CustData() { Name = authcust.Name, Id = authcust.Id };
 				var cnode = new BindNode(BindNode.TypeCust, cust.Name, cust, rnode);
 				rnode.AddChild(cnode);
-				foreach (var jelem in custelem.Elements("job"))
+				foreach (var authjob in authcust.Jobs)
 				{
-					var job = new JobData((string)jelem.Attribute("name"), null, null, null);
+					var job = new JobData(authjob.Name, null, null, null);
 					var jnode = new BindNode(BindNode.TypeJob, job.Name, job, cnode);
 					cnode.AddChild(jnode);
 				}
-				cnode.IsExpanded = true;
 			}
 			rnode.IsExpanded = true;
 			_obsNavNodes.Add(rnode);
