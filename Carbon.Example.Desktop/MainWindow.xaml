@@ -140,7 +140,7 @@
                             </TextBlock>
                         </Border>
                         <TreeView Grid.Row="1" ItemsSource="{Binding ObsVartreeNodes}" FontSize="{Binding AppFontSize}"
-                                  SelectedItemChanged="Vartree_SelectionChanged" BorderThickness="0,1,1,1" Padding="0">
+                                  SelectedItemChanged="Vartree_SelectionChanged" BorderThickness="0,1,1,1" Padding="0" MouseMove="VarTree_MouseMove">
                             <TreeView.IsEnabled>
                                 <MultiBinding Converter="{StaticResource MainMultiVerter}" ConverterParameter="AnySome">
                                     <Binding Path="SelectedVartreeName"/>
@@ -150,6 +150,14 @@
                             <TreeView.ItemTemplate>
                                 <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                                     <StackPanel Orientation="Horizontal">
+                                        <StackPanel.ToolTip>
+                                            <MultiBinding Converter="{StaticResource MainMultiVerter}" ConverterParameter="BindNodeTip">
+                                                <Binding Path="."/>
+                                                <Binding Path="IsExpanded"/>
+                                                <Binding Path="IsSelected"/>
+                                                <Binding Path="Children.Count"/>
+                                            </MultiBinding>
+                                        </StackPanel.ToolTip>
                                         <Image Style="{StaticResource MainIconStyle}" Margin="0,0,4,0">
                                             <Image.Source>
                                                 <MultiBinding Converter="{StaticResource MainMultiVerter}" ConverterParameter="VartreeIcon">

@@ -52,6 +52,27 @@ namespace Carbon.Example.Desktop
 				if (node.Description == null) return node.Text;
 				return $"{node.Text} = {node.Description}";
 			}
+			if (convarg == "SpecText")
+			{
+				var node = (BindNode)value;
+				if (node == null) return null;
+				if (node.Type == BindNode.TypeVariable || node.Type == BindNode.TypeCodeframe)
+				{
+					string s = node.Text;
+					if (node.Children.Count > 0)
+					{
+						string join = string.Join(" • ", node.Children.Select(c => c.Description ?? c.Text));
+						if (join.Length > 80) join = join.Substring(0, 80) + "\u2026";
+						s = $"{s} \u2190 {node.Children.Count} [{join}]";
+					}
+					return s;
+				}
+				if (node.Type == BindNode.TypeCode)
+				{
+					string s = node.Description == null ? node.Text : $"{node.Text} = {node.Description}";
+					return $"{s} \u2192 {node.Parent.Text}";
+				}
+			}
 			var m = Regex.Match(convarg, @"Int(>=|==|<=|!=|<|>)(\d+)$", RegexOptions.IgnoreCase);
 			if (m.Success)
 			{
@@ -69,7 +90,7 @@ namespace Carbon.Example.Desktop
 				}
 				return false;
 			}
-			if (convarg == "TreeSomeBack")
+			if (convarg == "ControlSomeBack")
 			{
 				return value != null ? SystemColors.WindowBrush : Brushes.WhiteSmoke;
 			}

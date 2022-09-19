@@ -10,7 +10,7 @@ namespace Carbon.Example.Desktop
 	/// </summary>
 	public sealed class BindNode : INotifyPropertyChanged
 	{
-		public const string TypeFolder = "FOLDER";
+		public const string TypeFolder = "Folder";
 		public const string TypeCloud = "CLOUD";
 		public const string TypeCust = "CUST";
 		public const string TypeJob = "JOB";
@@ -19,8 +19,13 @@ namespace Carbon.Example.Desktop
 		public const string TypeVartees = "VTS";
 		public const string TypeAxTrees = "AXS";
 		public const string TypeVt = "VT";
+		public const string TypeVtOff = "VTOFF";
 		public const string TypeAx = "AX";
 		public const string TypeIni = "JOBINI";
+		public const string TypeVariable = "Variable";
+		public const string TypeCodeframe = "Codeframe";
+		public const string TypeCode = "Code";
+		public const string TypeAxis = "Axis";
 
 		static int _id;
 
@@ -29,7 +34,6 @@ namespace Carbon.Example.Desktop
 			Id = ++_id;
 			Type = type;
 			Text = text;
-			Level = parent?.Level + 1 ?? 0;
 			Data = data;
 			Parent = parent;
 		}
@@ -39,7 +43,6 @@ namespace Carbon.Example.Desktop
 			Id = node.Id;
 			Type = node.Type;
 			Text = node.Name;
-			Level = parent?.Level + 1 ?? 0;
 			Description = node.Description;
 			Data = data;
 			Parent = parent;
@@ -48,7 +51,6 @@ namespace Carbon.Example.Desktop
 		public string Type { get; }
 		public int Id { get; }
 		public BindNode Parent { get; set; }
-		public int Level { get; }
 
 		public void AddChild(BindNode child)
 		{
@@ -73,7 +75,7 @@ namespace Carbon.Example.Desktop
 
 		public override string ToString()
 		{
-			return $"BindNode({Id},{Type},{Text},{Description},{Level},{Data},{Parent?.Id})";
+			return $"BindNode({Id},{Type},{Text},{Description},{Data},{Parent?.Id})";
 		}
 
 		static ObservableCollection<BindNode> EmptyChildren = new ObservableCollection<BindNode>();

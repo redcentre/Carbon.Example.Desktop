@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.ComponentModel;
 using System.Windows;
 using wf = System.Windows.Forms;
+using System.Windows.Media;
+using System.Windows.Controls;
+using System.Linq;
 
 namespace Carbon.Example.Desktop
 {
@@ -122,6 +126,22 @@ namespace Carbon.Example.Desktop
 				if (Controller.SelectedNavNode?.Type == "File")
 				{
 					MainCommands.DeleteReport.Execute(Controller.SelectedNavNode, this);
+				}
+			}
+		}
+
+		void VarTree_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+		{
+			if (e.LeftButton == System.Windows.Input.MouseButtonState.Pressed)
+			{
+				var item = MainUtility.FindVisualParent<TreeViewItem>(e.OriginalSource);
+				if (item != null)
+				{
+					var node = (BindNode)item.DataContext;
+					if (node.Type == BindNode.TypeVariable || node.Type == BindNode.TypeCodeframe || node.Type == BindNode.TypeCode)
+					{
+						DragDrop.DoDragDrop((TreeView)sender, node, DragDropEffects.Copy);
+					}
 				}
 			}
 		}

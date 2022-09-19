@@ -20,8 +20,11 @@ namespace Carbon.Example.Desktop
 				if (type == BindNode.TypeJob) return Images.IconJob;
 				if (type == BindNode.TypeFolder || type == BindNode.TypeTocNew || type == BindNode.TypeTocOld || type == BindNode.TypeVartees || type == BindNode.TypeAxTrees || type == BindNode.TypeIni) return exp == true ? Images.IconFolderOpen : Images.IconFolderClosed;
 				if (type == BindNode.TypeVt) return Images.IconVartree;
+				if (type == BindNode.TypeVtOff) return Images.IconVartreeOff;
 				if (type == BindNode.TypeAx) return Images.IconAxisTree;
-				if (type == "Folder") return exp == true ? Images.IconFolderOpen : Images.IconFolderClosed;
+				if (type == BindNode.TypeVariable) return Images.IconVariable;
+				if (type == BindNode.TypeCodeframe) return Images.IconCodeframe;
+				if (type == BindNode.TypeCode) return Images.IconCode;
 				if (type == "User") return Images.IconUser;
 				if (type == "Table") return Images.IconTable;
 				if (type == "Chart") return Images.IconChart;
@@ -29,16 +32,18 @@ namespace Carbon.Example.Desktop
 				if (type == "Node") return Images.IconNode;
 				if (type == "Data") return Images.IconData;
 				if (type == "Dir") return exp == true ? Images.IconDirOpen : Images.IconDirClosed;
-				return Images.IconVartree;
+				return Images.IconUnknown;
 			}
 			if (p == "VartreeIcon")
 			{
 				var type = values[0] as string;
 				var exp = values[1] as bool?;
-				if (type == "Folder") return exp == true ? Images.IconFolderOpen : Images.IconFolderClosed;
-				if (type == "Variable") return Images.IconVariable;
-				if (type == "Axis") return Images.IconAxisTree;
-				return Images.IconCode;
+				if (type == BindNode.TypeFolder) return exp == true ? Images.IconFolderOpen : Images.IconFolderClosed;
+				if (type == BindNode.TypeVariable) return Images.IconVariable;
+				if (type == BindNode.TypeCodeframe) return Images.IconCodeframe;
+				if (type == BindNode.TypeCode) return Images.IconCode;
+				if (type == BindNode.TypeAxis) return Images.IconAxisTree;
+				return Images.IconUnknown;
 			}
 			if (p == "JobHelpTextVisible")
 			{
@@ -65,12 +70,11 @@ namespace Carbon.Example.Desktop
 				var sel = values[2] as bool?;
 				var ccount = values[3] as int?;
 				if (node == null) return null;
-				return string.Format("{0} • {1} • {2}\nLevel {3} • {4} • {5}\nChildren: {6}",
+				return string.Format("{0} • {1} • {2}\n{3} • {4}\nChildren: {5}",
 					node.Id, node.Type, node.Text,
-					node.Level,
 					exp == true ? "Expanded" : "Collapsed",
 					sel == true ? "Selected" : "Unselected",
-					ccount == null ? "NULL" : ccount.ToString()
+					ccount.ToString()
 				);
 			}
 			throw new NotImplementedException($"MainMultiConverter Convert {parameter}");

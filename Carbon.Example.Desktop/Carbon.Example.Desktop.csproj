@@ -66,8 +66,8 @@
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.6.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Data.Sqlite, Version=6.0.8.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Data.Sqlite.Core.6.0.8\lib\netstandard2.0\Microsoft.Data.Sqlite.dll</HintPath>
+    <Reference Include="Microsoft.Data.Sqlite, Version=6.0.9.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Sqlite.Core.6.0.9\lib\netstandard2.0\Microsoft.Data.Sqlite.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.WebView2.Core, Version=1.0.1343.22, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.WebView2.1.0.1343.22\lib\net45\Microsoft.Web.WebView2.Core.dll</HintPath>
@@ -87,32 +87,32 @@
     <Reference Include="Orthogonal.NSettings, Version=3.0.2.0, Culture=neutral, PublicKeyToken=22ee175eb272f8cb, processorArchitecture=MSIL">
       <HintPath>..\packages\Orthogonal.NSettings.3.0.2\lib\net471\Orthogonal.NSettings.dll</HintPath>
     </Reference>
-    <Reference Include="RCS.Carbon.Export, Version=8.3.5.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
-      <HintPath>..\packages\RCS.Carbon.Export.8.3.5\lib\netstandard2.0\RCS.Carbon.Export.dll</HintPath>
+    <Reference Include="RCS.Carbon.Export, Version=8.3.9.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
+      <HintPath>..\packages\RCS.Carbon.Export.8.3.9\lib\netstandard2.0\RCS.Carbon.Export.dll</HintPath>
     </Reference>
-    <Reference Include="RCS.Carbon.Import, Version=8.3.5.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
-      <HintPath>..\packages\RCS.Carbon.Import.8.3.5\lib\netstandard2.0\RCS.Carbon.Import.dll</HintPath>
+    <Reference Include="RCS.Carbon.Import, Version=8.3.9.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
+      <HintPath>..\packages\RCS.Carbon.Import.8.3.9\lib\netstandard2.0\RCS.Carbon.Import.dll</HintPath>
     </Reference>
-    <Reference Include="RCS.Carbon.Shared, Version=8.3.5.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
-      <HintPath>..\packages\RCS.Carbon.Shared.8.3.5\lib\netstandard2.0\RCS.Carbon.Shared.dll</HintPath>
+    <Reference Include="RCS.Carbon.Shared, Version=8.3.9.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
+      <HintPath>..\packages\RCS.Carbon.Shared.8.3.9\lib\netstandard2.0\RCS.Carbon.Shared.dll</HintPath>
     </Reference>
-    <Reference Include="RCS.Carbon.Tables, Version=8.3.5.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
-      <HintPath>..\packages\RCS.Carbon.Tables.8.3.5\lib\netstandard2.0\RCS.Carbon.Tables.dll</HintPath>
+    <Reference Include="RCS.Carbon.Tables, Version=8.3.9.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
+      <HintPath>..\packages\RCS.Carbon.Tables.8.3.9\lib\netstandard2.0\RCS.Carbon.Tables.dll</HintPath>
     </Reference>
-    <Reference Include="RCS.Carbon.Variables, Version=8.3.5.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
-      <HintPath>..\packages\RCS.Carbon.Variables.8.3.5\lib\netstandard2.0\RCS.Carbon.Variables.dll</HintPath>
+    <Reference Include="RCS.Carbon.Variables, Version=8.3.9.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
+      <HintPath>..\packages\RCS.Carbon.Variables.8.3.9\lib\netstandard2.0\RCS.Carbon.Variables.dll</HintPath>
     </Reference>
-    <Reference Include="RCS.Licensing.Stdlib, Version=4.2.7.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
-      <HintPath>..\packages\RCS.Licensing.Stdlib.4.2.7\lib\net471\RCS.Licensing.Stdlib.dll</HintPath>
+    <Reference Include="RCS.Licensing.Stdlib, Version=4.2.8.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
+      <HintPath>..\packages\RCS.Licensing.Stdlib.4.2.8\lib\net471\RCS.Licensing.Stdlib.dll</HintPath>
     </Reference>
-    <Reference Include="SQLitePCLRaw.batteries_v2, Version=2.1.0.1603, Culture=neutral, PublicKeyToken=8226ea5df37bcae9, processorArchitecture=MSIL">
-      <HintPath>..\packages\SQLitePCLRaw.bundle_e_sqlite3.2.1.0\lib\net461\SQLitePCLRaw.batteries_v2.dll</HintPath>
+    <Reference Include="SQLitePCLRaw.batteries_v2, Version=2.1.1.1705, Culture=neutral, PublicKeyToken=8226ea5df37bcae9, processorArchitecture=MSIL">
+      <HintPath>..\packages\SQLitePCLRaw.bundle_e_sqlite3.2.1.1\lib\net461\SQLitePCLRaw.batteries_v2.dll</HintPath>
     </Reference>
-    <Reference Include="SQLitePCLRaw.core, Version=2.1.0.1603, Culture=neutral, PublicKeyToken=1488e028ca7ab535, processorArchitecture=MSIL">
-      <HintPath>..\packages\SQLitePCLRaw.core.2.1.0\lib\netstandard2.0\SQLitePCLRaw.core.dll</HintPath>
+    <Reference Include="SQLitePCLRaw.core, Version=2.1.1.1705, Culture=neutral, PublicKeyToken=1488e028ca7ab535, processorArchitecture=MSIL">
+      <HintPath>..\packages\SQLitePCLRaw.core.2.1.1\lib\netstandard2.0\SQLitePCLRaw.core.dll</HintPath>
     </Reference>
-    <Reference Include="SQLitePCLRaw.provider.dynamic_cdecl, Version=2.1.0.1603, Culture=neutral, PublicKeyToken=b68184102cba0b3b, processorArchitecture=MSIL">
-      <HintPath>..\packages\SQLitePCLRaw.provider.dynamic_cdecl.2.1.0\lib\netstandard2.0\SQLitePCLRaw.provider.dynamic_cdecl.dll</HintPath>
+    <Reference Include="SQLitePCLRaw.provider.dynamic_cdecl, Version=2.1.1.1705, Culture=neutral, PublicKeyToken=b68184102cba0b3b, processorArchitecture=MSIL">
+      <HintPath>..\packages\SQLitePCLRaw.provider.dynamic_cdecl.2.1.1\lib\netstandard2.0\SQLitePCLRaw.provider.dynamic_cdecl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -138,8 +138,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.IO.Hashing, Version=6.0.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IO.Hashing.6.0.1\lib\net461\System.IO.Hashing.dll</HintPath>
+    <Reference Include="System.IO.Hashing, Version=6.0.0.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Hashing.6.0.2\lib\net461\System.IO.Hashing.dll</HintPath>
     </Reference>
     <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
@@ -195,8 +195,8 @@
     <Reference Include="System.Text.Encodings.Web, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Text.Encodings.Web.6.0.0\lib\net461\System.Text.Encodings.Web.dll</HintPath>
     </Reference>
-    <Reference Include="System.Text.Json, Version=6.0.0.5, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.Json.6.0.5\lib\net461\System.Text.Json.dll</HintPath>
+    <Reference Include="System.Text.Json, Version=6.0.0.6, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.6.0.6\lib\net461\System.Text.Json.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
@@ -223,6 +223,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="MainUtility.cs" />
     <Compile Include="Model\MainContoller.Generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -306,6 +307,9 @@
     <Resource Include="App.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Unknown16.png" />
+    <Resource Include="Resources\Codeframe16.png" />
+    <Resource Include="Resources\Vartree16off.png" />
     <Resource Include="Resources\LoginPrompt16.png" />
     <Content Include="Model\MainContoller.Generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -346,8 +350,8 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Web.WebView2.1.0.1343.22\build\Microsoft.Web.WebView2.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Web.WebView2.1.0.1343.22\build\Microsoft.Web.WebView2.targets'))" />
-    <Error Condition="!Exists('..\packages\System.Text.Json.6.0.5\build\System.Text.Json.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Text.Json.6.0.5\build\System.Text.Json.targets'))" />
+    <Error Condition="!Exists('..\packages\System.Text.Json.6.0.6\build\System.Text.Json.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Text.Json.6.0.6\build\System.Text.Json.targets'))" />
   </Target>
   <Import Project="..\packages\Microsoft.Web.WebView2.1.0.1343.22\build\Microsoft.Web.WebView2.targets" Condition="Exists('..\packages\Microsoft.Web.WebView2.1.0.1343.22\build\Microsoft.Web.WebView2.targets')" />
-  <Import Project="..\packages\System.Text.Json.6.0.5\build\System.Text.Json.targets" Condition="Exists('..\packages\System.Text.Json.6.0.5\build\System.Text.Json.targets')" />
+  <Import Project="..\packages\System.Text.Json.6.0.6\build\System.Text.Json.targets" Condition="Exists('..\packages\System.Text.Json.6.0.6\build\System.Text.Json.targets')" />
 </Project>

@@ -14,7 +14,7 @@ namespace Carbon.Example.Desktop
 			Loaded += SessionDialog_Loaded;
 		}
 
-		private void SessionDialog_Loaded(object sender, RoutedEventArgs e)
+		void SessionDialog_Loaded(object sender, RoutedEventArgs e)
 		{
 			PassAccount.Password = Password;
 			BoxAccountId.Focus();

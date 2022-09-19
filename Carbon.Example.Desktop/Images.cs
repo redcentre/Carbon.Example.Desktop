@@ -9,8 +9,10 @@ namespace Carbon.Example.Desktop
 		public static BitmapImage IconCust = new BitmapImage(new Uri("/Resources/Cust16.png", UriKind.Relative));
 		public static BitmapImage IconJob = new BitmapImage(new Uri("/Resources/Job16.png", UriKind.Relative));
 		public static BitmapImage IconVartree = new BitmapImage(new Uri("/Resources/Vartree16.png", UriKind.Relative));
+		public static BitmapImage IconVartreeOff = new BitmapImage(new Uri("/Resources/Vartree16off.png", UriKind.Relative));
 		public static BitmapImage IconAxisTree = new BitmapImage(new Uri("/Resources/AxisTree16.png", UriKind.Relative));
 		public static BitmapImage IconVariable = new BitmapImage(new Uri("/Resources/Variable16.png", UriKind.Relative));
+		public static BitmapImage IconCodeframe = new BitmapImage(new Uri("/Resources/Codeframe16.png", UriKind.Relative));
 		public static BitmapImage IconCode = new BitmapImage(new Uri("/Resources/Code16.png", UriKind.Relative));
 		public static BitmapImage IconFolderClosed = new BitmapImage(new Uri("/Resources/FolderClosed16.png", UriKind.Relative));
 		public static BitmapImage IconFolderOpen = new BitmapImage(new Uri("/Resources/FolderOpen16.png", UriKind.Relative));
@@ -22,5 +24,6 @@ namespace Carbon.Example.Desktop
 		public static BitmapImage IconUser = new BitmapImage(new Uri("/Resources/User16.png", UriKind.Relative));
 		public static BitmapImage IconTable = new BitmapImage(new Uri("/Resources/Table16.png", UriKind.Relative));
 		public static BitmapImage IconChart = new BitmapImage(new Uri("/Resources/Chart16.png", UriKind.Relative));
+		public static BitmapImage IconUnknown = new BitmapImage(new Uri("/Resources/Unknown16.png", UriKind.Relative));
 	}
 }

@@ -143,23 +143,37 @@ namespace Carbon.Example.Desktop
 			BusyMessage = $"Open cloud job {_selectedCust.Name}:{_selectedJob.Name}";
 			try
 			{
+				// The OpenJob call must complete successfully.
 				await Task.Run(() => Engine.OpenJob(_selectedCust.Name, _selectedJob.Name));
+				// Create a set of tasks to load all of the available job detailed information
+				// for demo purposes so it can be seen under the job node. Note that some of
+				// the tasks are allowed to fail and the results are skipped.
+				// TODO Carbon should not throw for simple errors like these. A missing job INI or old TOC file is not really an error.
 				var t1 = Task.Run(() => Engine.GetProps());
 				var t2 = Task.Run(() => Engine.ListVartreeNames().ToArray());
 				var t3 = Task.Run(() => Engine.ListAxisNames().ToArray());
 				var t4 = Task.Run(() => Engine.ListSavedReports());
 				var t5 = Task.Run(() => Engine.GetLegacyTocAsNodes());
 				var t6 = Task.Run(() => Engine.GetJobIniAsNodes());
-				await Task.WhenAll(t1, t2, t3, t4, t5, t6);
+				try
+				{
+					await Task.WhenAll(t1, t2, t3, t4, t5, t6);
+				}
+				catch (Exception ex)
+				{
+					Trace.WriteLine(ex.ToString());
+				}
 				DProps = t1.Result;
 				VartreeNames = t2.Result;
 				AxisTreeNames = t3.Result;
-				TocNewRootGenNodes = t4.Result;
-				TocOldRootGenNodes = t5.Result;
-				JobIniRootNodes = t6.Result;
+				if (!t4.IsFaulted) TocNewRootGenNodes = t4.Result;
+				if (!t5.IsFaulted) TocOldRootGenNodes = t5.Result;
+				if (!t6.IsFaulted) JobIniRootNodes = t6.Result;
 				StatusMessage = $"{_selectedCust.Name} + {_selectedJob.Name}";
 				AppError = null;
-				CommandManager.InvalidateRequerySuggested();    // Makes the GenTab Run button enable
+				ObsTopNodes = new ObservableCollection<BindNode>();
+				ObsSideNodes = new ObservableCollection<BindNode>();
+				CommandManager.InvalidateRequerySuggested();    // Makes the GenTab Run button enable (why is this needed?)
 				return true;
 			}
 			catch (CarbonException ex)
@@ -243,6 +257,14 @@ namespace Carbon.Example.Desktop
 			try
 			{
 				VMeta = await Task.Run(() => Engine.GetVarMetaParsed(_selectedVartreeNode.Text));
+				foreach (var cfnode in _vMeta.RootNodes)	// TODO This loop to set the VarMeta types is a temporary workaround because they don't arrive with types.
+				{
+					cfnode.Type = "Codeframe";
+					foreach (var cnode in cfnode.Children)
+					{
+						cnode.Type = "Code";
+					}
+				}
 				AppError = null;
 				return true;
 			}
@@ -260,7 +282,7 @@ namespace Carbon.Example.Desktop
 		}
 
 		/// <summary>
-		/// TODO
+		/// PENDING
 		/// </summary>
 		public async Task<bool> RunSpecAsync()
 		{
@@ -281,18 +303,18 @@ namespace Carbon.Example.Desktop
 					case XOutputFormat.XML:
 						XDocument doc = await Task.Run(() => Engine.GenTabAsXML(null, _reportTop, _reportSide, filter, weight, _sProps, _dProps));
 						reportBody = doc.ToString();
-						GenTabLines = TextToLines(reportBody).ToArray();
+						GenTabLines = MainUtility.TextToLines(reportBody).ToArray();
 						break;
 					case XOutputFormat.XLSX:
 						byte[] workbook = await Task.Run(() => Engine.GenTabAsXLSX(null, _reportTop, _reportSide, filter, weight, _sProps, _dProps));
 						LastXlsxSaveFile = new FileInfo(Path.Combine(Path.GetTempPath(), "_carbon_example_desktop.xlsx"));
 						File.WriteAllBytes(LastXlsxSaveFile.FullName, workbook);
 						ReportTitle = $"{lastOpenedJobNode.Text} Excel Workbook ({workbook.Length} bytes)";
-						GenTabLines = HexToLines(workbook).ToArray();
+						GenTabLines = MainUtility.HexToLines(workbook).ToArray();
 						break;
 					default:
 						reportBody = await Task.Run(() => Engine.GenTab(null, _reportTop, _reportSide, filter, weight, _sProps, _dProps));
-						GenTabLines = TextToLines(reportBody).ToArray();
+						GenTabLines = MainUtility.TextToLines(reportBody).ToArray();
 						break;
 				}
 				AppError = null;
@@ -376,6 +398,22 @@ namespace Carbon.Example.Desktop
 			return Engine.ReadFileAsLines(name);
 		}
 
+		public void RemoveSelectedTopNode()
+		{
+			if (_selectedTopNode != null)
+			{
+				_obsTopNodes.Remove(_selectedTopNode);
+			}
+		}
+
+		public void RemoveSelectedSideNode()
+		{
+			if (_selectedSideNode != null)
+			{
+				_obsSideNodes.Remove(_selectedSideNode);
+			}
+		}
+
 		#endregion
 
 		#region Node Selection Handlers
@@ -429,7 +467,16 @@ namespace Carbon.Example.Desktop
 					if (_vartreeNames?.Length > 0)
 					{
 						var vtsnode = new BindNode(BindNode.TypeVartees, "Vartrees", null, _selectedNavNode);
-						var vtnodes = _vartreeNames.Select(v => new BindNode(BindNode.TypeVt, v, v, _selectedNavNode)).ToArray();
+						JobData job = (JobData)lastOpenedJobNode.Data;
+						// There are two Vartree node types. VT means it is permitted because it's named in the
+						// licence or there are no licence names. VTOFF means it exists but is not permitted to
+						// be used according to licensing. Note how the type is conditionally set.
+						var vtnodes = _vartreeNames.Select(v => new BindNode(
+							_lic.VartreeNames.Length == 0 || _lic.VartreeNames.Any(lv => lv == v) ? BindNode.TypeVt : BindNode.TypeVtOff,
+							v,
+							v,
+							_selectedNavNode
+						)).ToArray();
 						vtsnode.AddChildRange(vtnodes);
 						_selectedNavNode.AddChild(vtsnode);
 					}
@@ -449,10 +496,12 @@ namespace Carbon.Example.Desktop
 					_selectedNavNode.IsExpanded = true;
 				}
 			}
-			else if (_selectedNavNode.Type == BindNode.TypeVt)
+			else if (_selectedNavNode.Type == BindNode.TypeVt || _selectedNavNode.Type == BindNode.TypeVtOff)
 			{
 				// ┌─────────────────────────────────────────────────────────────────┐
 				// │ A named vartree is loaded and unwound into the variables tree.  │
+				// │ TRICKY: Changing vartree may accidentally change the parent     │
+				// │ job, so we have to detect that and silently change the job.     │
 				// └─────────────────────────────────────────────────────────────────┘
 				var accdata = (CustData)_selectedNavNode.Parent.Parent.Data;
 				var jobdata = (JobData)_selectedNavNode.Parent.Data;
@@ -499,7 +548,9 @@ namespace Carbon.Example.Desktop
 			else if (_selectedNavNode.Type == "Table" || _selectedNavNode.Type == "Chart")
 			{
 				// ┌───────────────────────────────────────────────────────────────────┐
-				// │ Legacy TOC file is also a simple lines display.                   │
+				// │ Legacy TOC file is also a simple lines display. The full name is  │
+				// │ combined from the path (Description) and name (Text) and the      │
+				// │ legacy report extension is added.                                 │
 				// └───────────────────────────────────────────────────────────────────┘
 				ReportTitle = Path.Combine(_selectedNavNode.Description, Path.ChangeExtension(_selectedNavNode.Text, ".rpt"));
 				GenTabLines = ReadFileAsLines(ReportTitle);
@@ -545,6 +596,7 @@ namespace Carbon.Example.Desktop
 				if (_selectedVartreeNode.Children == null || _selectedVartreeNode.Children.Count == 0)
 				{
 					if (!await LoadVarmeta()) return false;
+					// TODO Set the Type of the VarMeta generate nodes correctly
 					if (VMeta.RootNodes.FirstOrDefault()?.Children == null) return false;     // There might be no children (eg Weights)
 					if (VMeta.Metadata.Any(m => m.Name == "Type" && m.Value == "Hierarchic"))
 					{
@@ -558,8 +610,8 @@ namespace Carbon.Example.Desktop
 						// The varmeta returned for a 'simple' variables has a single variable child
 						// which has child codes. We only want the 2nd level codea to be added as
 						// children of the selected node.
-						var codenodes = GenToBindNodes(VMeta.RootNodes[0].Children, null);
-						_selectedVartreeNode.AddChildRange(codenodes);
+						var codenodes = GenToBindNodes(VMeta.RootNodes[0].Children, _selectedVartreeNode);
+						//_selectedVartreeNode.AddChildRange(codenodes);
 						_selectedVartreeNode.IsExpanded = true;
 					}
 				}
@@ -580,12 +632,12 @@ namespace Carbon.Example.Desktop
 		{
 			ObsNavNodes = new ObservableCollection<BindNode>();
 			var rnode = new BindNode(BindNode.TypeCloud, "Cloud", null, null);
-			foreach (var authcust in _lic.Customers)
+			foreach (var authcust in _lic.Customers.OrderBy(c => c.Name.ToUpper()))
 			{
 				var cust = new CustData() { Name = authcust.Name, Id = authcust.Id };
 				var cnode = new BindNode(BindNode.TypeCust, cust.Name, cust, rnode);
 				rnode.AddChild(cnode);
-				foreach (var authjob in authcust.Jobs)
+				foreach (var authjob in authcust.Jobs.OrderBy(j => j.Name.ToUpper()))
 				{
 					var job = new JobData(authjob.Name, null, null, null);
 					var jnode = new BindNode(BindNode.TypeJob, job.Name, job, cnode);
@@ -619,46 +671,6 @@ namespace Carbon.Example.Desktop
 				nodelist.Add(bnode);
 			}
 			return nodelist.ToArray();
-		}
-
-		static IEnumerable<string> TextToLines(string value)
-		{
-			if (value != null)
-			{
-				using (var reader = new StringReader(value))
-				{
-					string line = reader.ReadLine();
-					while (line != null)
-					{
-						yield return line;
-						line = reader.ReadLine();
-					}
-				}
-			}
-		}
-
-		static IEnumerable<string> HexToLines(byte[] buffer)
-		{
-			const int Len = 64;
-			if (buffer != null)
-			{
-				int count = buffer.Length / Len;
-				int rem = buffer.Length % Len;
-				for (int i = 0; i < count; i++)
-				{
-					int off = i * Len;
-					string hex = BitConverter.ToString(buffer, off, 64).Replace("-", "");
-					string line = $"{off:X6} {hex}";
-					yield return line;
-				}
-				if (rem > 0)
-				{
-					int off = count * Len;
-					string hex = BitConverter.ToString(buffer, off, rem).Replace("-", "");
-					string line = $"{off:X6} {hex}";
-					yield return line;
-				}
-			}
 		}
 
 		#endregion
