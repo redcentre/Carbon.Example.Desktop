@@ -122,11 +122,8 @@ await Task.Run(() => Engine.TableSaveCBT(name));
 
 ----
 
-#### :red_circle: NOTE — This sample project is under development and not all features are fully working yet.
+#### :red_circle: NOTE &mdash; This sample project is under development and not all features are fully working yet.
 
-----
-
-Last updated: 19-Sep-2022
 
 ### 
 

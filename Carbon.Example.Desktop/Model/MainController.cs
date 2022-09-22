@@ -14,6 +14,7 @@ using System.Xml.Linq;
 using Orthogonal.NSettings;
 using RCS.Carbon.Shared;
 using RCS.Carbon.Tables;
+using RCS.Carbon.Variables;
 
 namespace Carbon.Example.Desktop
 {
@@ -81,10 +82,10 @@ namespace Carbon.Example.Desktop
 			OnPropertyChanged(nameof(ReportFontSize));
 			_selectedOutputFormat = (XOutputFormat)Enum.Parse(typeof(XOutputFormat), Settings.Get(null, nameof(SelectedOutputFormat), XOutputFormat.CSV.ToString()));
 			OnPropertyChanged(nameof(SelectedOutputFormat));
-			_reportTop = Settings.Get(null, nameof(ReportTop), "Age(*)");
-			OnPropertyChanged(nameof(ReportTop));
-			_reportSide = Settings.Get(null, nameof(ReportSide), "Region(*)");
-			OnPropertyChanged(nameof(ReportSide));
+			//_reportTop = Settings.Get(null, nameof(ReportTop), "Age(*)");
+			//OnPropertyChanged(nameof(ReportTop));
+			//_reportSide = Settings.Get(null, nameof(ReportSide), "Region(*)");
+			//OnPropertyChanged(nameof(ReportSide));
 			_reportFilter = Settings.Get(null, nameof(ReportFilter), null);
 			OnPropertyChanged(nameof(ReportFilter));
 			_reportWeight = Settings.Get(null, nameof(ReportWeight), null);
@@ -172,7 +173,10 @@ namespace Carbon.Example.Desktop
 				StatusMessage = $"{_selectedCust.Name} + {_selectedJob.Name}";
 				AppError = null;
 				ObsTopNodes = new ObservableCollection<BindNode>();
+				_obsTopNodes.CollectionChanged += AxesNodes_CollectionChanged;
 				ObsSideNodes = new ObservableCollection<BindNode>();
+				_obsSideNodes.CollectionChanged += AxesNodes_CollectionChanged;
+				RecalculateAxesExpressions();
 				CommandManager.InvalidateRequerySuggested();    // Makes the GenTab Run button enable (why is this needed?)
 				return true;
 			}
@@ -189,6 +193,15 @@ namespace Carbon.Example.Desktop
 			{
 				BusyMessage = null;
 			}
+		}
+
+		/// <summary>
+		/// Then the Top or Side collection changes it means that variables and codes have been added
+		/// or removed. This causes the corresponding text expressions to be recalculated.
+		/// </summary>
+		void AxesNodes_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			RecalculateAxesExpressions();
 		}
 
 		/// <summary>
@@ -673,6 +686,31 @@ namespace Carbon.Example.Desktop
 			return nodelist.ToArray();
 		}
 
+		void RecalculateAxesExpressions()
+		{
+			ReportTop = AxisToExpression(_obsTopNodes);
+			ReportSide = AxisToExpression(_obsSideNodes);
+		}
+
+		string AxisToExpression(IList<BindNode> nodes)
+		{
+			if (nodes == null || nodes.Count == 0) return null;
+			var ax = new XTabAxis();
+			// set ax properties ???
+			foreach (var node in nodes.Where(n => n.Type == BindNode.TypeVariable))
+			{
+				var vv = new VVariable(_engine.Job);
+				// set vv properties ???
+				var item = new XTabAxisItem(vv);
+				// set item properties ???
+				ax.Items.Add(item);
+			}
+			string spec = null;
+			bool success = ax.Stringer.AsScript(ref spec);
+			// what happens for failure, is there a message ???
+			return spec;
+		}
+
 		#endregion
 
 		#region Properties
@@ -681,7 +719,7 @@ namespace Carbon.Example.Desktop
 		/// <summary>
 		/// The Carbon cross-tabulation engine is created on first demand, which we know will be the
 		/// first Login call attempt. This happens through a modal dialog in the UI, so after a
-		/// successful login this property will be created and all following calls can be made
+		/// successful login this property will be filled.
 		/// </summary>
 		public CrossTabEngine Engine => LazyInitializer.EnsureInitialized(ref _engine, () =>
 		{
