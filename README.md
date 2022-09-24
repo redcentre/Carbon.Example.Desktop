@@ -15,6 +15,7 @@ Software developers can combine this functionality to create complete applicatio
 
 This example project is for a Windows desktop application that shows how the Carbon API can be used to build a simple but practical UI that covers many aspects of managing Carbon *jobs* and reports. Developers may extend this project or steal parts of it to create their own custom application over the Carbon library.
 
+> ![Navigation tree partial screenshot][img0]
 ---
 
 ## Design Principle
@@ -133,6 +134,7 @@ await Task.Run(() => Engine.TableSaveCBT(name));
 [statem]: https://en.wikipedia.org/wiki/Finite-state_machine
 [t4]: https://docs.microsoft.com/en-us/visualstudio/modeling/code-generation-and-t4-text-templates?view=vs-2022
 [licsvc]: https://rcsapps.azurewebsites.net/licensing2/
+[img0]:https://systemrcs.blob.core.windows.net/wiki-images/sample%20desktop.png
 [img1]: https://systemrcs.blob.core.windows.net/wiki-images/sample%20desktop%20nav%20tree.png
 [img2]: https://systemrcs.blob.core.windows.net/wiki-images/sample%20desktop%20var%20select.png
 [img3]: https://systemrcs.blob.core.windows.net/wiki-images/sample%20desktop%20report%20tsv.png
