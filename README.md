@@ -99,9 +99,13 @@ VMeta = await Task.Run(() => Engine.GetVarMetaParsed(_selectedVartreeNode.Text))
 
 > ![Variable selection partial screenshot][img2]
 
+> Red and yellow variable tree nodes can be dragged into the top and side lists. Use the Delete key to remove a selected item from the lists.
+
+> As nodes are added and removed from the top and side lists, the Top and Side text boxes at the top of the screen updae in response to contain the corresponding report generation syntax. When both top and side have some syntax text present, the Run button will enabled to generate a report.
+
 ### GenTab
 
-> After the Top and Side axis have been filled, Click the Run button (shortcut F5) to validate the report specification and run the report generation process. The report output will be displayed in the floating report window. There are 8 report formats that can be selected from the dropdown list. The HTML format report is shown in the second tab rendered in a WebView control. The XLSX format reports is shown as dump of the workbook buffer and a temporary .xlsx file containing the report bytes is Shell launched, which will normally cause Excel to open if it is installed.
+> Click the Run button (shortcut F5) to run the report generation process using the Top and Side syntax text. The report output will be displayed in the floating report window. There are 8 report formats that can be selected from the dropdown list. The HTML format report is shown in the second tab rendered in a WebView control. The XLSX format reports is shown as dump of the workbook buffer and a temporary .xlsx file containing the report bytes is Shell launched, which will normally cause Excel to open if it is installed.
 
 > Application developers are free to generate a report using a format that suits their needs, then transform, save or render the results as required.
 
@@ -120,13 +124,6 @@ await Task.Run(() => Engine.TableSaveCBT(name));
 > The save name can be a simple name, or it can be a multi-part path the prefixes the name, such as `July/Sales/Regional Usage`. The full path of the report will be created if it doesn't already exist. Any existing report will be silently overwritten.
 
 > After report save, the `ListSavedReports` method is called to refresh the navigation tree and show the newly saved report.
-
-----
-
-#### :red_circle: NOTE &mdash; This sample project is under development and not all features are fully working yet.
-
-
-### 
 
 
 [wpf]: https://docs.microsoft.com/en-us/visualstudio/designers/getting-started-with-wpf?view=vs-2022

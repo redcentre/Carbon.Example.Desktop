@@ -706,13 +706,6 @@ namespace Carbon.Example.Desktop
 		{
 			if (nodes.Count == 0) return null;
 			var parts = new List<string>();
-			foreach (var node in nodes)
-			{
-				if (node.Type == BindNode.TypeVariable || node.Type == BindNode.TypeCodeframe)
-				{
-					parts.Add(node.Text);
-				}
-			}
 			var query1 = nodes.Where(n => n.Type == BindNode.TypeVariable || n.Type == BindNode.TypeCodeframe).Select(n => n.Text);
 			parts.AddRange(query1);
 			var query2 = nodes.Where(n => n.Type == BindNode.TypeCode)
