@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCompany("Red Centre Software")]
 [assembly: AssemblyProduct("Carbon Example Desktop")]
 [assembly: AssemblyCopyright("Copyright © 2022")]
-[assembly: AssemblyTrademark("2022-09-09 17:56 GMT+10")]
+[assembly: AssemblyTrademark("2022-09-29 15:03 GMT+10")]
 [assembly: ComVisible(false)]
 [assembly: AssemblyVersion("1.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]

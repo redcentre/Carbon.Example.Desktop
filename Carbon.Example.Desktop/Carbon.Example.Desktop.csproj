@@ -87,32 +87,32 @@
     <Reference Include="Orthogonal.NSettings, Version=3.0.2.0, Culture=neutral, PublicKeyToken=22ee175eb272f8cb, processorArchitecture=MSIL">
       <HintPath>..\packages\Orthogonal.NSettings.3.0.2\lib\net471\Orthogonal.NSettings.dll</HintPath>
     </Reference>
-    <Reference Include="RCS.Carbon.Export, Version=8.3.9.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
-      <HintPath>..\packages\RCS.Carbon.Export.8.3.9\lib\netstandard2.0\RCS.Carbon.Export.dll</HintPath>
+    <Reference Include="RCS.Carbon.Export, Version=8.3.11.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
+      <HintPath>..\packages\RCS.Carbon.Export.8.3.11\lib\netstandard2.0\RCS.Carbon.Export.dll</HintPath>
     </Reference>
-    <Reference Include="RCS.Carbon.Import, Version=8.3.9.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
-      <HintPath>..\packages\RCS.Carbon.Import.8.3.9\lib\netstandard2.0\RCS.Carbon.Import.dll</HintPath>
+    <Reference Include="RCS.Carbon.Import, Version=8.3.11.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
+      <HintPath>..\packages\RCS.Carbon.Import.8.3.11\lib\netstandard2.0\RCS.Carbon.Import.dll</HintPath>
     </Reference>
-    <Reference Include="RCS.Carbon.Shared, Version=8.3.9.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
-      <HintPath>..\packages\RCS.Carbon.Shared.8.3.9\lib\netstandard2.0\RCS.Carbon.Shared.dll</HintPath>
+    <Reference Include="RCS.Carbon.Shared, Version=8.3.11.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
+      <HintPath>..\packages\RCS.Carbon.Shared.8.3.11\lib\netstandard2.0\RCS.Carbon.Shared.dll</HintPath>
     </Reference>
-    <Reference Include="RCS.Carbon.Tables, Version=8.3.9.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
-      <HintPath>..\packages\RCS.Carbon.Tables.8.3.9\lib\netstandard2.0\RCS.Carbon.Tables.dll</HintPath>
+    <Reference Include="RCS.Carbon.Tables, Version=8.3.11.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
+      <HintPath>..\packages\RCS.Carbon.Tables.8.3.11\lib\netstandard2.0\RCS.Carbon.Tables.dll</HintPath>
     </Reference>
-    <Reference Include="RCS.Carbon.Variables, Version=8.3.9.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
-      <HintPath>..\packages\RCS.Carbon.Variables.8.3.9\lib\netstandard2.0\RCS.Carbon.Variables.dll</HintPath>
+    <Reference Include="RCS.Carbon.Variables, Version=8.3.11.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
+      <HintPath>..\packages\RCS.Carbon.Variables.8.3.11\lib\netstandard2.0\RCS.Carbon.Variables.dll</HintPath>
     </Reference>
     <Reference Include="RCS.Licensing.Stdlib, Version=4.2.8.0, Culture=neutral, PublicKeyToken=66d2d6c08baaa6e3, processorArchitecture=MSIL">
       <HintPath>..\packages\RCS.Licensing.Stdlib.4.2.8\lib\net471\RCS.Licensing.Stdlib.dll</HintPath>
     </Reference>
-    <Reference Include="SQLitePCLRaw.batteries_v2, Version=2.1.1.1705, Culture=neutral, PublicKeyToken=8226ea5df37bcae9, processorArchitecture=MSIL">
-      <HintPath>..\packages\SQLitePCLRaw.bundle_e_sqlite3.2.1.1\lib\net461\SQLitePCLRaw.batteries_v2.dll</HintPath>
+    <Reference Include="SQLitePCLRaw.batteries_v2, Version=2.1.2.1721, Culture=neutral, PublicKeyToken=8226ea5df37bcae9, processorArchitecture=MSIL">
+      <HintPath>..\packages\SQLitePCLRaw.bundle_e_sqlite3.2.1.2\lib\net461\SQLitePCLRaw.batteries_v2.dll</HintPath>
     </Reference>
-    <Reference Include="SQLitePCLRaw.core, Version=2.1.1.1705, Culture=neutral, PublicKeyToken=1488e028ca7ab535, processorArchitecture=MSIL">
-      <HintPath>..\packages\SQLitePCLRaw.core.2.1.1\lib\netstandard2.0\SQLitePCLRaw.core.dll</HintPath>
+    <Reference Include="SQLitePCLRaw.core, Version=2.1.2.1721, Culture=neutral, PublicKeyToken=1488e028ca7ab535, processorArchitecture=MSIL">
+      <HintPath>..\packages\SQLitePCLRaw.core.2.1.2\lib\netstandard2.0\SQLitePCLRaw.core.dll</HintPath>
     </Reference>
-    <Reference Include="SQLitePCLRaw.provider.dynamic_cdecl, Version=2.1.1.1705, Culture=neutral, PublicKeyToken=b68184102cba0b3b, processorArchitecture=MSIL">
-      <HintPath>..\packages\SQLitePCLRaw.provider.dynamic_cdecl.2.1.1\lib\netstandard2.0\SQLitePCLRaw.provider.dynamic_cdecl.dll</HintPath>
+    <Reference Include="SQLitePCLRaw.provider.dynamic_cdecl, Version=2.1.2.1721, Culture=neutral, PublicKeyToken=b68184102cba0b3b, processorArchitecture=MSIL">
+      <HintPath>..\packages\SQLitePCLRaw.provider.dynamic_cdecl.2.1.2\lib\netstandard2.0\SQLitePCLRaw.provider.dynamic_cdecl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">

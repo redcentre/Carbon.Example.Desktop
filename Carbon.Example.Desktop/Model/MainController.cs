@@ -8,13 +8,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using System.Xml.Linq;
 using Orthogonal.NSettings;
 using RCS.Carbon.Shared;
 using RCS.Carbon.Tables;
-using RCS.Carbon.Variables;
 
 namespace Carbon.Example.Desktop
 {
@@ -686,29 +684,47 @@ namespace Carbon.Example.Desktop
 			return nodelist.ToArray();
 		}
 
+		/// <summary>
+		/// recalculate the GenTab syntax expression for the Top and Side text boxes whenever one of the
+		/// lists changes.
+		/// </summary>
 		void RecalculateAxesExpressions()
 		{
 			ReportTop = AxisToExpression(_obsTopNodes);
 			ReportSide = AxisToExpression(_obsSideNodes);
 		}
 
+		/// <summary>
+		/// Note that this code is a very simplistic conversion of a flat list of codes into a GenTab syntax
+		/// expression. Red nodes become their plain text name. Yellow nodes are grouped under their parent
+		/// red node and become a simple join sub-list. The Carbon engine contains classes and logic to perform this
+		/// conversion in an optimal way that covers all possible types of input types, but that would add worthless
+		/// extra complexity to this already large example application. The syntax conversion can be seen fully active
+		/// in the Cadmium application on the report specification page.
+		/// </summary>
 		string AxisToExpression(IList<BindNode> nodes)
 		{
-			if (nodes == null || nodes.Count == 0) return null;
-			var ax = new XTabAxis();
-			// set ax properties ???
-			foreach (var node in nodes.Where(n => n.Type == BindNode.TypeVariable))
+			if (nodes.Count == 0) return null;
+			var parts = new List<string>();
+			foreach (var node in nodes)
 			{
-				var vv = new VVariable(_engine.Job);
-				// set vv properties ???
-				var item = new XTabAxisItem(vv);
-				// set item properties ???
-				ax.Items.Add(item);
+				if (node.Type == BindNode.TypeVariable || node.Type == BindNode.TypeCodeframe)
+				{
+					parts.Add(node.Text);
+				}
 			}
-			string spec = null;
-			bool success = ax.Stringer.AsScript(ref spec);
-			// what happens for failure, is there a message ???
-			return spec;
+			var query1 = nodes.Where(n => n.Type == BindNode.TypeVariable || n.Type == BindNode.TypeCodeframe).Select(n => n.Text);
+			parts.AddRange(query1);
+			var query2 = nodes.Where(n => n.Type == BindNode.TypeCode)
+				.GroupBy(n => n.Parent)
+				.Select(g => new { Parent = g.Key, Codes = g.ToArray() })
+				.ToArray();
+			foreach (var grp in query2)
+			{
+				string s = grp.Parent.Text + "(" + string.Join(";", grp.Codes.Select(c => c.Text)) + ")";
+				parts.Add(s);
+			}
+			return string.Join(",", parts);
 		}
 
 		#endregion
