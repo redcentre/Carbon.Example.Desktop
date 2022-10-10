@@ -52,7 +52,7 @@ Licence Lic = await Engine.LoginId(id, password);
 
 > Login processing is passed through the [licensing web service][licsvc] where the credentials are validated, access to customers and jobs is calculated, and upon success an instance of a `Licence` objects is returned. If authentication fails for any reason then an Exception is thrown with a message containing an explanation for the failure.
 
-> The returned `Licence` class contains account information for the `Id` credential. Applications may optionally use the account information for display or logging. A very useful property of the Licence class is `Customers`, which contains a 3-level hierarchical set of customers, job and variable trees that the account is authorised to access. The sample application displays this information in a TreeView control so the user can easily click available job nodes to open them.
+> The returned `Licence` class contains account information for the `Id` credential. Applications may optionally use the account information for display or logging. A very useful property of the Licence class is `Customers`, which contains a 3-level hierarchical set of customers, jobs and variable trees that the account is authorised to access. The sample application displays this information in a TreeView control so the user can easily click available job nodes to open them.
 
 
 ### OpenJob (Cloud)
@@ -101,7 +101,7 @@ VMeta = await Task.Run(() => Engine.GetVarMetaParsed(_selectedVartreeNode.Text))
 
 > Red and yellow variable tree nodes can be dragged into the top and side lists. Use the Delete key to remove a selected item from the lists.
 
-> As nodes are added and removed from the top and side lists, the Top and Side text boxes at the top of the screen updae in response to contain the corresponding report generation syntax. When both top and side have some syntax text present, the Run button will enabled to generate a report.
+> As nodes are added and removed from the top and side lists, the Top and Side text boxes at the top of the screen updae in response to contain the corresponding report generation syntax. When both top and side have some syntax text present, the Run button will be enabled to generate a report.
 
 ### GenTab
 

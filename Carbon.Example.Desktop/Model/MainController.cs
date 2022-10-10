@@ -402,11 +402,11 @@ namespace Carbon.Example.Desktop
 		}
 
 		/// <summary>
-		/// Plain API call to read a file as a string.
+		/// Plain API call to read a file as an array of lines.
 		/// </summary>
 		public string[] ReadFileAsLines(string name)
 		{
-			return Engine.ReadFileAsLines(name);
+			return Engine.ReadFileLines(name).ToArray();
 		}
 
 		public void RemoveSelectedTopNode()
