@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using RCS.Carbon.Shared;
 
-namespace Carbon.Example.Desktop
+namespace Carbon.Example.Desktop.Model
 {
 	static class MainUtility
 	{
@@ -54,6 +57,19 @@ namespace Carbon.Example.Desktop
 					string hex = BitConverter.ToString(buffer, off, rem).Replace("-", "");
 					string line = $"{off:X6} {hex}";
 					yield return line;
+				}
+			}
+		}
+
+		public static void PrintNodes(IEnumerable<GenNode> nodes, string title)
+		{
+			Trace.WriteLine($"---------- {title} ----------");
+			if (nodes != null)
+			{
+				foreach (var node in GenNode.WalkNodes(nodes))
+				{
+					string pfx = string.Join("", Enumerable.Repeat("|  ", node.Level));
+					Trace.WriteLine($"{pfx}{node}");
 				}
 			}
 		}

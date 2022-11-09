@@ -6,14 +6,15 @@ using wf = System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Controls;
 using System.Linq;
+using Carbon.Example.Desktop.Model;
 
 namespace Carbon.Example.Desktop
 {
-	/// <summary>
-	/// The code-behind for the main window tries to be thin and only related to UI matters.
-	/// Most of the business logic happens inside the DataContext controller class.
-	/// </summary>
-	public partial class MainWindow : Window, System.Windows.Forms.IWin32Window
+    /// <summary>
+    /// The code-behind for the main window tries to be thin and only related to UI matters.
+    /// Most of the business logic happens inside the DataContext controller class.
+    /// </summary>
+    public partial class MainWindow : Window, System.Windows.Forms.IWin32Window
 	{
 		ReportWindow _repwin;
 

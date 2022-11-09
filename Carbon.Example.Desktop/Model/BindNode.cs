@@ -14,8 +14,9 @@ namespace Carbon.Example.Desktop
 		public const string TypeCloud = "CLOUD";
 		public const string TypeCust = "CUST";
 		public const string TypeJob = "JOB";
-		public const string TypeTocNew = "TOCNEW";
-		public const string TypeTocOld = "TOCOLD";
+		public const string TypeTocFull = "TOCFULL";
+		public const string TypeTocExecUser = "TOCEXECUSER";
+		public const string TypeTocSimple = "TOCSIMPLE";
 		public const string TypeVartees = "VTS";
 		public const string TypeAxTrees = "AXS";
 		public const string TypeVt = "VT";

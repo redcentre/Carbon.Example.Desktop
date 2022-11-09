@@ -21,7 +21,7 @@ namespace Carbon.Example.Desktop
 			Title = asm.GetCustomAttributes(false).OfType<AssemblyTitleAttribute>().Single().Title;
 			Description = asm.GetCustomAttributes(false).OfType<AssemblyDescriptionAttribute>().Single().Description;
 			Copyright = asm.GetCustomAttributes(false).OfType<AssemblyCopyrightAttribute>().Single().Copyright;
-			Trademark = asm.GetCustomAttributes(false).OfType<AssemblyTrademarkAttribute>().Single().Trademark;
+			InfoVersion = asm.GetCustomAttributes(false).OfType<AssemblyInformationalVersionAttribute>().Single().InformationalVersion;
 			AsmVersion = asm.GetName().Version;
 			FileVersion = asm.GetCustomAttributes(false).OfType<AssemblyFileVersionAttribute>().Single().Version;
 			HomeFolder = new DirectoryInfo(Path.GetDirectoryName(asm.Location));
@@ -36,7 +36,7 @@ namespace Carbon.Example.Desktop
 		public static string Title { get; set; }
 		public static string Description { get; set; }
 		public static string Copyright { get; set; }
-		public static string Trademark { get; set; }
+		public static string InfoVersion { get; set; }
 		public static Version AsmVersion { get; set; }
 		public static string FileVersion { get; set; }
 		public static DirectoryInfo HomeFolder { get; set; }

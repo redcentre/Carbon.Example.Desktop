@@ -18,16 +18,16 @@ namespace Carbon.Example.Desktop
 				if (type == BindNode.TypeCloud) return Images.IconCloud;
 				if (type == BindNode.TypeCust) return Images.IconCust;
 				if (type == BindNode.TypeJob) return Images.IconJob;
-				if (type == BindNode.TypeFolder || type == BindNode.TypeTocNew || type == BindNode.TypeTocOld || type == BindNode.TypeVartees || type == BindNode.TypeAxTrees || type == BindNode.TypeIni) return exp == true ? Images.IconFolderOpen : Images.IconFolderClosed;
+				if (type == BindNode.TypeFolder || type == BindNode.TypeTocFull || type == BindNode.TypeTocExecUser || type == BindNode.TypeTocSimple || type == BindNode.TypeVartees || type == BindNode.TypeAxTrees || type == BindNode.TypeIni) return exp == true ? Images.IconFolderOpen : Images.IconFolderClosed;
 				if (type == BindNode.TypeVt) return Images.IconVartree;
 				if (type == BindNode.TypeVtOff) return Images.IconVartreeOff;
 				if (type == BindNode.TypeAx) return Images.IconAxisTree;
 				if (type == BindNode.TypeVariable) return Images.IconVariable;
 				if (type == BindNode.TypeCodeframe) return Images.IconCodeframe;
 				if (type == BindNode.TypeCode) return Images.IconCode;
+				if (type == "Section") return Images.IconSection;
 				if (type == "User") return Images.IconUser;
 				if (type == "Table") return Images.IconTable;
-				if (type == "Chart") return Images.IconChart;
 				if (type == "File") return Images.IconFile;
 				if (type == "Node") return Images.IconNode;
 				if (type == "Data") return Images.IconData;

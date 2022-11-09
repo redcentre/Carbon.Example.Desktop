@@ -21,9 +21,9 @@ namespace Carbon.Example.Desktop
 		public static BitmapImage IconFile = new BitmapImage(new Uri("/Resources/File16.png", UriKind.Relative));
 		public static BitmapImage IconNode = new BitmapImage(new Uri("/Resources/Node16.png", UriKind.Relative));
 		public static BitmapImage IconData = new BitmapImage(new Uri("/Resources/Data16.png", UriKind.Relative));
+		public static BitmapImage IconSection = new BitmapImage(new Uri("/Resources/Section16.png", UriKind.Relative));
 		public static BitmapImage IconUser = new BitmapImage(new Uri("/Resources/User16.png", UriKind.Relative));
 		public static BitmapImage IconTable = new BitmapImage(new Uri("/Resources/Table16.png", UriKind.Relative));
-		public static BitmapImage IconChart = new BitmapImage(new Uri("/Resources/Chart16.png", UriKind.Relative));
 		public static BitmapImage IconUnknown = new BitmapImage(new Uri("/Resources/Unknown16.png", UriKind.Relative));
 	}
 }

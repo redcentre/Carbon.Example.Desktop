@@ -10,18 +10,19 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
 using System.Xml.Linq;
+using Carbon.Example.Desktop.Model;
 using Orthogonal.NSettings;
 using RCS.Carbon.Shared;
 using RCS.Carbon.Tables;
 
 namespace Carbon.Example.Desktop
 {
-	/// <summary>
-	/// Following the conventions of MVVM style coding, this class is the data context for the WPF UI.
-	/// Classical binding properties and methods hold and manage the "state" of the application.
-	/// For more information see the <b>Controller</b> section of the GitHub project Wiki.
-	/// </summary>
-	sealed partial class MainController : INotifyPropertyChanged
+    /// <summary>
+    /// Following the conventions of MVVM style coding, this class is the data context for the WPF UI.
+    /// Classical binding properties and methods hold and manage the "state" of the application.
+    /// For more information see the <b>Controller</b> section of the GitHub project Wiki.
+    /// </summary>
+    sealed partial class MainController : INotifyPropertyChanged
 	{
 		public ISettingsProcessor Settings { get; private set; }
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -144,6 +145,8 @@ namespace Carbon.Example.Desktop
 			{
 				// The OpenJob call must complete successfully.
 				await Task.Run(() => Engine.OpenJob(_selectedCust.Name, _selectedJob.Name));
+				// The need for this call is in dispute, it should be done silently on first demand.
+				Engine.Job.LoadTOC(_lic.Name);
 				// Create a set of tasks to load all of the available job detailed information
 				// for demo purposes so it can be seen under the job node. Note that some of
 				// the tasks are allowed to fail and the results are skipped.
@@ -151,12 +154,13 @@ namespace Carbon.Example.Desktop
 				var t1 = Task.Run(() => Engine.GetProps());
 				var t2 = Task.Run(() => Engine.ListVartreeNames().ToArray());
 				var t3 = Task.Run(() => Engine.ListAxisNames().ToArray());
-				var t4 = Task.Run(() => Engine.ListSavedReports());
-				var t5 = Task.Run(() => Engine.GetLegacyTocAsNodes());
-				var t6 = Task.Run(() => Engine.GetJobIniAsNodes());
+				var t4 = Task.Run(() => Engine.FullTOCGenNodes());
+				var t5 = Task.Run(() => Engine.ExecUserTOCGenNodes());
+				var t6 = Task.Run(() => Engine.SimpleTOCGenNodes(_lic.Name));
+				var t7 = Task.Run(() => Engine.GetJobIniAsNodes());
 				try
 				{
-					await Task.WhenAll(t1, t2, t3, t4, t5, t6);
+					await Task.WhenAll(t1, t2, t3, t4, t5, t6, t7);
 				}
 				catch (Exception ex)
 				{
@@ -165,9 +169,14 @@ namespace Carbon.Example.Desktop
 				DProps = t1.Result;
 				VartreeNames = t2.Result;
 				AxisTreeNames = t3.Result;
-				if (!t4.IsFaulted) TocNewRootGenNodes = t4.Result;
-				if (!t5.IsFaulted) TocOldRootGenNodes = t5.Result;
-				if (!t6.IsFaulted) JobIniRootNodes = t6.Result;
+				if (!t4.IsFaulted) FullTOCRootGenNodes = t4.Result;
+				if (!t5.IsFaulted) ExecUserTOCRootGenNodes = t5.Result;
+				if (!t6.IsFaulted) SimpleTOCRootGenNodes = t6.Result;
+				if (!t7.IsFaulted) JobIniRootNodes = t7.Result;
+				//MainUtility.PrintNodes(_fullTOCRootGenNodes, "Full");
+				//MainUtility.PrintNodes(_execUserTOCRootGenNodes, "Exec/User");
+				//MainUtility.PrintNodes(_simpleTOCRootGenNodes, "Simple");
+				//MainUtility.PrintNodes(_tocOldRootGenNodes, "Old");
 				StatusMessage = $"{_selectedCust.Name} + {_selectedJob.Name}";
 				AppError = null;
 				ObsTopNodes = new ObservableCollection<BindNode>();
@@ -181,8 +190,10 @@ namespace Carbon.Example.Desktop
 			catch (CarbonException ex)
 			{
 				DProps = null;
-				TocOldRootGenNodes = null;
 				AxisTreeNames = null;
+				FullTOCRootGenNodes = null;
+				ExecUserTOCRootGenNodes = null;
+				SimpleTOCRootGenNodes = null;
 				ErrorTitle = "Open cloud job failed";
 				AppError = ex;
 				return false;
@@ -359,7 +370,7 @@ namespace Carbon.Example.Desktop
 		/// </summary>
 		public BindNode[] ListSavedReports()
 		{
-			var tocnode = lastOpenedJobNode?.Children.FirstOrDefault(n => n.Type == BindNode.TypeTocNew);
+			//var tocnode = lastOpenedJobNode?.Children.FirstOrDefault(n => n.Type == BindNode.TypeTocNew);
 			return null;
 		}
 
@@ -373,8 +384,10 @@ namespace Carbon.Example.Desktop
 			try
 			{
 				await Task.Run(() => Engine.TableSaveCBT(name));
-				TocNewRootGenNodes = Engine.ListSavedReports();
-				RefreshOpenJobToc();
+				FullTOCRootGenNodes = Engine.FullTOCGenNodes();
+				ExecUserTOCRootGenNodes = Engine.ExecUserTOCGenNodes();
+				SimpleTOCRootGenNodes = Engine.SimpleTOCGenNodes(_lic.Name);
+				RefreshOpenJobTocs();
 				return true;
 			}
 			catch (CarbonException ex)
@@ -397,8 +410,10 @@ namespace Carbon.Example.Desktop
 		public void DeleteReport(string name)
 		{
 			Engine.DeleteCBT(name);
-			TocNewRootGenNodes = Engine.ListSavedReports();
-			RefreshOpenJobToc();
+			FullTOCRootGenNodes = Engine.FullTOCGenNodes();
+			ExecUserTOCRootGenNodes = Engine.ExecUserTOCGenNodes();
+			SimpleTOCRootGenNodes = Engine.SimpleTOCGenNodes(_lic.Name);
+			RefreshOpenJobTocs();
 		}
 
 		/// <summary>
@@ -468,13 +483,7 @@ namespace Carbon.Example.Desktop
 				if (!await OpenJob()) return false;
 				if (!_selectedNavNode.AnyChildren)
 				{
-					RefreshOpenJobToc();
-					if (_tocOldRootGenNodes != null)
-					{
-						var tocnode = new BindNode(BindNode.TypeTocOld, "TOC (Legacy)", null, _selectedNavNode);
-						GenToBindNodes(_tocOldRootGenNodes, tocnode);
-						_selectedNavNode.AddChild(tocnode);
-					}
+					RefreshOpenJobTocs();
 					if (_vartreeNames?.Length > 0)
 					{
 						var vtsnode = new BindNode(BindNode.TypeVartees, "Vartrees", null, _selectedNavNode);
@@ -556,14 +565,12 @@ namespace Carbon.Example.Desktop
 				GenTabLines = ReadFileAsLines(_selectedNavNode.Text);
 				SelectedReportTabIndex = 0;
 			}
-			else if (_selectedNavNode.Type == "Table" || _selectedNavNode.Type == "Chart")
+			else if (_selectedNavNode.Type == "Table")
 			{
 				// ┌───────────────────────────────────────────────────────────────────┐
-				// │ Legacy TOC file is also a simple lines display. The full name is  │
-				// │ combined from the path (Description) and name (Text) and the      │
-				// │ legacy report extension is added.                                 │
+				// │ Carbon CBT file is also a simple lines display.                   │
 				// └───────────────────────────────────────────────────────────────────┘
-				ReportTitle = Path.Combine(_selectedNavNode.Description, Path.ChangeExtension(_selectedNavNode.Text, ".rpt"));
+				ReportTitle = Path.Combine(_selectedNavNode.Text);
 				GenTabLines = ReadFileAsLines(ReportTitle);
 				SelectedReportTabIndex = 0;
 			}
@@ -575,23 +582,29 @@ namespace Carbon.Example.Desktop
 		/// This can happen when then job is first opened, or if the set of saved reports
 		/// is changed and the tree branch much refresh to match the data.
 		/// </summary>
-		void RefreshOpenJobToc()
+		void RefreshOpenJobTocs()
 		{
-			var tocnode = lastOpenedJobNode?.Children.FirstOrDefault(n => n.Type == BindNode.TypeTocNew);
-			if (tocnode == null)
+			void InnerRefresh(string type, string label, GenNode[] nodes)
 			{
-				tocnode = new BindNode(BindNode.TypeTocNew, "TOC", null, _selectedNavNode);
-				lastOpenedJobNode.AddChild(tocnode);
+				var tocnode = lastOpenedJobNode?.Children.FirstOrDefault(n => n.Type == type);
+				if (tocnode == null)
+				{
+					tocnode = new BindNode(type, label, null, _selectedNavNode);
+					lastOpenedJobNode.AddChild(tocnode);
+				}
+				else
+				{
+					tocnode.Children?.Clear();
+					tocnode.IsExpanded = true;
+				}
+				if (_fullTOCRootGenNodes != null)
+				{
+					GenToBindNodes(_fullTOCRootGenNodes, tocnode);
+				}
 			}
-			else
-			{
-				tocnode.Children?.Clear();
-				tocnode.IsExpanded = true;
-			}
-			if (_tocNewRootGenNodes != null)
-			{
-				GenToBindNodes(_tocNewRootGenNodes, tocnode);
-			}
+			InnerRefresh(BindNode.TypeTocFull, "TOC Full", _fullTOCRootGenNodes);
+			InnerRefresh(BindNode.TypeTocExecUser, "TOC Exec/User", _execUserTOCRootGenNodes);
+			InnerRefresh(BindNode.TypeTocSimple, "TOC Simple", _simpleTOCRootGenNodes);
 		}
 
 		/// <summary>

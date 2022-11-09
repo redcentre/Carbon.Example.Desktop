@@ -20,9 +20,9 @@ This example project is for a Windows desktop application that shows how the Car
 
 ## Design Principle
 
-The Visual Studio 2022 project is a [WPF][wpf] application targeting .NET Framework 4.8.
+The Visual Studio 2022 project is a [WPF][wpf] application targeting .NET 6.0-windows.
 
-> :star: Note that the Carbon library can be used from any application targeting .NET Standard 2.0, .NET Framework 4.7.1 and later, and .NET 6.0. This example project only targets 4.8 because it was convenient when the project was created. It may be converted to 6.0 in the near future.
+> :star: Note that the Carbon libraries can be used from any application targeting .NET Standard 2.0, .NET Framework 4.7.1 and later.
 
 The project and class structure follows a simple [MVVM][mvvm] pattern that separates the UI code from the data and business logic of the application. The UI is defined in standard XAML and most of the controls are bound to properties of a single *controller* class of notify properties and observable collections. The developer community uses a variety of MVVM coding styles, so this project attempts to use the simplest classical style possible.
 
