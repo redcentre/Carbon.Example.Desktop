@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using RCS.Carbon.Shared;
@@ -16,9 +17,15 @@ namespace Carbon.Example.Desktop
 			InitializeComponent();
 			Loaded += ReportWindow_Loaded;
 			Closing += ReportWindow_Closing;
+            SourceInitialized += ReportWindow_SourceInitialized;
 		}
 
-		MainController Controller => (MainController)DataContext;
+        void ReportWindow_SourceInitialized(object sender, EventArgs e)
+        {
+			WinUtility.HideMinMax(this);
+        }
+
+        MainController Controller => (MainController)DataContext;
 
 		void ReportWindow_Loaded(object sender, RoutedEventArgs e)
 		{

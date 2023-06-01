@@ -43,6 +43,10 @@ namespace Carbon.Example.Desktop
 				if (type == BindNode.TypeCodeframe) return Images.IconCodeframe;
 				if (type == BindNode.TypeCode) return Images.IconCode;
 				if (type == BindNode.TypeAxis) return Images.IconAxisTree;
+				if (type == BindNode.TypeArith) return Images.IconArith;
+				if (type == BindNode.TypeNet) return Images.IconNet;
+				if (type == BindNode.TypeNes) return Images.IconNes;
+				if (type == BindNode.TypeStat) return Images.IconStat;
 				return Images.IconUnknown;
 			}
 			if (p == "JobHelpTextVisible")

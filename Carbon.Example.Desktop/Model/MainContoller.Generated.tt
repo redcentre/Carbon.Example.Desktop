@@ -32,14 +32,13 @@
 		"int|ReportFontSize|12||Setting",
 		"bool|UseFilter",
 		"bool|UseWeight",
-		"Licence|Lic",
+		"LicenceInfo|Lic",
 		"CustData|SelectedCust",
 		"JobData|SelectedJob",
 		"JobData[]|ConJobs",
 		"GenNode[]|FullTOCRootGenNodes",
 		"GenNode[]|ExecUserTOCRootGenNodes",
 		"GenNode[]|SimpleTOCRootGenNodes",
-		"GenNode[]|JobIniRootNodes",
 		"BindNode|SelectedNavNode||||PostNavSelect",
 		"BindNode|SelectedVartreeNode||||PostVartreeSelect",
 		"BindNode[]|TopRootNodes",
@@ -54,7 +53,7 @@
 		"XSpecProperties|SProps|new XSpecProperties()",
 		"XOutputFormat|SelectedOutputFormat|XOutputFormat.CSV||Setting",
 		"XSigType|SelectedSigType|XSigType.SingleCell",
-		"VarMetaResult|VMeta",
+		"GenNode[]|VMeta",
 	};
 	string ttname = Host.GetType().Name;
 	Version ttver = Host.GetType().Assembly.GetName().Version;

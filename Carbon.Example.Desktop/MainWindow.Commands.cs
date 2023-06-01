@@ -23,7 +23,7 @@ namespace Carbon.Example.Desktop
 		void ExecuteAppExit(object target, ExecutedRoutedEventArgs e) => Close();
 
 		void CanExecuteHelpAbout(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-		void ExecuteHelpAbout(object target, ExecutedRoutedEventArgs e) => Process.Start("https://github.com/redcentre");
+		void ExecuteHelpAbout(object target, ExecutedRoutedEventArgs e) => Process.Start(new ProcessStartInfo("https://github.com/redcentre/Carbon.Example.Desktop") { UseShellExecute = true });
 
 		void CanExecuteDismissError(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = Controller.ErrorTitle != null;
 		void ExecuteDismissError(object target, ExecutedRoutedEventArgs e) => Controller.DismissError();

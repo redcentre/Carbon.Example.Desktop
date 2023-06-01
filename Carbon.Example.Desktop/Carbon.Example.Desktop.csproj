@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>1.0.0</Version>
-    <InformationalVersion>2022-11-09 12:57 GMT+11</InformationalVersion>
+    <Version>1.0.2</Version>
+    <InformationalVersion>2023-06-01 15:45 GMT+10</InformationalVersion>
     <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <Company>Red Centre Software</Company>
-    <Copyright>Copyright © 2022 Red Centre Software</Copyright>
+    <Copyright>Copyright © 2022-2023 Red Centre Software</Copyright>
     <Description>A sophisticated WPF desktop app that exercies a large part of the Carbon API.</Description>
     <Title>Carbon Desktop Example</Title>
   </PropertyGroup>
@@ -19,7 +19,11 @@
     <ApplicationIcon>App.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Resources\Arith16.png" />
+    <None Remove="Resources\Nes16.png" />
+    <None Remove="Resources\Net16.png" />
     <None Remove="Resources\Section16.png" />
+    <None Remove="Resources\Stat16.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Model\MainContoller.Generated.cs">
@@ -36,7 +40,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="App.ico" />
+    <Resource Include="Resources\Nes16.png" />
+    <Resource Include="Resources\Net16.png" />
     <Resource Include="Resources\Section16.png" />
+    <Resource Include="Resources\Stat16.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Unknown16.png" />
@@ -47,6 +54,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>MainContoller.Generated.cs</LastGenOutput>
     </Content>
+    <Resource Include="Resources\Arith16.png" />
     <Resource Include="Resources\Cust16.png" />
     <Resource Include="Resources\AxisTree16.png" />
     <Resource Include="Resources\Cloud16.png" />
@@ -78,11 +86,9 @@
   <ItemGroup>
     <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.103" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1418.22" />
-    <PackageReference Include="Orthogonal.Common.Basic" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1722.45" />
+    <PackageReference Include="Orthogonal.Common.Basic" Version="3.1.6" />
     <PackageReference Include="Orthogonal.NSettings" Version="3.0.2" />
-    <PackageReference Include="RCS.Carbon.Export" Version="8.3.24" />
-    <PackageReference Include="RCS.Carbon.Import" Version="8.3.24" />
-    <PackageReference Include="RCS.Carbon.Tables" Version="8.3.24" />
+    <PackageReference Include="RCS.Carbon.Tables" Version="8.4.32" />
   </ItemGroup>
 </Project>

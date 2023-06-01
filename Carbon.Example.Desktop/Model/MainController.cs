@@ -17,12 +17,12 @@ using RCS.Carbon.Tables;
 
 namespace Carbon.Example.Desktop
 {
-    /// <summary>
-    /// Following the conventions of MVVM style coding, this class is the data context for the WPF UI.
-    /// Classical binding properties and methods hold and manage the "state" of the application.
-    /// For more information see the <b>Controller</b> section of the GitHub project Wiki.
-    /// </summary>
-    sealed partial class MainController : INotifyPropertyChanged
+	/// <summary>
+	/// Following the conventions of MVVM style coding, this class is the data context for the WPF UI.
+	/// Classical binding properties and methods hold and manage the "state" of the application.
+	/// For more information see the <b>Controller</b> section of the GitHub project Wiki.
+	/// </summary>
+	sealed partial class MainController : INotifyPropertyChanged
 	{
 		public ISettingsProcessor Settings { get; private set; }
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -145,38 +145,35 @@ namespace Carbon.Example.Desktop
 			{
 				// The OpenJob call must complete successfully.
 				await Task.Run(() => Engine.OpenJob(_selectedCust.Name, _selectedJob.Name));
-				// The need for this call is in dispute, it should be done silently on first demand.
-				Engine.Job.LoadTOC(_lic.Name);
 				// Create a set of tasks to load all of the available job detailed information
 				// for demo purposes so it can be seen under the job node. Note that some of
 				// the tasks are allowed to fail and the results are skipped.
 				// TODO Carbon should not throw for simple errors like these. A missing job INI or old TOC file is not really an error.
-				var t1 = Task.Run(() => Engine.GetProps());
-				var t2 = Task.Run(() => Engine.ListVartreeNames().ToArray());
-				var t3 = Task.Run(() => Engine.ListAxisNames().ToArray());
-				var t4 = Task.Run(() => Engine.FullTOCGenNodes());
-				var t5 = Task.Run(() => Engine.ExecUserTOCGenNodes());
-				var t6 = Task.Run(() => Engine.SimpleTOCGenNodes(_lic.Name));
-				var t7 = Task.Run(() => Engine.GetJobIniAsNodes());
-				try
+				await Task.Run(() =>
 				{
-					await Task.WhenAll(t1, t2, t3, t4, t5, t6, t7);
-				}
-				catch (Exception ex)
-				{
-					Trace.WriteLine(ex.ToString());
-				}
-				DProps = t1.Result;
-				VartreeNames = t2.Result;
-				AxisTreeNames = t3.Result;
-				if (!t4.IsFaulted) FullTOCRootGenNodes = t4.Result;
-				if (!t5.IsFaulted) ExecUserTOCRootGenNodes = t5.Result;
-				if (!t6.IsFaulted) SimpleTOCRootGenNodes = t6.Result;
-				if (!t7.IsFaulted) JobIniRootNodes = t7.Result;
-				//MainUtility.PrintNodes(_fullTOCRootGenNodes, "Full");
-				//MainUtility.PrintNodes(_execUserTOCRootGenNodes, "Exec/User");
-				//MainUtility.PrintNodes(_simpleTOCRootGenNodes, "Simple");
-				//MainUtility.PrintNodes(_tocOldRootGenNodes, "Old");
+					DProps = Engine.GetProps();
+					VartreeNames = Engine.ListVartreeNames().ToArray();
+					AxisTreeNames = Engine.Job.GetAxisNames().ToArray();
+					try
+					{
+						FullTOCRootGenNodes = Engine.FullTOCGenNodes().ToArray();
+						DumpNodes(_fullTOCRootGenNodes, $"Full {_fullTOCRootGenNodes.Length}");
+					}
+					catch { }
+					try
+					{
+						ExecUserTOCRootGenNodes = Engine.ExecUserTOCGenNodes().ToArray();
+						DumpNodes(_execUserTOCRootGenNodes, $"ExecUser {_execUserTOCRootGenNodes.Length}");
+					}
+					catch { }
+					try
+					{
+						SimpleTOCRootGenNodes = Engine.SimpleTOCGenNodes().ToArray();
+						DumpNodes(_simpleTOCRootGenNodes, $"Simple {_simpleTOCRootGenNodes.Length}");
+					}
+					catch { }
+				});
+
 				StatusMessage = $"{_selectedCust.Name} + {_selectedJob.Name}";
 				AppError = null;
 				ObsTopNodes = new ObservableCollection<BindNode>();
@@ -222,7 +219,8 @@ namespace Carbon.Example.Desktop
 			BusyMessage = $"Load vartree {_selectedVartreeName}";
 			try
 			{
-				var gnodes = await Task.Run(() => Engine.GetVartreeAsNodes(_selectedVartreeName));
+				Engine.SetTreeNames(_selectedVartreeName);
+				var gnodes = await Task.Run(() => Engine.VarTreeAsNodes());
 				var broots = GenToBindNodes(gnodes, null).ToArray();
 				ObsVartreeNodes = new ObservableCollection<BindNode>(broots);
 				AppError = null;
@@ -250,7 +248,7 @@ namespace Carbon.Example.Desktop
 			BusyMessage = $"Load axis tree {_selectedAxisTreeName}";
 			try
 			{
-				var gnodes = await Task.Run(() => Engine.GetAxisAsNodes(_selectedAxisTreeName));
+				var gnodes = await Task.Run(() => Engine.AxisTreeAsNodes());
 				var broots = GenToBindNodes(gnodes, null).ToArray();
 				ObsVartreeNodes = new ObservableCollection<BindNode>(broots);
 				AppError = null;
@@ -278,15 +276,8 @@ namespace Carbon.Example.Desktop
 			BusyMessage = $"Loading varmeta {_selectedVartreeNode.Text}";
 			try
 			{
-				VMeta = await Task.Run(() => Engine.GetVarMetaParsed(_selectedVartreeNode.Text));
-				foreach (var cfnode in _vMeta.RootNodes)	// TODO This loop to set the VarMeta types is a temporary workaround because they don't arrive with types.
-				{
-					cfnode.Type = "Codeframe";
-					foreach (var cnode in cfnode.Children)
-					{
-						cnode.Type = "Code";
-					}
-				}
+				VMeta = await Task.Run(() => Engine.VarAsNodes(_selectedVartreeNode.Text));
+				DumpNodes(_vMeta);
 				AppError = null;
 				return true;
 			}
@@ -380,13 +371,21 @@ namespace Carbon.Example.Desktop
 		/// </summary>
 		public async Task<bool> SaveReport(string name)
 		{
+			name = name.Replace(Path.PathSeparator, '/');
+			int ix = name.LastIndexOf('/');
+			string sub = null;
+			if (ix >= 1)
+			{
+				sub = name[ix..];
+				name = name[(ix + 1)..];
+			}
 			BusyMessage = "Save Report";
 			try
 			{
-				await Task.Run(() => Engine.TableSaveCBT(name));
+				await Task.Run(() => Engine.Job.SaveTableUserTOC(name, _lic.Name, sub, true));
 				FullTOCRootGenNodes = Engine.FullTOCGenNodes();
 				ExecUserTOCRootGenNodes = Engine.ExecUserTOCGenNodes();
-				SimpleTOCRootGenNodes = Engine.SimpleTOCGenNodes(_lic.Name);
+				SimpleTOCRootGenNodes = Engine.SimpleTOCGenNodes();
 				RefreshOpenJobTocs();
 				return true;
 			}
@@ -409,10 +408,16 @@ namespace Carbon.Example.Desktop
 		/// </summary>
 		public void DeleteReport(string name)
 		{
-			Engine.DeleteCBT(name);
+			DeleteJobFileResult result = Engine.DeleteCBT(name, out string msg);
+			if (result != DeleteJobFileResult.Success)
+			{
+				ErrorTitle = $"Delete Report failure: {result}";
+				AppError = null;
+				return;
+			}
 			FullTOCRootGenNodes = Engine.FullTOCGenNodes();
 			ExecUserTOCRootGenNodes = Engine.ExecUserTOCGenNodes();
-			SimpleTOCRootGenNodes = Engine.SimpleTOCGenNodes(_lic.Name);
+			SimpleTOCRootGenNodes = Engine.SimpleTOCGenNodes();
 			RefreshOpenJobTocs();
 		}
 
@@ -507,12 +512,12 @@ namespace Carbon.Example.Desktop
 						axsnode.AddChildRange(axnodes);
 						_selectedNavNode.AddChild(axsnode);
 					}
-					if (_jobIniRootNodes?.Length > 0)
-					{
-						var jininode = new BindNode(BindNode.TypeIni, "Job INI", null, _selectedNavNode);
-						GenToBindNodes(_jobIniRootNodes, jininode);
-						_selectedNavNode.AddChild(jininode);
-					}
+					//if (_jobIniRootNodes?.Length > 0)
+					//{
+					//    var jininode = new BindNode(BindNode.TypeIni, "Job INI", null, _selectedNavNode);
+					//    GenToBindNodes(_jobIniRootNodes, jininode);
+					//    _selectedNavNode.AddChild(jininode);
+					//}
 					_selectedNavNode.IsExpanded = true;
 				}
 			}
@@ -597,9 +602,9 @@ namespace Carbon.Example.Desktop
 					tocnode.Children?.Clear();
 					tocnode.IsExpanded = true;
 				}
-				if (_fullTOCRootGenNodes != null)
+				if (nodes != null)
 				{
-					GenToBindNodes(_fullTOCRootGenNodes, tocnode);
+					GenToBindNodes(nodes, tocnode);
 				}
 			}
 			InnerRefresh(BindNode.TypeTocFull, "TOC Full", _fullTOCRootGenNodes);
@@ -621,12 +626,12 @@ namespace Carbon.Example.Desktop
 				{
 					if (!await LoadVarmeta()) return false;
 					// TODO Set the Type of the VarMeta generate nodes correctly
-					if (VMeta.RootNodes.FirstOrDefault()?.Children == null) return false;     // There might be no children (eg Weights)
-					if (VMeta.Metadata.Any(m => m.Name == "Type" && m.Value == "Hierarchic"))
+					if (VMeta.FirstOrDefault()?.Children == null) return false;     // There might be no children (eg Weights)
+					if (VMeta[0].Type == "Variable")
 					{
 						// The varmeta returned for a 'hierarchic' variable has child
 						// variables which are added as children of the selected node.
-						GenToBindNodes(VMeta.RootNodes, _selectedVartreeNode);
+						GenToBindNodes(VMeta[0].Children, _selectedVartreeNode);
 						_selectedVartreeNode.IsExpanded = true;
 					}
 					else
@@ -634,7 +639,7 @@ namespace Carbon.Example.Desktop
 						// The varmeta returned for a 'simple' variables has a single variable child
 						// which has child codes. We only want the 2nd level codea to be added as
 						// children of the selected node.
-						var codenodes = GenToBindNodes(VMeta.RootNodes[0].Children, _selectedVartreeNode);
+						var codenodes = GenToBindNodes(VMeta[0].Children, _selectedVartreeNode);
 						//_selectedVartreeNode.AddChildRange(codenodes);
 						_selectedVartreeNode.IsExpanded = true;
 					}
@@ -680,21 +685,9 @@ namespace Carbon.Example.Desktop
 		/// </summary>
 		BindNode[] GenToBindNodes(IEnumerable<GenNode> nodes, BindNode parent)
 		{
-			var nodelist = new List<BindNode>();
-			foreach (var node in nodes)
-			{
-				var bnode = new BindNode(node, null, parent);
-				if (parent != null)
-				{
-					parent.AddChild(bnode);
-				}
-				if (node.Children?.Count > 0)
-				{
-					GenToBindNodes(node.Children, bnode);
-				}
-				nodelist.Add(bnode);
-			}
-			return nodelist.ToArray();
+			var bnodes = nodes.Select(n => new BindNode(n, parent)).ToArray();
+			parent?.AddChildRange(bnodes);
+			return bnodes;
 		}
 
 		/// <summary>
@@ -715,7 +708,7 @@ namespace Carbon.Example.Desktop
 		/// extra complexity to this already large example application. The syntax conversion can be seen fully active
 		/// in the Cadmium application on the report specification page.
 		/// </summary>
-		string AxisToExpression(IList<BindNode> nodes)
+		static string AxisToExpression(IList<BindNode> nodes)
 		{
 			if (nodes.Count == 0) return null;
 			var parts = new List<string>();
@@ -781,5 +774,17 @@ namespace Carbon.Example.Desktop
 		};
 
 		#endregion
+
+		public static void DumpNodes(GenNode[] roots, string title = null)
+		{
+			if (title != null)
+			{
+				Trace.WriteLine($"-------- {title} --------");
+			}
+			foreach (var node in GenNode.PrintTree(roots))
+			{
+				Trace.WriteLine(node);
+			}
+		}
 	}
 }

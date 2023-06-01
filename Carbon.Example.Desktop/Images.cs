@@ -11,6 +11,10 @@ namespace Carbon.Example.Desktop
 		public static BitmapImage IconVartree = new BitmapImage(new Uri("/Resources/Vartree16.png", UriKind.Relative));
 		public static BitmapImage IconVartreeOff = new BitmapImage(new Uri("/Resources/Vartree16off.png", UriKind.Relative));
 		public static BitmapImage IconAxisTree = new BitmapImage(new Uri("/Resources/AxisTree16.png", UriKind.Relative));
+		public static BitmapImage IconArith = new BitmapImage(new Uri("/Resources/Arith16.png", UriKind.Relative));
+		public static BitmapImage IconNet = new BitmapImage(new Uri("/Resources/Net16.png", UriKind.Relative));
+		public static BitmapImage IconNes = new BitmapImage(new Uri("/Resources/Nes16.png", UriKind.Relative));
+		public static BitmapImage IconStat = new BitmapImage(new Uri("/Resources/Stat16.png", UriKind.Relative));
 		public static BitmapImage IconVariable = new BitmapImage(new Uri("/Resources/Variable16.png", UriKind.Relative));
 		public static BitmapImage IconCodeframe = new BitmapImage(new Uri("/Resources/Codeframe16.png", UriKind.Relative));
 		public static BitmapImage IconCode = new BitmapImage(new Uri("/Resources/Code16.png", UriKind.Relative));

@@ -27,6 +27,10 @@ namespace Carbon.Example.Desktop
 		public const string TypeCodeframe = "Codeframe";
 		public const string TypeCode = "Code";
 		public const string TypeAxis = "Axis";
+		public const string TypeArith = "Arith";
+		public const string TypeNet = "Net";
+		public const string TypeNes = "Nes";
+		public const string TypeStat = "Stat";
 
 		static int _id;
 
@@ -39,14 +43,20 @@ namespace Carbon.Example.Desktop
 			Parent = parent;
 		}
 
-		public BindNode(GenNode node, object data, BindNode parent)
+		public BindNode(GenNode node, BindNode parent)
 		{
 			Id = node.Id;
 			Type = node.Type;
-			Text = node.Name;
-			Description = node.Description;
-			Data = data;
+			Text = node.Value1;
+			Description = node.Value2;
 			Parent = parent;
+			if (node.Children?.Count > 0)
+			{
+				foreach (var child in node.Children)
+				{
+					AddChild(new BindNode(child, this));
+				}
+			}
 		}
 
 		public string Type { get; }
@@ -55,19 +65,13 @@ namespace Carbon.Example.Desktop
 
 		public void AddChild(BindNode child)
 		{
-			if (Children == null)
-			{
-				Children = new ObservableCollection<BindNode>();
-			}
+			Children ??= new ObservableCollection<BindNode>();
 			Children.Add(child);
 		}
 
 		public void AddChildRange(IEnumerable<BindNode> children)
 		{
-			if (Children == null)
-			{
-				Children = new ObservableCollection<BindNode>();
-			}
+			Children ??= new ObservableCollection<BindNode>();
 			foreach (var child in children)
 			{
 				_children.Add(child);
@@ -79,7 +83,7 @@ namespace Carbon.Example.Desktop
 			return $"BindNode({Id},{Type},{Text},{Description},{Data},{Parent?.Id})";
 		}
 
-		static ObservableCollection<BindNode> EmptyChildren = new ObservableCollection<BindNode>();
+		static readonly ObservableCollection<BindNode> EmptyChildren = new ObservableCollection<BindNode>();
 
 		ObservableCollection<BindNode> _children = new ObservableCollection<BindNode>();
 		public ObservableCollection<BindNode> Children

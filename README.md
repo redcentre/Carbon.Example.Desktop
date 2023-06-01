@@ -68,15 +68,16 @@ await Task.Run(() => Engine.OpenJob(_selectedCust.Name, _selectedJob.Name));
 > Once a job is open, it is possible to run cross-tabulation reports immediately, which is a simple usage scenario demonstrated in the sample Console application project. This sample project is more sophisticated and it makes the following API calls to demonstrate all of the information that is available about an open job.
 
 ```
-var t1 = Task.Run(() => Engine.GetProps());
-var t2 = Task.Run(() => Engine.ListVartreeNames().ToArray());
-var t3 = Task.Run(() => Engine.ListAxisNames().ToArray());
-var t4 = Task.Run(() => Engine.ListSavedReports());
-var t5 = Task.Run(() => Engine.GetLegacyTocAsNodes());
-var t6 = Task.Run(() => Engine.GetJobIniAsNodes());
+await Task.Run(() =>
+{
+  DProps = Engine.GetProps();
+  VartreeNames = Engine.ListVartreeNames().ToArray();
+  AxisTreeNames = Engine.Job.GetAxisNames().ToArray();
+  FullTOCRootGenNodes = Engine.FullTOCGenNodes().ToArray();
+  ExecUserTOCRootGenNodes = Engine.ExecUserTOCGenNodes().ToArray();
+  SimpleTOCRootGenNodes = Engine.SimpleTOCGenNodes().ToArray();
+});
 ```
-
-> Note how the calls are run in parallel tasks to improve performance.  The information returned by these calls is used to create TreeView control branches under the job node.
 
 > ![Navigation tree partial screenshot][img1]
 
@@ -117,7 +118,7 @@ VMeta = await Task.Run(() => Engine.GetVarMetaParsed(_selectedVartreeNode.Text))
 await Task.Run(() => Engine.TableSaveCBT(name));
 ```
 
-> Clicking the Save icon :floppy_disk: will open open a dialog that prompts for a report name and optional path prefix to save the report using the `TableSaveCBT` API method.
+> Clicking the Save icon :floppy_disk: will open a dialog that prompts for a report name and optional path prefix to save the report using the `TableSaveCBT` API method.
 
 > ![Report save dialog screenshot][img4]
 
