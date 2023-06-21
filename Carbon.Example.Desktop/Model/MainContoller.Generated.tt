@@ -67,8 +67,8 @@
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.ObjectModel;
+using RCS.Carbon.Licensing.Shared;
 using RCS.Carbon.Shared;
-using RCS.Carbon.Variables;
 
 namespace Carbon.Example.Desktop
 {

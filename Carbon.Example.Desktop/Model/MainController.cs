@@ -12,6 +12,7 @@ using System.Windows.Threading;
 using System.Xml.Linq;
 using Carbon.Example.Desktop.Model;
 using Orthogonal.NSettings;
+using RCS.Carbon.Licensing.RedCentre;
 using RCS.Carbon.Shared;
 using RCS.Carbon.Tables;
 
@@ -28,6 +29,11 @@ namespace Carbon.Example.Desktop
 		public event PropertyChangedEventHandler PropertyChanged;
 		DispatcherTimer appTimer;
 		BindNode lastOpenedJobNode;
+
+		// Choose either the live or testing licensing server base address.
+		// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+		//const string LicensingBaseAddress = "https://rcsapps.azurewebsites.net/licensing2/";
+		const string LicensingBaseAddress = "https://rcsapps.azurewebsites.net/licensing2test/";
 
 		#region Lifetime
 
@@ -732,13 +738,22 @@ namespace Carbon.Example.Desktop
 
 		CrossTabEngine _engine;
 		/// <summary>
+		/// <para>
 		/// The Carbon cross-tabulation engine is created on first demand, which we know will be the
 		/// first Login call attempt. This happens through a modal dialog in the UI, so after a
 		/// successful login this property will be filled.
+		/// </para>
+		/// <para>
+		/// Note that this example uses the Red Centre Software licensing service for authentication
+		/// and authorisation to customers and jobs. For clarity we pass an instance of the RCS licensing
+		/// provider class to the crosstab engine, which allows an override of the url. If the empty
+		/// constructor is used then a reflection search is made for a suitable provider class.
+		/// </para>
 		/// </summary>
 		public CrossTabEngine Engine => LazyInitializer.EnsureInitialized(ref _engine, () =>
 		{
-			var eng = new CrossTabEngine();
+			var provider = new RedCentreLicensingProvider(LicensingBaseAddress);
+			var eng = new CrossTabEngine(provider);
 			StatusEngine = $"Carbon {eng.Version}";
 			return eng;
 		});

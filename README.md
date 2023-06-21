@@ -37,10 +37,13 @@ This sample application demonstrates how the Carbon API can be used to create a 
 ### Create Engine
 
 ```
-var eng = new CrossTabEngine();
+var provider = new RedCentreLicensingProvider(LicensingBaseAddress);
+var eng = new CrossTabEngine(provider);
 ```
 
 > Creates an instance of the Carbon cross-tabulation engine class. The sample code *lazily* creates the instance on first use. This class publishes most of the top-level API methods that are of general interest to client applications. A single instance of the class can be held globally for application lifetime. Multiple instances might only be useful in advanced scenarios where multiple jobs are open and being processed concurrently.
+
+> The licensing *provider* being passed into the engine constructor is not normally needed for production use. It's used here in this example app so that the address of the Red Centre Software licensing web service can be adjusted as needed. The subject of licensing providers is discussed in the Carbon article titled [Carbon Licensing][carblic].
 
 ### LoginId
 
@@ -137,3 +140,4 @@ await Task.Run(() => Engine.TableSaveCBT(name));
 [img2]: https://systemrcs.blob.core.windows.net/wiki-images/sample%20desktop%20var%20select.png
 [img3]: https://systemrcs.blob.core.windows.net/wiki-images/sample%20desktop%20report%20tsv.png
 [img4]: https://systemrcs.blob.core.windows.net/wiki-images/sample%20desktop%20save%20dialog.png
+[carblic]: https://rcsapps.azurewebsites.net/doc/carbon/articles/licensing.htm
