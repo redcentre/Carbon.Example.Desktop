@@ -32,8 +32,8 @@ namespace Carbon.Example.Desktop
 
 		// Choose either the live or testing licensing server base address.
 		// ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-		//const string LicensingBaseAddress = "https://rcsapps.azurewebsites.net/licensing2/";
-		const string LicensingBaseAddress = "https://rcsapps.azurewebsites.net/licensing2test/";
+		const string LicensingBaseAddress = "https://rcsapps.azurewebsites.net/licensing2/";
+		//const string LicensingBaseAddress = "https://rcsapps.azurewebsites.net/licensing2test/";
 
 		#region Lifetime
 
