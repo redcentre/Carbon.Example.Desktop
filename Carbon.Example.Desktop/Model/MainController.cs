@@ -337,15 +337,11 @@ namespace Carbon.Example.Desktop
 						break;
 				}
 				AppError = null;
-				switch (_selectedOutputFormat)
+				SelectedReportTabIndex = _selectedOutputFormat switch
 				{
-					case XOutputFormat.HTML:
-						SelectedReportTabIndex = 1;
-						break;
-					default:
-						SelectedReportTabIndex = 0;
-						break;
-				}
+					XOutputFormat.HTML => 1,
+					_ => 0,
+				};
 				CommandManager.InvalidateRequerySuggested();
 				return true;
 			}
