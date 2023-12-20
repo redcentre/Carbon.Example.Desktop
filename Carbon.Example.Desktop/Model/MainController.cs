@@ -428,7 +428,21 @@ namespace Carbon.Example.Desktop
 		/// </summary>
 		public string[] ReadFileAsLines(string name)
 		{
-			return Engine.ReadFileLines(name).ToArray();
+			BusyMessage = $"Reading {name}";
+			try
+			{
+				return Engine.ReadFileLines(name).ToArray();
+			}
+			catch (Exception ex)
+			{
+				ErrorTitle = "Failed to read text lines";
+				AppError = ex;
+				return null;
+			}
+			finally
+			{
+				BusyMessage = null;
+			}
 		}
 
 		public void RemoveSelectedTopNode()
@@ -472,6 +486,7 @@ namespace Carbon.Example.Desktop
 			{
 				// We used to dynamically load the jobs on a customer click,
 				// but they are preloaded, so we do nothing now.
+				return true;
 			}
 			else if (_selectedNavNode.Type == BindNode.TypeJob)
 			{
@@ -522,6 +537,7 @@ namespace Carbon.Example.Desktop
 					//}
 					_selectedNavNode.IsExpanded = true;
 				}
+				return true;
 			}
 			else if (_selectedNavNode.Type == BindNode.TypeVt || _selectedNavNode.Type == BindNode.TypeVtOff)
 			{
@@ -541,7 +557,7 @@ namespace Carbon.Example.Desktop
 				}
 				SelectedVartreeName = (string)_selectedNavNode.Data;
 				SelectedAxisTreeName = null;
-				await LoadVartree();
+				return await LoadVartree();
 			}
 			else if (_selectedNavNode.Type == BindNode.TypeAx)
 			{
@@ -559,7 +575,7 @@ namespace Carbon.Example.Desktop
 				}
 				SelectedAxisTreeName = (string)_selectedNavNode.Data;
 				SelectedVartreeName = null;
-				await LoadAxisTree();
+				return await LoadAxisTree();
 			}
 			else if (_selectedNavNode.Type == "File")
 			{
@@ -571,6 +587,7 @@ namespace Carbon.Example.Desktop
 				ReportTitle = _selectedNavNode.Text;
 				GenTabLines = ReadFileAsLines(_selectedNavNode.Text);
 				SelectedReportTabIndex = 0;
+				return _genTabLines != null;
 			}
 			else if (_selectedNavNode.Type == "Table")
 			{
@@ -580,8 +597,12 @@ namespace Carbon.Example.Desktop
 				ReportTitle = Path.Combine(_selectedNavNode.Text);
 				GenTabLines = ReadFileAsLines(ReportTitle);
 				SelectedReportTabIndex = 0;
+				return _genTabLines != null;
 			}
-			return true;
+			else
+			{
+				return false;
+			}
 		}
 
 		/// <summary>
