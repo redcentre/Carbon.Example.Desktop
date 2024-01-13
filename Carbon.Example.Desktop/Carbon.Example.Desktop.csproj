@@ -89,7 +89,7 @@
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2210.55" />
     <PackageReference Include="Orthogonal.Common.Basic" Version="3.1.10" />
     <PackageReference Include="Orthogonal.NSettings" Version="3.0.3" />
-    <PackageReference Include="RCS.Carbon.Licensing.RedCentre" Version="8.7.7" />
-    <PackageReference Include="RCS.Carbon.Tables" Version="8.7.7" />
+    <PackageReference Include="RCS.Carbon.Licensing.RedCentre" Version="8.7.8" />
+    <PackageReference Include="RCS.Carbon.Tables" Version="8.7.8" />
   </ItemGroup>
 </Project>
