@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>2.0.4</Version>
-    <InformationalVersion>2023-12-21 10:45 GMT+11</InformationalVersion>
+    <Version>2.0.5</Version>
+    <InformationalVersion>2024-01-31 10:56 GMT+11</InformationalVersion>
     <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <Company>Red Centre Software</Company>
-    <Copyright>Copyright © 2022-2023 Red Centre Software</Copyright>
+    <Copyright>Copyright © 2022-2024 Red Centre Software</Copyright>
     <Description>A sophisticated WPF desktop app that exercies a large part of the Carbon API.</Description>
     <Title>Carbon Desktop Example</Title>
   </PropertyGroup>
@@ -89,7 +89,7 @@
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2210.55" />
     <PackageReference Include="Orthogonal.Common.Basic" Version="3.1.10" />
     <PackageReference Include="Orthogonal.NSettings" Version="3.0.3" />
-    <PackageReference Include="RCS.Carbon.Licensing.RedCentre" Version="8.7.12" />
-    <PackageReference Include="RCS.Carbon.Tables" Version="8.7.12" />
+    <PackageReference Include="RCS.Carbon.Licensing.RedCentre" Version="8.7.16" />
+    <PackageReference Include="RCS.Carbon.Tables" Version="8.7.16" />
   </ItemGroup>
 </Project>
