@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>2.0.6</Version>
-    <InformationalVersion>2024-02-03 13:23 GMT+11</InformationalVersion>
+    <Version>2.0.7</Version>
+    <InformationalVersion>2024-02-09 11:42 GMT+11</InformationalVersion>
     <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <UseWindowsForms>true</UseWindowsForms>
@@ -86,10 +86,10 @@
   <ItemGroup>
     <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.113" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2210.55" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2277.86" />
     <PackageReference Include="Orthogonal.Common.Basic" Version="3.1.10" />
     <PackageReference Include="Orthogonal.NSettings" Version="3.0.3" />
-    <PackageReference Include="RCS.Carbon.Licensing.RedCentre" Version="8.7.17" />
-    <PackageReference Include="RCS.Carbon.Tables" Version="8.7.17" />
+    <PackageReference Include="RCS.Carbon.Licensing.RedCentre" Version="8.7.18" />
+    <PackageReference Include="RCS.Carbon.Tables" Version="8.7.18" />
   </ItemGroup>
 </Project>
