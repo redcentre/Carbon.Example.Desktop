@@ -1,30 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>8.8.11</Version>
-    <InformationalVersion>2024-06-08 16:31 GMT+10</InformationalVersion>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <Version>8.8.12</Version>
+    <InformationalVersion>2024-06-20 16:17 GMT+10</InformationalVersion>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <UseWindowsForms>true</UseWindowsForms>
     <UseWPF>true</UseWPF>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <Company>Red Centre Software</Company>
     <Copyright>Copyright © 2022-2024 Red Centre Software</Copyright>
     <Description>A sophisticated WPF desktop app that exercies a large part of the Carbon API.</Description>
     <Title>Carbon Desktop Example</Title>
-  </PropertyGroup>
-  <PropertyGroup>
     <StartupObject>Carbon.Example.Desktop.Program</StartupObject>
-  </PropertyGroup>
-  <PropertyGroup>
     <ApplicationIcon>App.ico</ApplicationIcon>
   </PropertyGroup>
-  <ItemGroup>
-    <None Remove="Resources\Arith16.png" />
-    <None Remove="Resources\Nes16.png" />
-    <None Remove="Resources\Net16.png" />
-    <None Remove="Resources\Section16.png" />
-    <None Remove="Resources\Stat16.png" />
-  </ItemGroup>
+  
   <ItemGroup>
     <Compile Update="Model\MainContoller.Generated.cs">
       <AutoGen>True</AutoGen>
@@ -32,34 +21,24 @@
       <DependentUpon>MainContoller.Generated.tt</DependentUpon>
     </Compile>
   </ItemGroup>
+  
   <ItemGroup>
-    <Resource Include="Resources\AppExit16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\HelpAbout16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="App.ico" />
-    <Resource Include="Resources\Nes16.png" />
-    <Resource Include="Resources\Net16.png" />
-    <Resource Include="Resources\Section16.png" />
-    <Resource Include="Resources\Stat16.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Unknown16.png" />
-    <Resource Include="Resources\Codeframe16.png" />
-    <Resource Include="Resources\Vartree16off.png" />
-    <Resource Include="Resources\LoginPrompt16.png" />
     <Content Include="Model\MainContoller.Generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>MainContoller.Generated.cs</LastGenOutput>
     </Content>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Resource Include="App.ico" />
+    <Resource Include="Resources\AppExit16.png" />
     <Resource Include="Resources\Arith16.png" />
-    <Resource Include="Resources\Cust16.png" />
     <Resource Include="Resources\AxisTree16.png" />
     <Resource Include="Resources\Cloud16.png" />
     <Resource Include="Resources\Code16.png" />
+    <Resource Include="Resources\Codeframe16.png" />
     <Resource Include="Resources\Connect16.png" />
+    <Resource Include="Resources\Cust16.png" />
     <Resource Include="Resources\Data16.png" />
     <Resource Include="Resources\DirClosed16.png" />
     <Resource Include="Resources\DirOpen16.png" />
@@ -69,27 +48,38 @@
     <Resource Include="Resources\FolderClosed16.png" />
     <Resource Include="Resources\FolderOpen16.png" />
     <Resource Include="Resources\GenTabRun16.png" />
+    <Resource Include="Resources\HelpAbout16.png" />
     <Resource Include="Resources\Job16.png" />
+    <Resource Include="Resources\LoginPrompt16.png" />
+    <Resource Include="Resources\Nes16.png" />
+    <Resource Include="Resources\Net16.png" />
     <Resource Include="Resources\Node16.png" />
     <Resource Include="Resources\OpenReport16.png" />
     <Resource Include="Resources\Print16.png" />
     <Resource Include="Resources\RunReport16.png" />
     <Resource Include="Resources\SaveReport16.png" />
+    <Resource Include="Resources\Section16.png" />
+    <Resource Include="Resources\Stat16.png" />
     <Resource Include="Resources\Table16.png" />
+    <Resource Include="Resources\Unknown16.png" />
     <Resource Include="Resources\User16.png" />
     <Resource Include="Resources\Variable16.png" />
     <Resource Include="Resources\Vartree16.png" />
+    <Resource Include="Resources\Vartree16off.png" />
   </ItemGroup>
+  
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  
   <ItemGroup>
-    <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.115" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2535.41" />
-    <PackageReference Include="Orthogonal.Common.Basic" Version="3.2.1" />
+    <PackageReference Include="RCS.Carbon.Tables" Version="8.9.23" />
+    <PackageReference Include="RCS.Carbon.Licensing.RedCentre" Version="8.9.23" />
     <PackageReference Include="Orthogonal.NSettings" Version="3.0.3" />
-    <PackageReference Include="RCS.Carbon.Licensing.RedCentre" Version="8.9.20" />
-    <PackageReference Include="RCS.Carbon.Tables" Version="8.9.20" />
+    <PackageReference Include="Orthogonal.Common.Basic" Version="3.2.1" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2592.51" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.115" />
   </ItemGroup>
+  
 </Project>

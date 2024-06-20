@@ -2,30 +2,29 @@
 using System.Linq;
 using RCS.Carbon.Shared;
 
-namespace Carbon.Example.Desktop
+namespace Carbon.Example.Desktop;
+
+/// <summary>
+/// Data associated with a single container (job).
+/// </summary>
+public sealed class JobData
 {
-	/// <summary>
-	/// Data associated with a single container (job).
-	/// </summary>
-	public sealed class JobData
-	{
 #pragma warning disable CS8618     // Empty ctor required for JSON serialization                                                   
-		public JobData()
-		{
-		}
+	public JobData()
+	{
+	}
 #pragma warning restore CS8618
 
-		public JobData(string name, DateTime? lastModified, string publicAccess, MetaData[] metadata)
-		{
-			Name = name;
-			LastModified = lastModified;
-			PublicAccess = publicAccess;
-			Metadata = metadata?.Count() > 0 ? metadata.ToArray() : null;
-		}
-
-		public string Name { get; set; }
-		public DateTime? LastModified { get; set; }
-		public string PublicAccess { get; set; }
-		public MetaData[] Metadata { get; set; }
+	public JobData(string name, DateTime? lastModified, string publicAccess, MetaData[] metadata)
+	{
+		Name = name;
+		LastModified = lastModified;
+		PublicAccess = publicAccess;
+		Metadata = metadata?.Count() > 0 ? metadata.ToArray() : null;
 	}
+
+	public string Name { get; set; }
+	public DateTime? LastModified { get; set; }
+	public string PublicAccess { get; set; }
+	public MetaData[] Metadata { get; set; }
 }
