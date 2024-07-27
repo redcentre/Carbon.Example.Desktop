@@ -73,8 +73,8 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="RCS.Carbon.Tables" Version="8.9.32" />
-    <PackageReference Include="RCS.Carbon.Licensing.RedCentre" Version="8.9.32" />
+    <PackageReference Include="RCS.Carbon.Tables" Version="8.9.33" />
+    <PackageReference Include="RCS.Carbon.Licensing.RedCentre" Version="8.9.33" />
     <PackageReference Include="Orthogonal.NSettings" Version="3.0.5" />
     <PackageReference Include="Orthogonal.Common.Basic" Version="3.2.1" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2592.51" />
