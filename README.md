@@ -20,7 +20,7 @@ This example project is for a Windows desktop application that shows how the Car
 
 ## Design Principle
 
-The Visual Studio 2022 project is a [WPF][wpf] application targeting .NET 6.0-windows.
+The Visual Studio 2022 project is a [WPF][wpf] application targeting .NET 8.0-windows.
 
 > :star: Note that the Carbon libraries can be used from any application targeting .NET Standard 2.0, .NET Framework 4.7.1 and later.
 
@@ -125,7 +125,7 @@ await Task.Run(() => Engine.TableSaveCBT(name));
 
 > ![Report save dialog screenshot][img4]
 
-> The save name can be a simple name, or it can be a multi-part path the prefixes the name, such as `July/Sales/Regional Usage`. The full path of the report will be created if it doesn't already exist. Any existing report will be silently overwritten.
+> The save name can be a simple name, or it can be a multi-part path the prefixes the name, such as `July/Sales/RegionalÂ Usage`. The full path of the report will be created if it doesn't already exist. Any existing report will be silently overwritten.
 
 > After report save, the `ListSavedReports` method is called to refresh the navigation tree and show the newly saved report.
 
