@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>9.0.0</Version>
-    <InformationalVersion>2024-08-03 10:33 GMT+10</InformationalVersion>
+    <Version>9.0.2</Version>
+    <InformationalVersion>2024-08-16 13:46 GMT+10</InformationalVersion>
     <TargetFramework>net8.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <UseWPF>true</UseWPF>
@@ -73,11 +73,11 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="RCS.Carbon.Tables" Version="9.0.0" />
-    <PackageReference Include="RCS.Carbon.Licensing.RedCentre" Version="9.0.0" />
+    <PackageReference Include="RCS.Carbon.Tables" Version="9.0.2" />
+    <PackageReference Include="RCS.Carbon.Licensing.RedCentre" Version="9.0.2" />
     <PackageReference Include="Orthogonal.NSettings" Version="3.0.5" />
     <PackageReference Include="Orthogonal.Common.Basic" Version="3.2.1" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2592.51" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2651.64" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.115" />
   </ItemGroup>
