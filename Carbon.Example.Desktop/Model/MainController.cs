@@ -321,8 +321,9 @@ sealed partial class MainController : INotifyPropertyChanged
 			switch (_selectedOutputFormat)
 			{
 				case XOutputFormat.XML:
-					XDocument doc = await Task.Run(() => Engine.GenTabAsXML(null, _reportTop, _reportSide, filter, weight, _sProps, _dProps));
-					reportBody = doc.ToString();
+					_dProps.Output.Format = XOutputFormat.XML;
+					string xml = await Task.Run(() => Engine.GenTab(null, _reportTop, _reportSide, filter, weight, _sProps, _dProps));
+					reportBody = xml;// doc.ToString();
 					GenTabLines = MainUtility.TextToLines(reportBody).ToArray();
 					break;
 				case XOutputFormat.XLSX:
