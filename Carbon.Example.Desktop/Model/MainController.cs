@@ -74,7 +74,7 @@ sealed partial class MainController : INotifyPropertyChanged
 	/// </summary>
 	void ReloadSettings()
 	{
-		// The login credentials can optionally be stored in user environment variables.
+		// The licence credentials can optionally be stored in user environment variables.
 		// This may be useful for repetitive testing on different computers.
 		_loginId = Settings.Get(null, nameof(LoginId), Environment.GetEnvironmentVariable("RCSTESTID") ?? "10000858");
 		OnPropertyChanged(nameof(LoginId));
@@ -112,19 +112,19 @@ sealed partial class MainController : INotifyPropertyChanged
 	/// On success, the navigation tree is loaded with a set of publicly visible Cloud jobs
 	/// and the app enters a state where it can continue and do useful work.
 	/// </summary>
-	public async Task<bool> LoginAsync(string id, string password)
+	public async Task<bool> GetLicenceAsync(string id, string password)
 	{
 		try
 		{
-			Lic = await Engine.LoginId(id, password);
-			StatusAccount = $"Account {_lic.Id} ({_lic.Name})";
+			Lic = await Engine.GetLicenceId(id, password);
+			StatusAccount = $"Licence {_lic.Id} ({_lic.Name})";
 			AppError = null;
 			LoadNavigationTree();
 			return true;
 		}
 		catch (Exception ex)
 		{
-			ErrorTitle = "Login Error";
+			ErrorTitle = "Licence Error";
 			AppError = ex;
 			Trace.WriteLine(ex.Message);
 			BusyMessage = null;
@@ -680,7 +680,7 @@ sealed partial class MainController : INotifyPropertyChanged
 	#region Private Helpers
 
 	/// <summary>
-	/// A successful login returns a Red Centre Software <c>Licence</c> class with lots of public
+	/// A successful authentication returns a Red Centre Software <c>Licence</c> class with lots of public
 	/// information about the account. Important 
 	/// </summary>
 	void LoadNavigationTree()
@@ -760,8 +760,8 @@ sealed partial class MainController : INotifyPropertyChanged
 	/// <summary>
 	/// <para>
 	/// The Carbon cross-tabulation engine is created on first demand, which we know will be the
-	/// first Login call attempt. This happens through a modal dialog in the UI, so after a
-	/// successful login this property will be filled.
+	/// first attempt to get an authenticated licence. This happens through a modal dialog in the UI, so after a
+	/// successful authentication this property will be filled.
 	/// </para>
 	/// <para>
 	/// Note that this example uses the Red Centre Software licensing service for authentication

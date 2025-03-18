@@ -31,7 +31,7 @@ public partial class SessionDialog : Window, INotifyPropertyChanged
 		if (!CanAuthenticate) return;
 		FeedInfo("Authenticating...");
 		await Task.Delay(500);
-		if (await Controller.LoginAsync(_accountId, _password))
+		if (await Controller.GetLicenceAsync(_accountId, _password))
 		{
 			FeedInfo("Success");
 			DialogResult = true;
