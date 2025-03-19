@@ -2,7 +2,11 @@
   <PropertyGroup>
     <Version>9.1.14</Version>
     <InformationalVersion>2025-03-18 12:25 GMT+11</InformationalVersion>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <TargetFramework>net8.0-windows</TargetFramework>
+    <SelfContained>false</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <OutputType>WinExe</OutputType>
     <UseWPF>true</UseWPF>
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
