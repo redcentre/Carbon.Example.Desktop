@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>9.1.15</Version>
-    <InformationalVersion>2025-03-26 16:54 GMT+11</InformationalVersion>
+    <Version>9.1.17</Version>
+    <InformationalVersion>2025-03-28 16:01 GMT+11</InformationalVersion>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <TargetFramework>net8.0-windows</TargetFramework>
@@ -77,8 +77,8 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="RCS.Carbon.Tables" Version="9.1.16" />
-    <PackageReference Include="RCS.Carbon.Licensing.RedCentre" Version="9.1.16" />
+    <PackageReference Include="RCS.Carbon.Tables" Version="9.1.17" />
+    <PackageReference Include="RCS.Carbon.Licensing.RedCentre" Version="9.1.17" />
     <PackageReference Include="Orthogonal.NSettings" Version="3.0.5" />
     <PackageReference Include="Orthogonal.Common.Basic" Version="3.2.2" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3124.44" />
