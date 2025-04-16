@@ -1,0 +1,102 @@
+﻿<main:BaseControl x:Class="Carbon.Example.Desktop.CarbonControl"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:main="clr-namespace:Carbon.Example.Desktop"
+        mc:Ignorable="d"
+        x:ClassModifier="internal"
+        d:DesignHeight="600" d:DesignWidth="900">
+
+    <main:BaseControl.Resources>
+        <Style x:Key="TabItemStyle" TargetType="TabItem">
+            <Setter Property="Width" Value="120"/>
+            <Setter Property="Height" Value="30"/>
+        </Style>
+        <Style x:Key="TabItemLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+        </Style>
+    </main:BaseControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="350"/>
+            <ColumnDefinition Width="4"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <TreeView ItemsSource="{Binding ObsNodes}" FontSize="{Binding AppFontSize}" IsEnabled="{Binding IsIdle}" SelectedItemChanged="MainTree_SelectionChanged" MouseMove="MainTree_MouseMove">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                    <StackPanel Orientation="Horizontal" ToolTip="{Binding Converter={StaticResource MainVerter},ConverterParameter=MainNodeTip}">
+                        <Image Style="{StaticResource Icon16Style}" Margin="0,0,4,0">
+                            <Image.Source>
+                                <MultiBinding Converter="{StaticResource MainMultiVerter}" ConverterParameter="MainNodeIcon">
+                                    <Binding Path="Type"/>
+                                    <Binding Path="IsExpanded"/>
+                                </MultiBinding>
+                            </Image.Source>
+                        </Image>
+                        <TextBlock Text="{Binding Converter={StaticResource MainVerter},ConverterParameter=MainNodeLabel}"/>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="TreeViewItem">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded,Mode=TwoWay}"/>
+                    <Setter Property="IsSelected" Value="{Binding IsSelected,Mode=TwoWay}"/>
+                </Style>
+            </TreeView.ItemContainerStyle>
+        </TreeView>
+
+        <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent"/>
+
+        <TabControl Grid.Column="2" SelectedIndex="{Binding MainTabIndex}">
+            <TabItem Style="{StaticResource TabItemStyle}">
+                <TabItem.Header>
+                    <TextBlock Text="Browse" Style="{StaticResource TabItemLabelStyle}"/>
+                </TabItem.Header>
+                <Grid>
+                    <Border Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="1">
+                        <TextBlock Text="No Selection" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="28" Foreground="Silver"/>
+                    </Border>
+                    <main:DetailPropertiesControl>
+                        <main:DetailPropertiesControl.Visibility>
+                            <MultiBinding Converter="{StaticResource MainMultiVerter}" ConverterParameter="NodeTypeVisible|Licence;Customer;Job">
+                                <Binding Path="SelectedNode"/>
+                                <Binding Path="SelectedNode.Type"/>
+                            </MultiBinding>
+                        </main:DetailPropertiesControl.Visibility>
+                    </main:DetailPropertiesControl>
+                    <main:DetailLinesControl>
+                        <main:DetailLinesControl.Visibility>
+                            <MultiBinding Converter="{StaticResource MainMultiVerter}" ConverterParameter="NodeTypeVisible|Table">
+                                <Binding Path="SelectedNode"/>
+                                <Binding Path="SelectedNode.Type"/>
+                            </MultiBinding>
+                        </main:DetailLinesControl.Visibility>
+                    </main:DetailLinesControl>
+                </Grid>
+            </TabItem>
+            <TabItem Style="{StaticResource TabItemStyle}">
+                <TabItem.Header>
+                    <TextBlock Text="Specification" Style="{StaticResource TabItemLabelStyle}"/>
+                </TabItem.Header>
+                <main:SpecificationControl/>
+            </TabItem>
+            <TabItem Style="{StaticResource TabItemStyle}">
+                <TabItem.Header>
+                    <TextBlock Text="Log" Style="{StaticResource TabItemLabelStyle}"/>
+                </TabItem.Header>
+                <DataGrid ItemsSource="{Binding ObsLog}" IsReadOnly="True" AutoGenerateColumns="False" FontSize="{Binding AppFontSize}" SelectionMode="Extended" SelectionUnit="Cell">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Time" Binding="{Binding Time,Converter={StaticResource MainVerter},ConverterParameter=LogTime}" ElementStyle="{StaticResource GridColCentre}"/>
+                        <DataGridTextColumn Header="Category" Binding="{Binding Category}"/>
+                        <DataGridTextColumn Header="Thread" Binding="{Binding ThreadId}" ElementStyle="{StaticResource GridColRight}"/>
+                        <DataGridTextColumn Header="Message" Binding="{Binding Message}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+
+</main:BaseControl>

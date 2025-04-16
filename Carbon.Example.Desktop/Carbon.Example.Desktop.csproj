@@ -1,0 +1,133 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Version>9.1.18</Version>
+    <InformationalVersion>2025-04-11 08:46 GMT+10</InformationalVersion>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <SelfContained>false</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <Nullable>enable</Nullable>
+    <OutputType>WinExe</OutputType>
+    <UseWPF>true</UseWPF>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <Company>Red Centre Software</Company>
+    <Copyright>Copyright © 2022-2025 Red Centre Software</Copyright>
+    <Description>A more simple WPF desktop app that exercies the Carbon API.</Description>
+    <Title>Carbon Desktop Example</Title>
+    <ApplicationIcon>App.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Images\AppError.png" />
+    <None Remove="Images\BayesPrice24.png" />
+    <None Remove="Images\Busy16.png" />
+    <None Remove="Images\BusySpin.png" />
+    <None Remove="Images\FormatHtml.png" />
+    <None Remove="Images\FormatText.png" />
+    <None Remove="Images\NodeArith.png" />
+    <None Remove="Images\NodeCode.png" />
+    <None Remove="Images\NodeCodeframe.png" />
+    <None Remove="Images\NodeCustomer.png" />
+    <None Remove="Images\NodeError.png" />
+    <None Remove="Images\NodeJob.png" />
+    <None Remove="Images\NodeLicence.png" />
+    <None Remove="Images\NodeNes.png" />
+    <None Remove="Images\NodeNet.png" />
+    <None Remove="Images\NodeRealVartree.png" />
+    <None Remove="Images\NodeSection.png" />
+    <None Remove="Images\NodeStat.png" />
+    <None Remove="Images\NodeTable.png" />
+    <None Remove="Images\NodeUnknown.png" />
+    <None Remove="Images\NodeUser.png" />
+    <None Remove="Images\RubyLogo24.png" />
+    <None Remove="Images\Warning16.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RCS.Carbon.Licensing.Example" Version="9.1.18" />
+    <PackageReference Include="RCS.Carbon.Tables" Version="9.1.18" />
+    <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.124" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3179.45" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="App.ico" />
+    <Resource Include="Images\AppError.png" />
+    <Resource Include="Images\Busy16.png" />
+    <Resource Include="Images\FormatHtml.png" />
+    <Resource Include="Images\FormatText.png" />
+    <Resource Include="Images\NodeAxis.png" />
+    <Resource Include="Images\BayesPrice24.png" />
+    <Resource Include="Images\BusySpin.png" />
+    <Resource Include="Images\NodeArith.png" />
+    <Resource Include="Images\NodeCode.png" />
+    <Resource Include="Images\NodeCodeframe.png" />
+    <Resource Include="Images\NodeCustomer.png" />
+    <Resource Include="Images\NodeError.png" />
+    <Resource Include="Images\NodeFolderOpen.png" />
+    <Resource Include="Images\NodeFolderClosed.png" />
+    <Resource Include="Images\NodeJob.png" />
+    <Resource Include="Images\NodeLicence.png" />
+    <Resource Include="Images\NodeNes.png" />
+    <Resource Include="Images\NodeNet.png" />
+    <Resource Include="Images\NodeSection.png" />
+    <Resource Include="Images\NodeStat.png" />
+    <Resource Include="Images\NodeTable.png" />
+    <Resource Include="Images\NodeUser.png" />
+    <Resource Include="Images\NodeVartree.png" />
+    <Resource Include="Images\NodeRealVartree.png" />
+    <Resource Include="Images\NodeUnknown.png" />
+    <Resource Include="Images\NodeVartreeVariable.png" />
+    <Resource Include="Images\RubyLogo24.png" />
+    <Resource Include="Images\Warning16.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="AppSettings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>AppSettings.settings</DependentUpon>
+    </Compile>
+    <Compile Update="Model\MainContoller.Generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>MainContoller.Generated.tt</DependentUpon>
+    </Compile>
+    <Compile Update="SpecificationControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="DetailLinesControl.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Strings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Strings.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="AppSettings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>AppSettings.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="Model\MainContoller.Generated.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>MainContoller.Generated.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+</Project>
