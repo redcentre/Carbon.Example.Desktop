@@ -15,7 +15,7 @@ This example project is for a Windows desktop application that shows how the Car
 
 The following screenshot of the application shows an existing report has been selected in the TOC (table of contents) and displayed in HTML format.
 
-![screenshot](_support/example-desktop-load-report.png)
+![screenshot]([_support/example-desktop-load-report.png](https://systemrcs.blob.core.windows.net/wiki-images/example-desktop-browse.png)
 
 ----
 
