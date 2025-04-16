@@ -15,7 +15,7 @@ This example project is for a Windows desktop application that shows how the Car
 
 The following screenshot of the application shows an existing report has been selected in the TOC (table of contents) and displayed in HTML format.
 
-![screenshot]([_support/example-desktop-load-report.png](https://systemrcs.blob.core.windows.net/wiki-images/example-desktop-browse.png)
+![screenshot](https://systemrcs.blob.core.windows.net/wiki-images/example-desktop-browse.png)
 
 ----
 
@@ -95,7 +95,7 @@ else
 
 The example app uses the information in the licence object to prepare the navigation tree with a root licence node and hierarchical customer and job children. 
 
-![screenshot](_support/example-desktop-licnodes.png)
+![screenshot](https://systemrcs.blob.core.windows.net/wiki-images/example-desktop-licnodes.png)
 
 ----
 
@@ -112,7 +112,7 @@ GenNode[] execTocNodes = engine.ExecUserTOCGenNodes();
 GenNode[] simpleTocNodes = engine.SimpleTOCGenNodes();
 ```
 
-![screenshot](_support/example-desktop-jobnodes.png)
+![screenshot](https://systemrcs.blob.core.windows.net/wiki-images/example-desktop-jobnodes.png)
 
 ----
 
@@ -125,7 +125,7 @@ engine.SetTreeNames(vartreeName);
 GenNode[] gnodes = _engine!.VarTreeAsNodes();
 ```
 
-![screenshot](_support/example-desktop-vtnodes.png)
+![screenshot](https://systemrcs.blob.core.windows.net/wiki-images/example-desktop-vtnodes.png)
 
 Similarly, when an Axes leaf node is clicked, the axis is loaded and displayed as a hierarchy of child nodes.
 
@@ -143,7 +143,7 @@ When a variable node (red circles) is clicked its child codeframes and codes are
 GenNode[] gnodes = engine.VarAsNodes(variableName);
 ```
 
-![screenshot](_support/example-desktop-varnodes.png)
+![screenshot](https://systemrcs.blob.core.windows.net/wiki-images/example-desktop-varnodes.png)
 
 ----
 
@@ -210,7 +210,7 @@ side = null;
 
 Variables, codeframes and codes can be drag-dropped from the tree into the Top and Side text boxes.
 
-![screenshot](_support/example-desktop-vardrop.png)
+![screenshot](https://systemrcs.blob.core.windows.net/wiki-images/example-desktop-vardrop.png)
 
 ----
 
