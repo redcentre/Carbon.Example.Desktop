@@ -33,6 +33,9 @@ public enum CredentialType
 
 #endregion
 
+/// <summary>
+/// For more information about this project see: https://github.com/redcentre/Carbon.Example.Desktop
+/// </summary>
 sealed partial class MainController : INotifyPropertyChanged
 {
 	public AppSettings Settings { get; private set; }
@@ -189,7 +192,7 @@ sealed partial class MainController : INotifyPropertyChanged
 				// lines of hex dump of the document.
 				case XOutputFormat.XLSX:
 					ReportTabIndex = 0;
-					byte[] workbook = await Task.Run(() => _engine.GenTabAsXLSX(null, _reportTop!, _reportSide!, _reportFilter, _reportWeight, _reportSpec!.SpecProperties, _reportProps));
+					byte[] workbook = await Task.Run(() => _engine!.GenTabAsXLSX(null, _reportTop!, _reportSide!, _reportFilter, _reportWeight, _reportSpec!.SpecProperties, _reportProps));
 					var lines = MainUtility.HexToLines(workbook).ToArray();
 					ReportTextBody = string.Join(Environment.NewLine, lines);
 					LogEngine($"GenTabAsXLSX({_reportTop},{_reportSide},{_reportFilter},{_reportWeight}) {_reportProps.Output.Format} -> {workbook.Length} bytes ({lines.Length} lines)");
@@ -197,7 +200,7 @@ sealed partial class MainController : INotifyPropertyChanged
 				// All of the remaining report formats can be displayed as plain text.
 				// The HTML output format can ALSO be displayed in a WebView2 control.
 				default:
-					ReportTextBody = await Task.Run(() => _engine.GenTab(null, _reportTop!, _reportSide!, _reportFilter, _reportWeight, _reportSpec!.SpecProperties, _reportProps));
+					ReportTextBody = await Task.Run(() => _engine!.GenTab(null, _reportTop!, _reportSide!, _reportFilter, _reportWeight, _reportSpec!.SpecProperties, _reportProps));
 					LogEngine($"GenTab({_reportTop},{_reportSide},{_reportFilter},{_reportWeight}) {_reportProps.Output.Format} -> ({_reportTextBody!.Length} lines)");
 					if (_reportProps.Output.Format == XOutputFormat.HTML)
 					{
@@ -219,6 +222,7 @@ sealed partial class MainController : INotifyPropertyChanged
 		{
 			++newReportSequence;
 			ReportSpec = await Task.Run(() => _engine!.GetNewSpec());
+			LogEngine("GetNewSpec()");
 			ReportProps = new XDisplayProperties();
 			ReportTop = null;
 			ReportSide = null;
@@ -274,6 +278,7 @@ sealed partial class MainController : INotifyPropertyChanged
 		{
 			string? message = null;
 			bool success = await Task.Run(() => _engine!.DeleteInUserTOC(_selectedNode!.Key!, true, out message));
+			LogEngine($"DeleteInUserTOC({_selectedNode!.Key}) -> {success}");
 			if (!success)
 			{
 				string msg = string.IsNullOrEmpty(message) ? "No details are available." : message;
@@ -303,6 +308,7 @@ sealed partial class MainController : INotifyPropertyChanged
 		var simpleParent = _openJobNode!.Children.FirstOrDefault(n => n.Type == AppNodeType.SimpleToc)!;
 		simpleParent.Children.Clear();
 		AddGenNodes(simpleParent, simpleTocNodes);
+		LogEngine($"ReloadTocs() -> {GenNode.WalkNodes(fullTocNodes).Count()} full nodes, {GenNode.WalkNodes(execTocNodes).Count()} exec nodes, {GenNode.WalkNodes(simpleTocNodes).Count()} simple nodes");
 	}
 
 	#endregion
@@ -682,6 +688,7 @@ sealed partial class MainController : INotifyPropertyChanged
 		LogEngine($"ReadFileLines({node.Key}) -> {_textLines!.Length}");
 		// Set the report as the active one in the engine.
 		await Task.Run(() => _engine!.TableLoadCBT(node.Key!));
+		LogEngine($"TableLoadCBT({node.Key})");
 		// Get the report properties and set defaults.
 		ReportProps = await Task.Run(() => _engine!.GetProps());
 		LogEngine($"GetProps() -> {_reportProps}");

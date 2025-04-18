@@ -56,13 +56,16 @@ internal static partial class AppUtility
 		}
 	}
 
+	/// <summary>
+	/// See: https://gfkeogh.blogspot.com/2016/07/windows-universal-gethashcode.html
+	/// </summary>
 	public static long StableHash64(string value)
 	{
 		ulong hash = 14695981039346656037UL;
 		for (int i = 0; i < value.Length; i++)
 		{
 			hash ^= value[i];
-			hash = hash * 1099511628211UL;
+			hash *= 1099511628211UL;
 			hash = (2770643476691UL * hash) + 4354685564936844689UL;
 		}
 		return (long)hash;

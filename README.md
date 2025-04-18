@@ -15,7 +15,7 @@ This example project is for a Windows desktop application that shows how the Car
 
 The following screenshot of the application shows an existing report has been selected in the TOC (table of contents) and displayed in HTML format.
 
-![screenshot](https://systemrcs.blob.core.windows.net/wiki-images/example-desktop-browse.png)
+![screenshot](https://systemrcs.blob.core.windows.net/wiki-images/example-desktop-load-report.png)
 
 ----
 
@@ -31,7 +31,7 @@ The `MainController` class is mostly self-contained and acts like a simple [stat
 
 ## Licensing Providers
 
-It's important to note that different companies can host Carbon data in their own Azure cloud storage subscriptions, and each host can create their own licensing system that defines the relationships between users, customers and jobs. Carbon has knowledge of host licensing systems, so it must be initialised with a reference to a class that implements the `ILicensingProvider` interface. Carbon will make calls through that interface to authenticate user credentials and retrieve a user's *licence* which lists the customers and jobs that the user has access to.
+It's important to note that different companies can host Carbon data in their own Azure cloud storage subscriptions, and each host can create their own licensing system that defines the relationships between users, customers and jobs. Carbon has no knowledge of host licensing systems, so it must be initialised with a reference to a class that implements the `ILicensingProvider` interface. Carbon will make calls through that interface to authenticate user credentials and retrieve a user's *licence* which lists the customers and jobs that the user has access to.
 
 There are currently two licensing providers available as NuGet packages:
 
@@ -105,7 +105,7 @@ When a Job node is clicked or expanded, the job is opened and all available info
 
 ```C#
 engine.OpenJob(custName, jobName);
-string[] vartreeNames = engine!.ListVartreeNames()];
+string[] vartreeNames = engine.ListVartreeNames()];
 string[] axisNames = engine.Job.GetAxisNames()];
 GenNode[] fullTocNodes = engine.FullTOCGenNodes();
 GenNode[] execTocNodes = engine.ExecUserTOCGenNodes();
@@ -122,7 +122,7 @@ When one of the real vartree (variable tree) nodes is clicked it is set as the a
 
 ```C#
 engine.SetTreeNames(vartreeName);
-GenNode[] gnodes = _engine!.VarTreeAsNodes();
+GenNode[] gnodes = engine.VarTreeAsNodes();
 ```
 
 ![screenshot](https://systemrcs.blob.core.windows.net/wiki-images/example-desktop-vtnodes.png)
@@ -130,7 +130,7 @@ GenNode[] gnodes = _engine!.VarTreeAsNodes();
 Similarly, when an Axes leaf node is clicked, the axis is loaded and displayed as a hierarchy of child nodes.
 
 ```C#
-GenNode[] gnodes = _engine!.AxisTreeAsNodes();
+GenNode[] gnodes = engine.AxisTreeAsNodes();
 ```
 
 ----
@@ -159,17 +159,17 @@ TableSpec spec = engine.GetEditSpec();
 string syntax = engine.Job.DisplayTable.TableSpec.AsSyntax();  // Experimental
 ```
 
-The array of `lines` is used to display the raw report in a text box. The raw report is rarely of interest, but it's loaded and shown how it coul dbe useful for debugging.
+The array of `lines` is used to display the raw report in a text box. The raw report is rarely of interest, but it's displayed as an example of how it could be useful for debugging.
 
 The `TableLoadCBT` call loads the report and sets it as the active in the Carbon engine.
 
-The `dprops` and `spec` values contain values that fully define the report. In a sophisticated app it would be desirable to editing most of the values, but the example app only binds controls to the most commonly used ones, as shown in the first screenshot above.
+The `dprops` and `spec` values contain values that fully define the report. In a sophisticated app it would be desirable to be able to edit most of the values, but the example app only binds controls to the most commonly used values, as shown in the first screenshot above.
 
 The `AsSyntax` call is experimental and has not yet been added to the top level API. It will be in a future release.
 
 ----
 
-### &#x23e9; Load Report
+### &#x23e9; Generate Report
 
 After a report has been selected and loaded, the report is *generated* in the format specified in the Format combo box.
 
@@ -214,7 +214,7 @@ Variables, codeframes and codes can be drag-dropped from the tree into the Top a
 
 ----
 
-Last udpated: 16-Apr-2025
+Last udpated: 18-Apr-2025
 
 [wpf]: https://learn.microsoft.com/en-us/dotnet/desktop/wpf/overview/
 [carbon]: https://rcsapps.azurewebsites.net/doc/carbon/articles/overview.htm
