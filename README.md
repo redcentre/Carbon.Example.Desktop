@@ -49,6 +49,8 @@ Detailed technical information about the providers can be found in the README fi
 
 Although the project contains a few thousand lines of C# and XAML (some of it template generated), most of the code is boilerplate that would be found in any WPF application of similar design. This section largely ignores the platform specific code and concentrates on the basic sequence of Carbon API calls required to create a useful application over the Carbon libraries.
 
+Note that for historical reasons, only a small number of Carbon API calls are asynchronous. To avoid blocking the UI thread, most of the API calls use the `await Task.Run(() => ...)` pattern to run the work on a background thread. This is a recommended convention in Windows Forms and WPF applications. Those Carbon API calls that touch the file-system or Blob storage, or can perform possibly very long calculations certainly should run on a background thread. Some API calls in the sample code that are called directly are known to be so fast that they are safe to run on the UI thread. The relative speed of Carbon API calls is not documented.
+
 ----
 
 ### &#x23e9; Create Licensing Provider
@@ -56,14 +58,9 @@ Although the project contains a few thousand lines of C# and XAML (some of it te
 Depending on the values provided in the UI authentication screen, one of the previously described licensing providers is created.
 
 ```C#
-if (useExampleProvider)
-{
-  licprov = new RedCentreLicensingProvider(baseUri, apiKey);
-}
-else
-{
-  licprov = new ExampleLicensingProvider(productKey, adoConnectString);
-}
+ILicensingProvider provider = useExampleProvider ?
+  new RedCentreLicensingProvider(baseUri, apiKey) :
+  new ExampleLicensingProvider(productKey, adoConnectString);
 ```
 
 ----
@@ -73,24 +70,19 @@ else
  The provider is passed to the Carbon engine's constructor.
 
 ```C#
-var engine = new CrossTabEngine(licprov);
+var engine = new CrossTabEngine(provider);
 ```
 
 ----
 
 ### &#x23e9; Authenticate (Get Licence)
 
- Carbon authenticates either the user Id or Name and returns a licence object containing details about the user's licence and what customers and jobs they have access to.
+ Carbon authenticates either the user Id or Name and returns a `LicenceInfo` object containing details about the user's licence and what customers and jobs they have access to.
 
 ```C#
-if (useUserId)
-{
-  licence = await engine.GetLicenceId(userId, password);
-}
-else
-{
-  licence = await engine.GetLicenceName(userName, password);
-}
+LicenceInfo licence = useUserId ?
+  await engine.GetLicenceId(userId, password) :
+  await engine.GetLicenceName(userName, password);
 ```
 
 The example app uses the information in the licence object to prepare the navigation tree with a root licence node and hierarchical customer and job children. 
@@ -101,7 +93,9 @@ The example app uses the information in the licence object to prepare the naviga
 
 ### &#x23e9; Open Job
 
-When a Job node is clicked or expanded, the job is opened and all available information about the job is loaded. All of the job's information would not normally be immediately needed, but the example code loads all job information to demonstrate the job related API calls and populate the job node's children nodes.
+When a Job node is clicked or expanded, the job is opened and all available information about the job is loaded. All of the job's information would not normally be immediately needed, but the example code loads all job information to demonstrate the job related API calls and populate all possible job children nodes.
+
+Many API calls return arrays of `GenNode` objects which are lightweight classical *node* classes which represent a logical *tree* of information. The example code converts them into richer internal node classes that are suitable for binding in a TreeView control.
 
 ```C#
 engine.OpenJob(custName, jobName);
@@ -207,6 +201,10 @@ top = null;
 side = null;
 // etc
 ```
+
+----
+
+### &#x23e9; Notes
 
 Variables, codeframes and codes can be drag-dropped from the tree into the Top and Side text boxes.
 
