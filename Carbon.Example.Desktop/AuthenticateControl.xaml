@@ -41,14 +41,14 @@
                 </LinearGradientBrush>
             </Grid.Background>
             <StackPanel Orientation="Vertical" Width="600" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,20,0,0" IsEnabled="{Binding AuthenticatingMessage,Converter={StaticResource MainVerter},ConverterParameter=None}">
-                <GroupBox Header="Licensing Provider" Style="{StaticResource Group1Style}">
+                <GroupBox Header="{x:Static main:Strings.AuthHeadLicProv}" Style="{StaticResource Group1Style}">
                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                             <RadioButton IsChecked="{Binding AuthData.ActiveLicensingType,Mode=TwoWay,Converter={StaticResource MainVerter},ConverterParameter='EnumBool|RedCentre'}">
                                 <RadioButton.Content>
                                     <StackPanel Orientation="Horizontal">
                                         <Image Source="/Images/RubyLogo24.png"/>
-                                        <TextBlock Text="Red Centre" Style="{StaticResource LicLabelStyle}"/>
+                                        <TextBlock Text="{x:Static main:Strings.AuthLabelRCS}" Style="{StaticResource LicLabelStyle}"/>
                                     </StackPanel>
                                 </RadioButton.Content>
                             </RadioButton>
@@ -56,37 +56,37 @@
                                 <RadioButton.Content>
                                     <StackPanel Orientation="Horizontal">
                                         <Image Source="/Images/BayesPrice24.png"/>
-                                        <TextBlock Text="BayesPrice" Style="{StaticResource LicLabelStyle}"/>
+                                        <TextBlock Text="{x:Static main:Strings.AuthLabelBPr}" Style="{StaticResource LicLabelStyle}"/>
                                     </StackPanel>
                                 </RadioButton.Content>
                             </RadioButton>
                         </StackPanel>
                         <StackPanel Orientation="Vertical" Visibility="{Binding AuthData.ActiveLicensingType,Converter={StaticResource MainVerter},ConverterParameter='EnumVisible|RedCentre'}">
-                            <TextBlock Text="Licensing Service Base Uri" Style="{StaticResource AuthLabelStyle}"/>
+                            <TextBlock Text="{x:Static main:Strings.AuthLabelBaseUri}" Style="{StaticResource AuthLabelStyle}"/>
                             <TextBox HorizontalAlignment="Left" x:Name="TextBaseAddr" Width="400" Text="{Binding AuthData.RcsLicBaseAddress,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Delay=400}" Style="{StaticResource AuthTextStyle}"/>
-                            <TextBlock Text="API Key (optional)" Style="{StaticResource AuthLabelStyle}"/>
+                            <TextBlock Text="AuthLabelApiKey" Style="{StaticResource AuthLabelStyle}"/>
                             <TextBox Width="120" HorizontalAlignment="Left" Text="{Binding AuthData.RcsLicApiKey,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Delay=400}" Style="{StaticResource AuthTextStyle}"/>
-                            <TextBlock Text="Timeout" Style="{StaticResource AuthLabelStyle}"/>
+                            <TextBlock Text="{x:Static main:Strings.AuthLabelTimeout}" Style="{StaticResource AuthLabelStyle}"/>
                             <kit:IntegerUpDown Width="80" Minimum="10" Maximum="60" HorizontalAlignment="Left" Value="{Binding AuthData.RcsLicTimeout,Mode=TwoWay}"/>
                         </StackPanel>
                         <StackPanel Orientation="Vertical" Visibility="{Binding AuthData.ActiveLicensingType,Converter={StaticResource MainVerter},ConverterParameter='EnumVisible|BayesPrice'}">
-                            <TextBlock Text="Product Key" Style="{StaticResource AuthLabelStyle}"/>
+                            <TextBlock Text="{x:Static main:Strings.AuthLabelProdKey}" Style="{StaticResource AuthLabelStyle}"/>
                             <TextBox x:Name="TextProductKey" Width="120" HorizontalAlignment="Left" Text="{Binding AuthData.BPrLicProductKey,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Delay=400}" Style="{StaticResource AuthTextStyle}"/>
-                            <TextBlock Text="ADO Connection String" Style="{StaticResource AuthLabelStyle}"/>
+                            <TextBlock Text="{x:Static main:Strings.AuthlabelAdoConnect}" Style="{StaticResource AuthLabelStyle}"/>
                             <TextBox x:Name="TextAdoConnect" Text="{Binding AuthData.BPrLicAdoConnect,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Delay=400}" Height="110" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Style="{StaticResource AuthTextStyle}"/>
 
                         </StackPanel>
                     </StackPanel>
                 </GroupBox>
-                <GroupBox Header="Licence Credentials" Margin="0,16,0,0" Style="{StaticResource Group1Style}" IsEnabled="{Binding AuthenticatingMessage,Converter={StaticResource MainVerter},ConverterParameter=None}">
+                <GroupBox Header="{x:Static main:Strings.AuthHeadLicCreds}" Margin="0,16,0,0" Style="{StaticResource Group1Style}" IsEnabled="{Binding AuthenticatingMessage,Converter={StaticResource MainVerter},ConverterParameter=None}">
                     <StackPanel Orientation="Vertical">
-                        <RadioButton x:Name="RadioId" Content="User Id" IsChecked="{Binding AuthData.ActiveCredType,Mode=TwoWay,Converter={StaticResource MainVerter},ConverterParameter='EnumBool|Id'}" Style="{StaticResource AuthRadioStyle}"/>
+                        <RadioButton x:Name="RadioId" Content="{x:Static main:Strings.AuthLabelUserId}" IsChecked="{Binding AuthData.ActiveCredType,Mode=TwoWay,Converter={StaticResource MainVerter},ConverterParameter='EnumBool|Id'}" Style="{StaticResource AuthRadioStyle}"/>
                         <TextBox x:Name="TextId" Width="400" HorizontalAlignment="Left" Text="{Binding AuthData.CredentialId,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Delay=400}" Style="{StaticResource AuthTextStyle}" IsEnabled="{Binding ElementName=RadioId,Path=IsChecked}"/>
-                        <RadioButton x:Name="RadioName" Content="User Name" IsChecked="{Binding AuthData.ActiveCredType,Mode=TwoWay,Converter={StaticResource MainVerter},ConverterParameter='EnumBool|Name'}" Style="{StaticResource AuthRadioStyle}" Margin="0,12,0,0"/>
+                        <RadioButton x:Name="RadioName" Content="{x:Static main:Strings.AuthLabelUserName}" IsChecked="{Binding AuthData.ActiveCredType,Mode=TwoWay,Converter={StaticResource MainVerter},ConverterParameter='EnumBool|Name'}" Style="{StaticResource AuthRadioStyle}" Margin="0,12,0,0"/>
                         <TextBox x:Name="TextName" Width="400" HorizontalAlignment="Left" Text="{Binding AuthData.CredentialName,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Delay=400}" Style="{StaticResource AuthTextStyle}" IsEnabled="{Binding ElementName=RadioName,Path=IsChecked}"/>
-                        <TextBlock Text="Password" Style="{StaticResource AuthLabelStyle}" Margin="0,12,0,0"/>
+                        <TextBlock Text="{x:Static main:Strings.AuthLabelPass}" Style="{StaticResource AuthLabelStyle}" Margin="0,12,0,0"/>
                         <TextBox x:Name="TextPassword" Width="400" HorizontalAlignment="Left" Text="{Binding AuthData.Password,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Delay=400}" Style="{StaticResource AuthTextStyle}"/>
-                        <CheckBox Content="Remember me" IsChecked="{Binding AuthData.RememberMe,Mode=TwoWay}" Margin="0,12,0,0"/>
+                        <CheckBox Content="{x:Static main:Strings.AuthLabelRemember}" IsChecked="{Binding AuthData.RememberMe,Mode=TwoWay}" Margin="0,12,0,0"/>
                     </StackPanel>
                 </GroupBox>
 
@@ -105,7 +105,7 @@
                             </ItemsControl>
                         </Border>
                         <StackPanel Orientation="Horizontal" Visibility="{Binding AuthData.AnyErrors,Converter={StaticResource MainVerter},ConverterParameter=FalseVisible}">
-                            <Button Content="Get Licence" Padding="14,6" Margin="16,0,0,0" HorizontalAlignment="Left" FontSize="16" Command="main:MainCommands.GetLicence"/>
+                            <Button Content="{x:Static main:Strings.AuthLabelGetLic}" Padding="20,6" Margin="16,0,0,0" HorizontalAlignment="Left" Command="main:MainCommands.GetLicence"/>
                             <StackPanel Orientation="Horizontal" Visibility="{Binding AuthenticatingMessage,Converter={StaticResource MainVerter},ConverterParameter=SomeVisible}">
                                 <Image Grid.Column="1" Source="Images/BusySpin.png" Width="42" Margin="16,0,0,0" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center">
                                     <Image.RenderTransform>

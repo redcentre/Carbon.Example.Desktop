@@ -18,9 +18,7 @@ internal class BrowserSourceBehavior
 
 	static void OnHtmlChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 	{
-		var wb = d as WebView2;
-		var doc = e.NewValue as string;
-		if (wb != null && doc != null)
+		if (d is WebView2 wb && e.NewValue is string doc)
 		{
 			wb.NavigateToString(doc);
 		}

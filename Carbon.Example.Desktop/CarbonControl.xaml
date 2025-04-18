@@ -53,11 +53,11 @@
         <TabControl Grid.Column="2" SelectedIndex="{Binding MainTabIndex}">
             <TabItem Style="{StaticResource TabItemStyle}">
                 <TabItem.Header>
-                    <TextBlock Text="Browse" Style="{StaticResource TabItemLabelStyle}"/>
+                    <TextBlock Text="{x:Static main:Strings.TabLinesHead}" Style="{StaticResource TabItemLabelStyle}"/>
                 </TabItem.Header>
                 <Grid>
                     <Border Background="WhiteSmoke" BorderBrush="Gray" BorderThickness="1">
-                        <TextBlock Text="No Selection" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="28" Foreground="Silver"/>
+                        <TextBlock Text="{x:Static main:Strings.NoSelect}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="28" Foreground="Silver"/>
                     </Border>
                     <main:DetailPropertiesControl>
                         <main:DetailPropertiesControl.Visibility>
@@ -79,20 +79,20 @@
             </TabItem>
             <TabItem Style="{StaticResource TabItemStyle}">
                 <TabItem.Header>
-                    <TextBlock Text="Specification" Style="{StaticResource TabItemLabelStyle}"/>
+                    <TextBlock Text="{x:Static main:Strings.TabSpecHead}" Style="{StaticResource TabItemLabelStyle}"/>
                 </TabItem.Header>
                 <main:SpecificationControl/>
             </TabItem>
             <TabItem Style="{StaticResource TabItemStyle}">
                 <TabItem.Header>
-                    <TextBlock Text="Log" Style="{StaticResource TabItemLabelStyle}"/>
+                    <TextBlock Text="{x:Static main:Strings.TabLogHead}" Style="{StaticResource TabItemLabelStyle}"/>
                 </TabItem.Header>
                 <DataGrid ItemsSource="{Binding ObsLog}" IsReadOnly="True" AutoGenerateColumns="False" FontSize="{Binding AppFontSize}" SelectionMode="Extended" SelectionUnit="Cell">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Time" Binding="{Binding Time,Converter={StaticResource MainVerter},ConverterParameter=LogTime}" ElementStyle="{StaticResource GridColCentre}"/>
-                        <DataGridTextColumn Header="Category" Binding="{Binding Category}"/>
-                        <DataGridTextColumn Header="Thread" Binding="{Binding ThreadId}" ElementStyle="{StaticResource GridColRight}"/>
-                        <DataGridTextColumn Header="Message" Binding="{Binding Message}"/>
+                        <DataGridTextColumn Header="{x:Static main:Strings.LogColHeadTime}" Binding="{Binding Time,Converter={StaticResource MainVerter},ConverterParameter=LogTime}" ElementStyle="{StaticResource GridColCentre}"/>
+                        <DataGridTextColumn Header="{x:Static main:Strings.LogColHeadCat}" Binding="{Binding Category}"/>
+                        <DataGridTextColumn Header="{x:Static main:Strings.LogColHeadThread}" Binding="{Binding ThreadId}" ElementStyle="{StaticResource GridColRight}"/>
+                        <DataGridTextColumn Header="{x:Static main:Strings.LogColHeadMessage}" Binding="{Binding Message}"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </TabItem>

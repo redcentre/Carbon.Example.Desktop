@@ -24,18 +24,21 @@ public enum AppNodeType
 	Section,
 	User,
 	Licence,
+	FullToc,
+	ExecToc,
+	SimpleToc,
 	Error
 }
 
-public class AppNode(AppNodeType type, long id, string label, string? key = null) : INotifyPropertyChanged
+public class AppNode(AppNodeType type, string idSeed, string label, string? key = null) : INotifyPropertyChanged
 {
 	public event PropertyChangedEventHandler? PropertyChanged;
 	public AppNodeType Type { get; } = type;
-	public long Id { get; } = id;
+	public long Id { get; } = AppUtility.StableHash64($"{type}+{idSeed}+{label}+{key}");
 	public string Label { get; } = label;
 	public string? Key { get; } = key;
 	public virtual object? Props { get; }
-	public override string ToString() => $"({Id},{Type},{Label},{_isExpanded},{_isSelected},{Children.Count},{Parent?.Id})";
+	public override string ToString() => $"({Id:X16},{Type},{Label},{_isExpanded},{_isSelected},{Children.Count},{Parent?.Id})";
 
 	bool _isExpanded;
 	public bool IsExpanded

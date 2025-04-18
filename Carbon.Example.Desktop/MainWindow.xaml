@@ -7,7 +7,7 @@
         xmlns:model="clr-namespace:Carbon.Example.Desktop.Model"
         x:ClassModifier="internal"
         mc:Ignorable="d"
-        Title="Example Application"
+        Title="Example WPF Application"
         WindowStartupLocation="CenterScreen"
         Height="750" Width="900"
         MinHeight="750" MinWidth="900">
@@ -24,6 +24,9 @@
         <CommandBinding Command="main:MainCommands.CloseAlert" CanExecute="CloseAlertCanExecute" Executed="CloseAlertExecute"/>
         <CommandBinding Command="main:MainCommands.GenerateReport" CanExecute="GenerateReportCanExecute" Executed="GenerateReportExecute"/>
         <CommandBinding Command="main:MainCommands.NewReport" CanExecute="NewReportCanExecute" Executed="NewReportExecute"/>
+        <CommandBinding Command="main:MainCommands.LaunchSaveReport" CanExecute="LaunchSaveReportCanExecute" Executed="LaunchSaveReportExecute"/>
+        <CommandBinding Command="main:MainCommands.SaveReport" CanExecute="SaveReportCanExecute" Executed="SaveReportExecute"/>
+        <CommandBinding Command="main:MainCommands.DeleteReport" CanExecute="DeleteReportCanExecute" Executed="DeleteReportExecute"/>
     </Window.CommandBindings>
 
     <Grid>
@@ -34,20 +37,20 @@
         </Grid.RowDefinitions>
 
         <Menu Padding="2,2,2,3">
-            <MenuItem Header="_File">
-                <MenuItem Header="_Get Licence" Command="main:MainCommands.GetLicence"/>
-                <MenuItem Header="_Close Licence" Command="main:MainCommands.CloseLicence"/>
+            <MenuItem Header="{x:Static main:Strings.MenuFileText}">
+                <MenuItem Header="{x:Static main:Strings.MenuFileGetLicText}" Command="main:MainCommands.GetLicence"/>
+                <MenuItem Header="{x:Static main:Strings.MenuFileCloseLicText}" Command="main:MainCommands.CloseLicence"/>
                 <Separator/>
-                <MenuItem Header="Exit" Command="ApplicationCommands.Close"/>
+                <MenuItem Header="{x:Static main:Strings.MenuFileExitText}" Command="ApplicationCommands.Close"/>
             </MenuItem>
-            <MenuItem Header="_Help">
-                <MenuItem Header="_GitHub" Command="ApplicationCommands.Help"/>
+            <MenuItem Header="{x:Static main:Strings.MenuHelpText}">
+                <MenuItem Header="{x:Static main:Strings.MenuHelpGithubText}" Command="ApplicationCommands.Help"/>
             </MenuItem>
         </Menu>
 
         <Grid Grid.Row="1">
-            <main:AuthenticateControl Grid.Row="1" Visibility="{Binding Licence,Converter={StaticResource MainVerter},ConverterParameter=NoneVisible}"/>
-            <main:CarbonControl Grid.Row="1" Visibility="{Binding Licence,Converter={StaticResource MainVerter},ConverterParameter=SomeVisible}"/>
+            <main:AuthenticateControl Visibility="{Binding Licence,Converter={StaticResource MainVerter},ConverterParameter=NoneVisible}"/>
+            <main:CarbonControl Visibility="{Binding Licence,Converter={StaticResource MainVerter},ConverterParameter=SomeVisible}"/>
             <Border Background="DarkRed" MaxWidth="550" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="10" Padding="10" CornerRadius="8" Visibility="{Binding AlertTitle,Converter={StaticResource MainVerter},ConverterParameter=SomeVisible}">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -70,8 +73,8 @@
                 <ItemsPanelTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
                             <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
@@ -91,9 +94,9 @@
                     </TextBlock.Text>
                 </TextBlock>
             </StatusBarItem>
-            <StatusBarItem Grid.Column="1" VerticalAlignment="Center">
-                <Border Background="Yellow" Visibility="{Binding BusyMessage,Converter={StaticResource MainVerter},ConverterParameter=SomeVisible}" Padding="6,1,6,2">
-                    <StackPanel Orientation="Horizontal">
+            <StatusBarItem Grid.Column="1" HorizontalContentAlignment="Stretch">
+                <Border Background="Yellow" Padding="6,1,6,2" Margin="6,0" Visibility="{Binding BusyMessage,Converter={StaticResource MainVerter},ConverterParameter=SomeVisible}">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <Image Source="Images/Busy16.png" Width="16" Margin="0,0,6,0"/>
                         <TextBlock Text="{Binding BusyMessage}"/>
                     </StackPanel>

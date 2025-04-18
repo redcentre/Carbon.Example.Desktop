@@ -26,6 +26,10 @@ internal class MainMultiConverter : IMultiValueConverter
 			if (list.Count == 0) return "Not authenticated";
 			return string.Join(" \u25fe ", list);
 		}
+		if (arg == "AllNotNull")
+		{
+			return values.All(v => v != null);
+		}
 		if (arg == "ReportTitle")
 		{
 			var isnew = values[0] as bool?;
@@ -35,9 +39,10 @@ internal class MainMultiConverter : IMultiValueConverter
 		}
 		if (arg == "MainNodeIcon")
 		{
+			AppNodeType[] FolderTypes = [AppNodeType.Folder, AppNodeType.FullToc, AppNodeType.ExecToc, AppNodeType.SimpleToc];
 			var type = (AppNodeType)values[0];
 			var expand = (bool)values[1];
-			if (type == AppNodeType.Folder) return expand ? Images.NodeFolderOpen : Images.NodeFolderClosed;
+			if (FolderTypes.Contains(type)) return expand ? Images.NodeFolderOpen : Images.NodeFolderClosed;
 			if (type == AppNodeType.Customer) return Images.NodeCustomer;
 			if (type == AppNodeType.Job) return Images.NodeJob;
 			if (type == AppNodeType.RealVartree) return Images.NodeRealVartree;

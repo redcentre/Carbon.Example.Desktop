@@ -117,7 +117,193 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AuthErrorBadTimeout" xml:space="preserve">
+    <value>Timeout must be between 10 and 60 seconds.</value>
+  </data>
+  <data name="AuthErrorBadUri" xml:space="preserve">
+    <value>Service Base Uri incorrect format.</value>
+  </data>
+  <data name="AuthErrorNeedAdo" xml:space="preserve">
+    <value>ADO Connection String is required.</value>
+  </data>
+  <data name="AuthErrorNeedBaseUri" xml:space="preserve">
+    <value>RCS Licensing Base Address is required</value>
+  </data>
+  <data name="AuthErrorNeedId" xml:space="preserve">
+    <value>User Id is required.</value>
+  </data>
+  <data name="AuthErrorNeedName" xml:space="preserve">
+    <value>User Name is required.</value>
+  </data>
+  <data name="AuthErrorNeedPass" xml:space="preserve">
+    <value>Password is required.</value>
+  </data>
+  <data name="AuthErrorNeedProdKey" xml:space="preserve">
+    <value>Product Key is required.</value>
+  </data>
+  <data name="AuthHeadLicCreds" xml:space="preserve">
+    <value>Licence Credentials</value>
+  </data>
+  <data name="AuthHeadLicProv" xml:space="preserve">
+    <value>Licensing Provider</value>
+  </data>
+  <data name="AuthlabelAdoConnect" xml:space="preserve">
+    <value>ADO Connection String</value>
+  </data>
+  <data name="AuthLabelApiKey" xml:space="preserve">
+    <value>API Key (optional)</value>
+  </data>
+  <data name="AuthLabelBaseUri" xml:space="preserve">
+    <value>Licensing service base Uri</value>
+  </data>
+  <data name="AuthLabelBPr" xml:space="preserve">
+    <value>Bayes Price</value>
+  </data>
+  <data name="AuthLabelGetLic" xml:space="preserve">
+    <value>Get Licence</value>
+  </data>
+  <data name="AuthLabelPass" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="AuthLabelProdKey" xml:space="preserve">
+    <value>Product Key</value>
+  </data>
+  <data name="AuthLabelRCS" xml:space="preserve">
+    <value>Red Centre</value>
+  </data>
+  <data name="AuthLabelRemember" xml:space="preserve">
+    <value>Remember me</value>
+  </data>
+  <data name="AuthLabelTimeout" xml:space="preserve">
+    <value>Timeout</value>
+  </data>
+  <data name="AuthLabelUserId" xml:space="preserve">
+    <value>User Id</value>
+  </data>
+  <data name="AuthLabelUserName" xml:space="preserve">
+    <value>User Name</value>
+  </data>
   <data name="BusyAuthenticating" xml:space="preserve">
     <value>Authenticating - Please wait...</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="DeleteTableConfirmPrompt" xml:space="preserve">
+    <value>Are you sure you want to delete this report?\n\n{0}</value>
+  </data>
+  <data name="DeleteTableNotOwner" xml:space="preserve">
+    <value>The report cannot be deleted because it is not under the TOC user node of your authenticated name {0}.</value>
+  </data>
+  <data name="LogColHeadCat" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="LogColHeadMessage" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="LogColHeadThread" xml:space="preserve">
+    <value>Thread</value>
+  </data>
+  <data name="LogColHeadTime" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="MenuFileCloseLicText" xml:space="preserve">
+    <value>_Close Licence</value>
+  </data>
+  <data name="MenuFileExitText" xml:space="preserve">
+    <value>E_xit</value>
+  </data>
+  <data name="MenuFileGetLicText" xml:space="preserve">
+    <value>_Get Licence</value>
+  </data>
+  <data name="MenuFileText" xml:space="preserve">
+    <value>_File</value>
+  </data>
+  <data name="MenuHelpGithubText" xml:space="preserve">
+    <value>_GitHub</value>
+  </data>
+  <data name="MenuHelpText" xml:space="preserve">
+    <value>_Help</value>
+  </data>
+  <data name="NewReportName" xml:space="preserve">
+    <value>New Report No.{0}</value>
+  </data>
+  <data name="NodeLabelAxes" xml:space="preserve">
+    <value>Axes</value>
+  </data>
+  <data name="NodeLabelExecToc" xml:space="preserve">
+    <value>Exec TOC</value>
+  </data>
+  <data name="NodeLabelFullToc" xml:space="preserve">
+    <value>Full TOC</value>
+  </data>
+  <data name="NodeLabelSimpleToc" xml:space="preserve">
+    <value>Simple TOC</value>
+  </data>
+  <data name="NodeLabelVtNamed" xml:space="preserve">
+    <value>Vartrees (named)</value>
+  </data>
+  <data name="NodeLabelVtReal" xml:space="preserve">
+    <value>Vartrees (real)</value>
+  </data>
+  <data name="NoSelect" xml:space="preserve">
+    <value>No Selection</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="SaveErrorBadChars" xml:space="preserve">
+    <value>Invalid characters</value>
+  </data>
+  <data name="SaveErrorBlankSeg" xml:space="preserve">
+    <value>Blank path segment</value>
+  </data>
+  <data name="SaveErrorRequired" xml:space="preserve">
+    <value>Save name required</value>
+  </data>
+  <data name="SaveErrorSpace" xml:space="preserve">
+    <value>Loading or trailing space</value>
+  </data>
+  <data name="SaveInstruct" xml:space="preserve">
+    <value>The report name can be a plain name like 'My&amp;#xa0;Report' or it can be prefixed with a path like 'Billing/June/My&amp;#xa0;Report'. Any existing report with the same name will overwritten.</value>
+  </data>
+  <data name="SaveLabelName" xml:space="preserve">
+    <value>Path/Name</value>
+  </data>
+  <data name="TabLinesHead" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="TabLogHead" xml:space="preserve">
+    <value>Log</value>
+  </data>
+  <data name="TabSpecHead" xml:space="preserve">
+    <value>Specification</value>
+  </data>
+  <data name="WorkTitleDeleteReport" xml:space="preserve">
+    <value>Delete Report</value>
+  </data>
+  <data name="WorkTitleGentab" xml:space="preserve">
+    <value>Generate Report</value>
+  </data>
+  <data name="WorkTitleLoadAxis" xml:space="preserve">
+    <value>Deep load axis</value>
+  </data>
+  <data name="WorkTitleLoadLines" xml:space="preserve">
+    <value>Load raw table lines</value>
+  </data>
+  <data name="WorkTitleLoadVar" xml:space="preserve">
+    <value>Deep load variable</value>
+  </data>
+  <data name="WorkTitleLoadVartree" xml:space="preserve">
+    <value>Deep load real vartree</value>
+  </data>
+  <data name="WorkTitleNewReport" xml:space="preserve">
+    <value>New Report</value>
+  </data>
+  <data name="WorkTitleOpenLoadJob" xml:space="preserve">
+    <value>Open and deep load job</value>
+  </data>
+  <data name="WorkTitleSaveReport" xml:space="preserve">
+    <value>Save Report</value>
   </data>
 </root>

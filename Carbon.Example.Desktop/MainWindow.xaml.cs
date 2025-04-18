@@ -7,10 +7,14 @@ namespace Carbon.Example.Desktop;
 
 partial class MainWindow : Window
 {
+	MainController Controller => (MainController)DataContext;
+	DispatcherTimer? mainTimer;
+
 	public MainWindow()
 	{
 		InitializeComponent();
 		Loaded += MainWindow_Loaded;
+		Closing += MainWindow_Closing;
 		Closed += MainWindow_Closed;
 	}
 
@@ -25,8 +29,10 @@ partial class MainWindow : Window
 		LoadWindowBounds();
 	}
 
-	MainController Controller => (MainController)DataContext;
-	DispatcherTimer? mainTimer;
+	void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+	{
+		Controller.AppClosing();
+	}
 
 	void MainWindow_Closed(object? sender, System.EventArgs e)
 	{

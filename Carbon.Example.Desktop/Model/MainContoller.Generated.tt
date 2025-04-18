@@ -40,7 +40,10 @@
 		"int|ReportTabIndex",
 		"bool|IsNewReport",
 		"XSigType|SelectedSigType|XSigType.SingleCell",
-		"XOutputFormat|SelectedOutputFormat|XOutputFormat.CSV"
+		"XOutputFormat|SelectedOutputFormat|XOutputFormat.CSV",
+		"string?|SaveReportName||||ValidateSaveName",
+		"string?|SaveReportFeedback",
+		"bool|IsSaveNameValid"
 	};
 	string ttname = Host.GetType().Name;
 	Version ttver = Host.GetType().Assembly.GetName().Version;
@@ -54,6 +57,7 @@
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Threading;
 using RCS.Carbon.Licensing.Shared;
 using RCS.Carbon.Shared;
@@ -135,13 +139,13 @@ namespace Carbon.Example.Desktop.Model
 			if (postMethod.EndsWith("Async"))
 			{
 #>
-					Dispatcher.CurrentDispatcher.InvokeAsync(async () => await <#=postMethod#>());
+					Application.Current.Dispatcher.InvokeAsync(async () => await <#=postMethod#>());
 <#
 			}
 			else
 			{
 #>
-					_ = <#=postMethod#>();
+					<#=postMethod#>();
 <#
 			}
 		}

@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
+using Carbon.Example.Desktop.Model.Extensions;
 using RCS.Carbon.Licensing.Example;
 using RCS.Carbon.Licensing.RedCentre;
 using RCS.Carbon.Licensing.Shared;
@@ -14,6 +16,8 @@ using RCS.Carbon.Shared;
 using RCS.Carbon.Tables;
 
 namespace Carbon.Example.Desktop.Model;
+
+#region Enums
 
 public enum LicenceProviderType
 {
@@ -27,21 +31,27 @@ public enum CredentialType
 	Name
 }
 
+#endregion
+
 sealed partial class MainController : INotifyPropertyChanged
 {
 	public AppSettings Settings { get; private set; }
 	public AuthenticateData AuthData { get; private set; } = new AuthenticateData();
-	long nodeId;
 	DateTime? closeAlertTime;
+	int newReportSequence;
+	long[] expandNodeIds;
 	readonly PropertyChangedEventHandler jobChangeHandler;
+
+	#region Lifetime
 
 	public MainController()
 	{
-		jobChangeHandler = new PropertyChangedEventHandler(Jnode_PropertyChanged);
+		jobChangeHandler = new PropertyChangedEventHandler(JobNode_PropertyChanged);
 		ReloadSettings();
 	}
 
 	[MemberNotNull(nameof(Settings))]
+	[MemberNotNull(nameof(expandNodeIds))]
 	void ReloadSettings()
 	{
 		Settings = new AppSettings();
@@ -58,6 +68,17 @@ sealed partial class MainController : INotifyPropertyChanged
 		AuthData.CredentialName = AuthData.RememberMe ? Trim(Settings.UserName) : null;
 		AuthData.Password = AuthData.RememberMe ? Trim(Settings.Password) : null;
 		SelectedOutputFormat = Enum.TryParse<XOutputFormat>(Settings.LastOutputFormat, out var lastfmt) ? lastfmt : XOutputFormat.CSV;
+		expandNodeIds = Settings.ExpandNodeIds?.Cast<string>().Select(s => long.Parse(s, NumberFormatInfo.InvariantInfo)).ToArray() ?? [];
+	}
+
+	public void AppClosing()
+	{
+		// Save the Ids of all navigation tree expanded nodes.
+		expandNodeIds = [.. AppUtility.WalkNodes(_obsNodes).Where(n => n.IsExpanded).Select(n => n.Id)];
+		Settings.ExpandNodeIds ??= [];
+		Settings.ExpandNodeIds.Clear();
+		Settings.ExpandNodeIds.AddRange([.. expandNodeIds.Select(n => n.ToString(NumberFormatInfo.InvariantInfo))]);
+		Settings.Save();
 	}
 
 	public void TimerTick()
@@ -70,6 +91,10 @@ sealed partial class MainController : INotifyPropertyChanged
 			closeAlertTime = null;
 		}
 	}
+
+	#endregion
+
+	#region Public API
 
 	/// <summary>
 	/// The Carbon engine does not have any concept of a 'login', it only authenticates credentials against a
@@ -149,12 +174,12 @@ sealed partial class MainController : INotifyPropertyChanged
 
 	public async Task GenerateReport()
 	{
-		await WrapWork("Generate report", async () =>
+		await WrapWork(Strings.WorkTitleGentab, async () =>
 		{
 			_reportProps!.Output.Format = _selectedOutputFormat;
 			Settings.LastOutputFormat = _selectedOutputFormat.ToString();
 			Settings.Save();
-			_engine!.SetProps(_reportProps!);
+			await Task.Run(() => _engine!.SetProps(_reportProps!));
 			LogEngine("SetProps");
 			ReportHtmlBody = null;
 			switch (_reportProps!.Output.Format)
@@ -190,8 +215,9 @@ sealed partial class MainController : INotifyPropertyChanged
 
 	public async Task NewReport()
 	{
-		await WrapWork("New report", async () =>
+		await WrapWork(Strings.WorkTitleNewReport, async () =>
 		{
+			++newReportSequence;
 			ReportSpec = await Task.Run(() => _engine!.GetNewSpec());
 			ReportProps = new XDisplayProperties();
 			ReportTop = null;
@@ -204,37 +230,115 @@ sealed partial class MainController : INotifyPropertyChanged
 		});
 	}
 
+	public void PrepareSaveReport()
+	{
+		// Set nice defaults for the save report name.
+		if (_isNewReport)
+		{
+			SaveReportName = Strings.NewReportName.Format(newReportSequence);
+		}
+		else
+		{
+			// The currently open report will be formatted as something like:
+			// 'Tables/User/henry/RootReport.cbt'
+			// 'Tables/User/henry/Path-1/Path-2/SubReport.cbt'
+			// Note that the Path segments can zero or more. Skip the three prefix segments and join
+			// the optional path segments with a plain name. Both / and \ can be segment separators.
+			string[] allsegs = _selectedNode!.Key!.Split(Constants.PathSeparators);
+			var pathsegs = allsegs[3..^1];
+			var name = Path.GetFileNameWithoutExtension(allsegs[^1]);
+			SaveReportName = string.Join('/', pathsegs.Concat([name]));
+		}
+		ValidateSaveName();     // BUG This should be done by binding when the dialog opens. It's a hack to do it here.
+	}
+
+	/// <summary>
+	/// The entered save name will be a full job relative path and name (without extension).
+	/// </summary>
+	public async Task SaveReport()
+	{
+		await WrapWork(Strings.WorkTitleSaveReport, async () =>
+		{
+			var segs = _saveReportName!.Split(Constants.PathSeparators);
+			var path = string.Join("/", segs[..^1]);
+			var name = segs.Last();
+			await Task.Run(() => _engine!.SaveTableUserTOC(name, path, true));
+			LogEngine($"TableSaveCBT({name},{path})");
+			await ReloadTocs();
+		});
+	}
+
+	public async Task DeleteReport()
+	{
+		await WrapWork(Strings.WorkTitleSaveReport, async () =>
+		{
+			string? message = null;
+			bool success = await Task.Run(() => _engine!.DeleteInUserTOC(_selectedNode!.Key!, true, out message));
+			if (!success)
+			{
+				string msg = string.IsNullOrEmpty(message) ? "No details are available." : message;
+				throw new ApplicationException($"Carbon engine method DeleteInUserTOC returned failure. {msg}");
+			}
+			await ReloadTocs();
+		});
+	}
+
+	/// <summary>
+	/// After a report/TOC save the shape of the TOC can change in non trvial ways.
+	/// The trees could be adjusted in-place, but the logic is tricky for the three
+	/// trees in the job. It's easier to reload the TOC tree branches. Their expanded
+	/// states will be preserved so it won't be visually annoying.
+	/// </summary>
+	async Task ReloadTocs()
+	{
+		GenNode[] fullTocNodes = await Task.Run(() => _engine!.FullTOCGenNodes());
+		var fullParent = _openJobNode!.Children.FirstOrDefault(n => n.Type == AppNodeType.FullToc)!;
+		fullParent.Children.Clear();
+		AddGenNodes(fullParent, fullTocNodes);
+		GenNode[] execTocNodes = await Task.Run(() => _engine!.ExecUserTOCGenNodes());
+		var execParent = _openJobNode!.Children.FirstOrDefault(n => n.Type == AppNodeType.ExecToc)!;
+		execParent.Children.Clear();
+		AddGenNodes(execParent, execTocNodes);
+		GenNode[] simpleTocNodes = await Task.Run(() => _engine!.SimpleTOCGenNodes());
+		var simpleParent = _openJobNode!.Children.FirstOrDefault(n => n.Type == AppNodeType.SimpleToc)!;
+		simpleParent.Children.Clear();
+		AddGenNodes(simpleParent, simpleTocNodes);
+	}
+
+	#endregion
+
+	#region Tree and Nodes
+
 	/// <summary>
 	/// The navigation tree is initally loaded with the customers, jobs and real vartree names that are
 	/// returned as part of the authenticated licence. Clicking on certain nodes will cause them to be
 	/// deep loaded.
 	/// </summary>
-	public void FillTree()
+	void FillTree()
 	{
 		ObsNodes.Clear();
-		var lnode = new LicenceNode(nodeId++, _licence!);
+		var lnode = new LicenceNode(_licence!);
 		_obsNodes.Add(lnode);
 		foreach (var cust in _licence!.Customers.OrderBy(c => c.Name.ToUpper()))
 		{
-			var cnode = new CustomerNode(nodeId++, cust);
-			lnode.AddChild(cnode);
+			var cnode = new CustomerNode(cust);
+			AddChild(lnode, cnode);
 			foreach (var job in cust.Jobs.OrderBy(j => j.Name.ToUpper()))
 			{
-				var jnode = new JobNode(nodeId++, job);
+				var jnode = new JobNode(job);
 				jnode.PropertyChanged += jobChangeHandler;
-				cnode.AddChild(jnode);
+				AddChild(cnode, jnode);
 				if (job.RealCloudVartreeNames?.Length > 0)
 				{
-					var fnode = new AppNode(AppNodeType.Folder, nodeId++, "Vartrees (real)", null);
-					jnode.AddChild(fnode);
+					var fnode = new AppNode(AppNodeType.Folder, "VTRealFolder", Strings.NodeLabelVtReal, null);
+					AddChild(jnode, fnode);
 					foreach (var vt in job.RealCloudVartreeNames)
 					{
-						var rvtnode = new AppNode(AppNodeType.RealVartree, nodeId++, vt, vt);
-						fnode.AddChild(rvtnode);
+						var rvtnode = new AppNode(AppNodeType.RealVartree, "VTReal", vt, vt);
+						AddChild(fnode, rvtnode);
 					}
 				}
 			}
-			lnode.IsExpanded = true;
 		}
 	}
 
@@ -242,13 +346,13 @@ sealed partial class MainController : INotifyPropertyChanged
 	/// Special cases. When a job node is expanded it will be opened and deep loaded as an act
 	/// of user friendliness, so there is no need to actually select the job node.
 	/// </summary>
-	async void Jnode_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+	async void JobNode_PropertyChanged(object? sender, PropertyChangedEventArgs e)
 	{
 		if (sender is JobNode jnode)
 		{
 			if (e.PropertyName == nameof(JobNode.IsExpanded) && jnode.IsExpanded && !jnode.IsLoaded)
 			{
-				await WrapWork("Open and deep load job", async () =>
+				await WrapWork(Strings.WorkTitleOpenLoadJob, async () =>
 				{
 					await GuardedOpenJob(jnode);
 					await GuardedDeepLoadJob(jnode);
@@ -267,7 +371,7 @@ sealed partial class MainController : INotifyPropertyChanged
 		if (_selectedNode.Type == AppNodeType.Job)
 		{
 			MainTabIndex = 0;
-			await WrapWork("Open and deep load job", async () =>
+			await WrapWork(Strings.WorkTitleOpenLoadJob, async () =>
 			{
 				var jnode = (JobNode)_selectedNode;
 				await GuardedOpenJob(jnode);
@@ -280,33 +384,107 @@ sealed partial class MainController : INotifyPropertyChanged
 		}
 		else if (_selectedNode.Type == AppNodeType.RealVartree)
 		{
-			await WrapWork("Deep load vartree", async () =>
+			await WrapWork(Strings.WorkTitleLoadVartree, async () =>
 			{
 				await GuardedDeepLoadRealVartree(_selectedNode);
 			});
 		}
 		else if (_selectedNode.Type == AppNodeType.Axis)
 		{
-			await WrapWork("Deep load axis", async () =>
+			await WrapWork(Strings.WorkTitleLoadAxis, async () =>
 			{
 				await GuardedDeepLoadAxis(_selectedNode);
 			});
 		}
 		else if (_selectedNode.Type == AppNodeType.VartreeVariable)
 		{
-			await WrapWork("Deep load variable", async () =>
+			await WrapWork(Strings.WorkTitleLoadVar, async () =>
 			{
 				await GuardedDeepLoadVariable(_selectedNode);
 			});
 		}
 		else if (_selectedNode.Type == AppNodeType.Table)
 		{
-			await WrapWork("Load table lines", async () =>
+			await WrapWork(Strings.WorkTitleLoadLines, async () =>
 			{
-				await DisplayReport((TocLeafNode)_selectedNode);
+				await LoadAndGenerateReport((TocLeafNode)_selectedNode);
 			});
 		}
 	}
+
+	/// <summary>
+	/// Recursively adds GenNodes and their children to an existing node the tree.
+	/// The GenNode is a generic node returned from many Carbon API calls.
+	/// A table lookup partly controls how the GenNode to be converted into some
+	/// kind of local AppNode.
+	/// </summary>
+	void AddGenNodes(AppNode parent, IEnumerable<GenNode> gnodes)
+	{
+		if (gnodes == null) return;
+		foreach (var gnode in gnodes)
+		{
+			AppNode node;
+			if (gnode.Type == "Table")
+			{
+				// TOC leaf nodes are a special case.
+				node = new TocLeafNode(AppNodeType.Table, gnode.Value1, gnode.Value2);
+			}
+			else
+			{
+				// Table-driven conversion of other similar nodes.
+				AppNodeType type = AppNodeType.Undefined;
+				string? key = null;
+				string label;
+				var tups = new[]
+				{
+				("Folder", AppNodeType.Folder, 1, 0),
+				("Variable", AppNodeType.VartreeVariable, 3, 1),
+				("Codeframe", AppNodeType.Codeframe, 1, 0),
+				("Code", AppNodeType.Code, 3, 0),
+				("Section" , AppNodeType.Section, 1, 0),
+				("User" , AppNodeType.User, 1, 0),
+				("Arith", AppNodeType.Arith, 3, 0),
+				("Net", AppNodeType.Net, 3, 0),
+				("Nes", AppNodeType.Nes, 3, 0),
+				("Nes", AppNodeType.Stat, 3, 0),
+				("Axis", AppNodeType.AxisChild, 1, 0)
+			};
+				var tup = tups.FirstOrDefault(t => t.Item1 == gnode.Type);
+				if (tup.Item1 == null)
+				{
+					label = $"{gnode.Id}|{gnode.Type}|{gnode.Value1}|{gnode.Value2}";
+				}
+				else
+				{
+					type = tup.Item2;
+					label = tup.Item3 == 1 ? gnode.Value1 : tup.Item3 == 2 ? gnode.Value2 : BestLabel(gnode);
+					key = tup.Item4 == 1 ? gnode.Value1 : tup.Item4 == 2 ? gnode.Value2 : null;
+				}
+				node = new AppNode(type, parent.Id.ToString(NumberFormatInfo.InvariantInfo), label, key);
+			}
+			AddChild(parent, node);
+			AddGenNodes(node, gnode.Children);
+			parent.IsExpanded = expandNodeIds.Contains(parent.Id);
+		}
+	}
+
+	readonly AppNodeType[] NoAutoExpandTypes = [AppNodeType.Job, AppNodeType.VartreeVariable, AppNodeType.Codeframe, AppNodeType.RealVartree];
+
+	/// <summary>
+	/// For user friendliness, every time a child node is added to a parent node, the parent is automatically
+	/// expanded if its in the settings list of previously expanded nodes AND it's not in the list of node types
+	/// that should NOT be auto expanded because that would cause unexpected demand child loading work to happen.
+	/// </summary>
+	void AddChild(AppNode parent, AppNode child)
+	{
+		parent.AddChild(child);
+		if (!NoAutoExpandTypes.Contains(parent.Type))
+		{
+			parent.IsExpanded = expandNodeIds.Contains(parent.Id);
+		}
+	}
+
+	#endregion
 
 	#region Guarded Methods
 
@@ -343,59 +521,50 @@ sealed partial class MainController : INotifyPropertyChanged
 			axisNames = [.. _engine.Job.GetAxisNames()];
 			LogEngine($"GetAxisNames() -> {axisNames.Length}");
 			fullTocNodes = _engine.FullTOCGenNodes();
-			LogEngine($"FullTOCGenNodes() -> {GenNode.WalkNodes(fullTocNodes).Count()} nodes");
+			LogEngine($"FullTOCGenNodes() -> {GenNode.WalkNodes(fullTocNodes).Count()} nodes]");
 			execTocNodes = _engine.ExecUserTOCGenNodes();
-			LogEngine($"ExecUserTOCGenNodes() -> {GenNode.WalkNodes(execTocNodes).Count()} nodes");
+			LogEngine($"ExecUserTOCGenNodes() -> {GenNode.WalkNodes(execTocNodes).Count()} nodes]");
 			simpleTocNodes = _engine.SimpleTOCGenNodes();
-			LogEngine($"SimpleTOCGenNodes() -> {GenNode.WalkNodes(simpleTocNodes).Count()} nodes");
+			LogEngine($"SimpleTOCGenNodes() -> {GenNode.WalkNodes(simpleTocNodes).Count()} nodes]");
+			ReportProps = _engine.GetProps();
+			LogEngine($"GetProps() -> Decimals[{_reportProps!.Decimals.Frequencies},{_reportProps!.Decimals.Percents},{_reportProps!.Decimals.Statistics},{_reportProps!.Decimals.Expressions}]");
+			ReportSpec = _engine.GetEditSpec();
+			LogEngine($"GetEditSpec() -> {GenNode.WalkNodes(_reportSpec!.TopAxis).Count()} top nodes - {GenNode.WalkNodes(_reportSpec!.SideAxis).Count()} side nodes");
+
 		});
-		if (vartreeNames.Length > 0)
+		var vtsnode = new AppNode(AppNodeType.Folder, "VTNameFolder", Strings.NodeLabelVtNamed, null);
+		AddChild(jnode, vtsnode);
+		foreach (var vt in vartreeNames)
 		{
-			var vtsnode = new AppNode(AppNodeType.Folder, nodeId++, "Vartrees (named)", null);
-			jnode.AddChild(vtsnode);
-			foreach (var vt in vartreeNames)
-			{
-				var vtnode = new AppNode(AppNodeType.Vartree, nodeId++, vt, vt);
-				vtsnode.AddChild(vtnode);
-			}
+			var vtnode = new AppNode(AppNodeType.Vartree, "VTName", vt, vt);
+			AddChild(vtsnode, vtnode);
 		}
-		if (axisNames.Length > 0)
+		vtsnode.IsExpanded = expandNodeIds.Contains(vtsnode.Id);
+
+		var axsnode = new AppNode(AppNodeType.Folder, "AxFolder", Strings.NodeLabelAxes, null);
+		AddChild(jnode, axsnode);
+		foreach (var ax in axisNames)
 		{
-			var axsnode = new AppNode(AppNodeType.Folder, nodeId++, "Axes", null);
-			jnode.AddChild(axsnode);
-			foreach (var ax in axisNames)
-			{
-				var axnode = new AppNode(AppNodeType.Axis, nodeId++, ax, ax);
-				axsnode.AddChild(axnode);
-			}
+			var axnode = new AppNode(AppNodeType.Axis, "Ax", ax, ax);
+			AddChild(axsnode, axnode);
 		}
-		if (fullTocNodes.Length > 0)
-		{
-			var tocnode = new AppNode(AppNodeType.Folder, nodeId++, "Full TOC", null);
-			jnode.AddChild(tocnode);
-			foreach (var node in fullTocNodes)
-			{
-				AddGenNode(tocnode, node);
-			}
-		}
-		if (execTocNodes.Length > 0)
-		{
-			var tocnode = new AppNode(AppNodeType.Folder, nodeId++, "Exec TOC", null);
-			jnode.AddChild(tocnode);
-			foreach (var node in execTocNodes)
-			{
-				AddGenNode(tocnode, node);
-			}
-		}
-		if (simpleTocNodes.Length > 0)
-		{
-			var tocnode = new AppNode(AppNodeType.Folder, nodeId++, "Simple TOC", null);
-			jnode.AddChild(tocnode);
-			foreach (var node in simpleTocNodes)
-			{
-				AddGenNode(tocnode, node);
-			}
-		}
+		axsnode.IsExpanded = expandNodeIds.Contains(axsnode.Id);
+
+		var tocnode = new AppNode(AppNodeType.FullToc, "FullFolder", Strings.NodeLabelFullToc, null);
+		AddChild(jnode, tocnode);
+		AddGenNodes(tocnode, fullTocNodes);
+		tocnode.IsExpanded = expandNodeIds.Contains(tocnode.Id);
+
+		tocnode = new AppNode(AppNodeType.ExecToc, "ExecFolder", Strings.NodeLabelExecToc, null);
+		AddChild(jnode, tocnode);
+		AddGenNodes(tocnode, execTocNodes);
+		tocnode.IsExpanded = expandNodeIds.Contains(tocnode.Id);
+
+		tocnode = new AppNode(AppNodeType.SimpleToc, "SimpleFolder", Strings.NodeLabelSimpleToc, null);
+		AddChild(jnode, tocnode);
+		AddGenNodes(tocnode, simpleTocNodes);
+		tocnode.IsExpanded = expandNodeIds.Contains(tocnode.Id);
+
 		jnode.IsLoaded = true;
 		jnode.IsExpanded = true;
 	}
@@ -406,19 +575,16 @@ sealed partial class MainController : INotifyPropertyChanged
 	/// </summary>
 	async Task GuardedDeepLoadRealVartree(AppNode node)
 	{
-		JobNode jnode = FindAncestorNodeByType<JobNode>(node, AppNodeType.Job);
+		JobNode jnode = AppUtility.FindAncestorNodeByType<JobNode>(node, AppNodeType.Job);
 		await GuardedOpenJob(jnode);
 		_engine!.SetTreeNames(node.Key!);
 		LogEngine($"SetTreeNames({node.Key!}) in GuardedDeepLoadVartree");
 		OpenVartreeName = node.Label;
 		if (!node.IsLoaded)
 		{
-			GenNode[] gnodes = _engine!.VarTreeAsNodes();
+			GenNode[] gnodes = await Task.Run(() => _engine!.VarTreeAsNodes());
 			LogEngine($"VarTreeAsNodes() -> {GenNode.WalkNodes(gnodes).Count()} nodes");
-			foreach (var gnode in gnodes)
-			{
-				AddGenNode(node, gnode);
-			}
+			AddGenNodes(node, gnodes);
 			node.IsLoaded = true;
 			node.IsExpanded = true;
 		}
@@ -430,25 +596,22 @@ sealed partial class MainController : INotifyPropertyChanged
 	/// </summary>
 	async Task GuardedDeepLoadVariable(AppNode node)
 	{
-		var rvtnode = FindAncestorNodeByType<AppNode>(node, AppNodeType.RealVartree);
-		var jnode = FindAncestorNodeByType<JobNode>(rvtnode, AppNodeType.Job);
+		var rvtnode = AppUtility.FindAncestorNodeByType<AppNode>(node, AppNodeType.RealVartree);
+		var jnode = AppUtility.FindAncestorNodeByType<JobNode>(rvtnode, AppNodeType.Job);
 		await GuardedOpenJob(jnode);
 		_engine!.SetTreeNames(rvtnode.Label);
 		LogEngine($"SetTreeNames({node.Key!}) in GuardedDeepLoadVariable");
 		OpenVartreeName = rvtnode.Label;
 		if (!node.IsLoaded)
 		{
-			GenNode[] gnodes = _engine!.VarAsNodes(node.Key!);
+			GenNode[] gnodes = await Task.Run(() => _engine!.VarAsNodes(node.Key!));
 			LogEngine($"VarAsNodes({node.Key}) -> {GenNode.WalkNodes(gnodes).Count()} nodes");
 			// There might be no children (eg Weights)
 			if (gnodes.FirstOrDefault()?.Children == null) return;
 			// Note that there are two types of returned nodes. A 'hierarchic' and a 'simple' return have
 			// different shapes, but luckily the difference doesn't matter here and we just add all the
 			// children because the root node in each case is useless. Some apps may care about the difference.
-			foreach (var cfnode in gnodes[0].Children)
-			{
-				AddGenNode(node, cfnode);
-			}
+			AddGenNodes(node, gnodes[0].Children);
 			node.IsLoaded = true;
 			node.IsExpanded = true;
 		}
@@ -459,44 +622,77 @@ sealed partial class MainController : INotifyPropertyChanged
 	/// </summary>
 	async Task GuardedDeepLoadAxis(AppNode node)
 	{
-		JobNode jnode = FindAncestorNodeByType<JobNode>(node, AppNodeType.Job);
+		JobNode jnode = AppUtility.FindAncestorNodeByType<JobNode>(node, AppNodeType.Job);
 		await GuardedOpenJob(jnode);
 		_engine!.SetTreeNames(node.Key!);
 		LogEngine($"SetTreeNames({node.Key!}) in GuardedDeepLoadAxis");
 		OpenVartreeName = node.Label;
 		if (!node.IsLoaded)
 		{
-			GenNode[] gnodes = _engine!.AxisTreeAsNodes();
+			GenNode[] gnodes = await Task.Run(() => _engine!.AxisTreeAsNodes());
 			LogEngine($"VarAsNodes({node.Key}) -> {GenNode.WalkNodes(gnodes).Count()} nodes");
-			foreach (var gnode in gnodes)
-			{
-				AddGenNode(node, gnode);
-			}
+			AddGenNodes(node, gnodes);
 			node.IsLoaded = true;
 			node.IsExpanded = true;
 		}
 	}
 
+	#endregion
+
 	/// <summary>
-	/// The only leaf nodes in the TOCs are currently Table nodes. Selecting one causes everything known about the report to be loaded.
+	/// This validation runs on every change of the save report name.
 	/// </summary>
-	async Task DisplayReport(TocLeafNode node)
+	void ValidateSaveName()
 	{
-		JobNode jnode = FindAncestorNodeByType<JobNode>(node, AppNodeType.Job);
+		string? error = null;
+		if (_saveReportName == null)
+		{
+			error = Strings.SaveErrorRequired;
+		}
+		else
+		{
+			string[] parts = _saveReportName.Split(Constants.PathSeparators);
+			if (parts.Any(parts => parts.Length == 0))
+			{
+				error = Strings.SaveErrorBlankSeg;
+			}
+			else if (parts.Any(p => p.StartsWith(' ') || p.EndsWith(' ')))
+			{
+				error = Strings.SaveErrorSpace;
+			}
+			else if (parts.Any(p => p.Intersect(Path.GetInvalidFileNameChars()).Any()))
+			{
+				error = Strings.SaveErrorBadChars;
+			}
+		}
+		SaveReportFeedback = error;
+		IsSaveNameValid = _saveReportFeedback == null;
+	}
+
+	/// <summary>
+	/// The only leaf nodes in the TOCs are currently Table nodes. Selecting one causes
+	/// everything known about the report to be loaded and generated.
+	/// </summary>
+	async Task LoadAndGenerateReport(TocLeafNode node)
+	{
+		JobNode jnode = AppUtility.FindAncestorNodeByType<JobNode>(node, AppNodeType.Job);
 		await GuardedOpenJob(jnode);
 		// Read the raw lines for browsing display.
-		TextLines = await Task.Run<string[]>(() => [.. _engine!.ReadFileLines(node.Key!)]);
+		TextLines = await Task.Run(() => _engine!.ReadFileLines(node.Key!).ToArray());
 		LogEngine($"ReadFileLines({node.Key}) -> {_textLines!.Length}");
 		// Set the report as the active one in the engine.
-		_engine!.TableLoadCBT(node.Key!);
+		await Task.Run(() => _engine!.TableLoadCBT(node.Key!));
 		// Get the report properties and set defaults.
-		ReportProps = _engine!.GetProps();
+		ReportProps = await Task.Run(() => _engine!.GetProps());
 		LogEngine($"GetProps() -> {_reportProps}");
 		// Get the report specification.
-		ReportSpec = _engine.GetEditSpec();
+		ReportSpec = await Task.Run(() => _engine!.GetEditSpec());
 		LogEngine($"GetEditSpec() -> {_reportSpec}");
-		// The current report syntax needs to be retrieved separately (why?).
-		string syntax = _engine.Job.DisplayTable.TableSpec.AsSyntax();
+		// The current report syntax needs to be retrieved separately.
+		// This obscure call was made for the Platinum UI and hasn't
+		// been added to the engine API yet. It comes back as an unusual
+		// joined key=value lines which need clumsy parsing.
+		string syntax = _engine!.Job.DisplayTable.TableSpec.AsSyntax();
 		LogEngine($"Job.DisplayTable.TableSpec.AsSyntax() -> {syntax.Replace("\n", "\xb6")}");
 		string[] synparts = syntax.Split('\n');
 		foreach (string part in synparts)
@@ -527,65 +723,6 @@ sealed partial class MainController : INotifyPropertyChanged
 		ReportWeight = null;
 	}
 
-	#endregion
-
-	/// <summary>
-	/// Recursively add a GenNode and its children to an existing node the tree.
-	/// The GenNode is a generic node returned from many Carbon API calls.
-	/// A table lookup partly controls how the GenNode to be converted into some
-	/// kind of local AppNode.
-	/// </summary>
-	static void AddGenNode(AppNode parent, GenNode gnode)
-	{
-		AppNode node;
-		if (gnode.Type == "Table")
-		{
-			// TOC leaf nodes are a special case.
-			node = new TocLeafNode(AppNodeType.Table, gnode.Id, gnode.Value1, gnode.Value2);
-		}
-		else
-		{
-			// Table-driven conversion of other similar nodes.
-			AppNodeType type = AppNodeType.Undefined;
-			string? key = null;
-			string label;
-			var tups = new[]
-			{
-				("Folder", AppNodeType.Folder, 1, 0),
-				("Variable", AppNodeType.VartreeVariable, 3, 1),
-				("Codeframe", AppNodeType.Codeframe, 1, 0),
-				("Code", AppNodeType.Code, 3, 0),
-				("Section" , AppNodeType.Section, 1, 0),
-				("User" , AppNodeType.User, 1, 0),
-				("Arith", AppNodeType.Arith, 3, 0),
-				("Net", AppNodeType.Net, 3, 0),
-				("Nes", AppNodeType.Nes, 3, 0),
-				("Nes", AppNodeType.Stat, 3, 0),
-				("Axis", AppNodeType.AxisChild, 1, 0)
-			};
-			var tup = tups.FirstOrDefault(t => t.Item1 == gnode.Type);
-			if (tup.Item1 == null)
-			{
-				label = $"{gnode.Id}|{gnode.Type}|{gnode.Value1}|{gnode.Value2}";
-			}
-			else
-			{
-				type = tup.Item2;
-				label = tup.Item3 == 1 ? gnode.Value1 : tup.Item3 == 2 ? gnode.Value2 : BestLabel(gnode);
-				key = tup.Item4 == 1 ? gnode.Value1 : tup.Item4 == 2 ? gnode.Value2 : null;
-			}
-			node = new AppNode(type, gnode.Id, label, key);
-		}
-		parent.AddChild(node);
-		if (gnode.Children?.Count > 0)
-		{
-			foreach (var child in gnode.Children)
-			{
-				AddGenNode(node, child);
-			}
-		}
-	}
-
 	/// <summary>
 	/// Wraps some asynchronous work and shows a standard alert if an exception occurs.
 	/// </summary>
@@ -613,17 +750,6 @@ sealed partial class MainController : INotifyPropertyChanged
 		closeAlertTime = DateTime.Now.AddSeconds(closeSeconds);
 	}
 
-	static T FindAncestorNodeByType<T>(AppNode node, AppNodeType type) where T : AppNode
-	{
-		AppNode findnode = node;
-		while (findnode.Parent != null)
-		{
-			if (findnode.Type == type) return (T)findnode;
-			findnode = findnode.Parent;
-		}
-		throw new Exception($"FindParentByType {node} -> {type} not found");
-	}
-
 	#region Logging
 
 	public sealed record LogRow(DateTime Time, string Category, int ThreadId, string Message);
@@ -644,7 +770,7 @@ sealed partial class MainController : INotifyPropertyChanged
 		}
 		else
 		{
-			Dispatcher.CurrentDispatcher.BeginInvoke(() => Log(category, message));
+			Application.Current.Dispatcher.InvokeAsync(() => Log(category, message));
 		}
 	}
 

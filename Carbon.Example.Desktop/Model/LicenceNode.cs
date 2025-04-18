@@ -2,7 +2,7 @@
 
 namespace Carbon.Example.Desktop.Model;
 
-public sealed class LicenceNode(long id, LicenceInfo licence) : AppNode(AppNodeType.Licence, id, licence.Name, licence.Id)
+public sealed class LicenceNode(LicenceInfo licence) : AppNode(AppNodeType.Licence, nameof(Licence), licence.Name, licence.Id)
 {
 	public LicenceInfo Licence { get; } = licence;
 

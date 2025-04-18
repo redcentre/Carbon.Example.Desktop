@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Windows;
+﻿using System.Windows;
 using Carbon.Example.Desktop.Model;
 
 namespace Carbon.Example.Desktop;
@@ -29,6 +28,8 @@ partial class SpecificationControl : BaseControl
 	{
 		Controller.SetWebViewActivated();
 	}
+
+	#region Drag-Drop
 
 	void Top_PreviewDragOver(object sender, DragEventArgs e)
 	{
@@ -69,4 +70,6 @@ partial class SpecificationControl : BaseControl
 			Controller.ReportSide = $"{Controller.ReportSide},{node.Key}";
 		}
 	}
+
+	#endregion
 }

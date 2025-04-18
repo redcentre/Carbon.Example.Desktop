@@ -178,5 +178,16 @@ namespace Carbon.Example.Desktop {
                 this["LastOutputFormat"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection ExpandNodeIds {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["ExpandNodeIds"]));
+            }
+            set {
+                this["ExpandNodeIds"] = value;
+            }
+        }
     }
 }

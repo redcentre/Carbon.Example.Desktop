@@ -2,7 +2,7 @@
 
 namespace Carbon.Example.Desktop.Model;
 
-public sealed class JobNode(long id, LicenceJob job) : AppNode(AppNodeType.Job, id, job.Name, job.Id)
+public sealed class JobNode(LicenceJob job) : AppNode(AppNodeType.Job, nameof(Job), job.Name, job.Id)
 {
 	public LicenceJob Job { get; } = job;
 

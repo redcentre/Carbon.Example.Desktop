@@ -199,48 +199,48 @@ internal partial class AuthenticateData : INotifyPropertyChanged
 		{
 			if (_rcsLicBaseAddress == null)
 			{
-				ErrorMessages.Add("RCS Licensing Base Address is required.");
+				ErrorMessages.Add(Strings.AuthErrorNeedBaseUri);
 			}
 			else
 			{
 				if (!RegBaseUri().IsMatch(_rcsLicBaseAddress))
 				{
-					ErrorMessages.Add("Service Base Uri must be a valid URL.");
+					ErrorMessages.Add(Strings.AuthErrorBadUri);
 				}
 			}
 			if (_rcsLicTimeout < 10 || _rcsLicTimeout > 60)
 			{
-				ErrorMessages.Add("Timeout must be between 10 and 60 seconds.");
+				ErrorMessages.Add(Strings.AuthErrorBadTimeout);
 			}
 		}
 		else
 		{
 			if (_bprLicProductKey == null)
 			{
-				ErrorMessages.Add("Product Key is required.");
+				ErrorMessages.Add(Strings.AuthErrorNeedProdKey);
 			}
 			if (_bprLicAdoConnect == null)
 			{
-				ErrorMessages.Add("ADO Connection String is required.");
+				ErrorMessages.Add(Strings.AuthErrorNeedAdo);
 			}
 		}
 		if (_activeCredType == CredentialType.Id)
 		{
 			if (_credentialId == null)
 			{
-				ErrorMessages.Add("User Id is required.");
+				ErrorMessages.Add(Strings.AuthErrorNeedId);
 			}
 		}
 		else
 		{
 			if (_credentialName == null)
 			{
-				ErrorMessages.Add("User Name is required.");
+				ErrorMessages.Add(Strings.AuthErrorNeedName);
 			}
 		}
 		if (_password == null)
 		{
-			ErrorMessages.Add("Password is required.");
+			ErrorMessages.Add(Strings.AuthErrorNeedPass);
 		}
 		OnPropertyChanged(nameof(AnyErrors));
 	}

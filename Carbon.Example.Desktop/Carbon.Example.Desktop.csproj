@@ -8,6 +8,7 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <SelfContained>false</SelfContained>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <NeutralResourcesLanguage>en-AU</NeutralResourcesLanguage>
     <Nullable>enable</Nullable>
     <OutputType>WinExe</OutputType>
     <UseWPF>true</UseWPF>
@@ -17,6 +18,7 @@
     <Description>A more simple WPF desktop app that exercies the Carbon API.</Description>
     <Title>Carbon Desktop Example</Title>
     <ApplicationIcon>App.ico</ApplicationIcon>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,6 +26,7 @@
     <None Remove="Images\BayesPrice24.png" />
     <None Remove="Images\Busy16.png" />
     <None Remove="Images\BusySpin.png" />
+    <None Remove="Images\Delete16.png" />
     <None Remove="Images\FormatHtml.png" />
     <None Remove="Images\FormatText.png" />
     <None Remove="Images\NodeArith.png" />
@@ -42,6 +45,7 @@
     <None Remove="Images\NodeUnknown.png" />
     <None Remove="Images\NodeUser.png" />
     <None Remove="Images\RubyLogo24.png" />
+    <None Remove="Images\Save16.png" />
     <None Remove="Images\Warning16.png" />
   </ItemGroup>
 
@@ -56,6 +60,7 @@
     <Resource Include="App.ico" />
     <Resource Include="Images\AppError.png" />
     <Resource Include="Images\Busy16.png" />
+    <Resource Include="Images\Delete16.png" />
     <Resource Include="Images\FormatHtml.png" />
     <Resource Include="Images\FormatText.png" />
     <Resource Include="Images\NodeAxis.png" />
@@ -81,6 +86,7 @@
     <Resource Include="Images\NodeUnknown.png" />
     <Resource Include="Images\NodeVartreeVariable.png" />
     <Resource Include="Images\RubyLogo24.png" />
+    <Resource Include="Images\Save16.png" />
     <Resource Include="Images\Warning16.png" />
   </ItemGroup>
 
