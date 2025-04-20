@@ -16,7 +16,7 @@
     <Company>Red Centre Software</Company>
     <Copyright>Copyright © 2022-2025 Red Centre Software</Copyright>
     <Description>A more simple WPF desktop app that exercies the Carbon API.</Description>
-    <Title>Carbon Desktop Example</Title>
+    <Title>Carbon WPF Example</Title>
     <ApplicationIcon>App.ico</ApplicationIcon>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>

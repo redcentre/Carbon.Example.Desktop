@@ -236,8 +236,10 @@ sealed partial class MainController : INotifyPropertyChanged
 
 	public void PrepareSaveReport()
 	{
-		// Set nice defaults for the save report name.
-		if (_isNewReport)
+		// Set nice defaults for the save report name. Guard against no node being selected
+		// or no report being open, which can happen if a job is opened then a Top and Side
+		// are manually entered and a report generated.
+		if (_isNewReport || _selectedNode == null || _openReportNode == null)
 		{
 			SaveReportName = Strings.NewReportName.Format(newReportSequence);
 		}
@@ -249,11 +251,10 @@ sealed partial class MainController : INotifyPropertyChanged
 			// Note that the Path segments can zero or more. Skip the three prefix segments and join
 			// the optional path segments with a plain name. Both / and \ can be segment separators.
 			string[] allsegs = _selectedNode!.Key!.Split(Constants.PathSeparators);
-			var pathsegs = allsegs[3..^1];
+			var pathsegs = allsegs[..^1];
 			var name = Path.GetFileNameWithoutExtension(allsegs[^1]);
 			SaveReportName = string.Join('/', pathsegs.Concat([name]));
 		}
-		ValidateSaveName();     // BUG This should be done by binding when the dialog opens. It's a hack to do it here.
 	}
 
 	/// <summary>
@@ -270,6 +271,44 @@ sealed partial class MainController : INotifyPropertyChanged
 			LogEngine($"TableSaveCBT({name},{path})");
 			await ReloadTocs();
 		});
+	}
+
+	// The default bad file (and path) characters are C1 (0x00-0x1F) and " < > : * ? \ /
+	// Some extra ones are added for conservative safety.
+	readonly char[] BadSaveChars = [.. Path.GetInvalidFileNameChars().Union(['=', ':', ';'])];
+
+	public bool IsValidSaveName
+	{
+		get
+		{
+			string? error = null;
+			if (_saveReportName == null)
+			{
+				error = Strings.SaveErrorRequired;
+			}
+			else
+			{
+				string[] segments = _saveReportName.Split(Constants.PathSeparators);
+				// A char array array of bad characters in each segment.
+				char[][] badSegChars = [.. segments.Select(p => p.ToCharArray().Intersect(BadSaveChars).ToArray())];
+				if (segments.Any(s => s.Length == 0))
+				{
+					error = Strings.SaveErrorBlankSeg;
+				}
+				else if (segments.Any(s => s.StartsWith(' ') || s.EndsWith(' ')))
+				{
+					error = Strings.SaveErrorSpace;
+				}
+				else if (badSegChars.Any(x => x.Length > 0))
+				{
+					// Make a nice string summary of all distinct bad characters,
+					string s = new([.. badSegChars.SelectMany(x => x).Distinct()]);
+					error = Strings.SaveErrorBadChars.Format(s);
+				}
+			}
+			SaveReportFeedback = error;
+			return _saveReportFeedback == null;
+		}
 	}
 
 	public async Task DeleteReport()
@@ -346,6 +385,7 @@ sealed partial class MainController : INotifyPropertyChanged
 				}
 			}
 		}
+		lnode.IsExpanded = true;
 	}
 
 	/// <summary>
@@ -646,36 +686,6 @@ sealed partial class MainController : INotifyPropertyChanged
 	#endregion
 
 	/// <summary>
-	/// This validation runs on every change of the save report name.
-	/// </summary>
-	void ValidateSaveName()
-	{
-		string? error = null;
-		if (_saveReportName == null)
-		{
-			error = Strings.SaveErrorRequired;
-		}
-		else
-		{
-			string[] parts = _saveReportName.Split(Constants.PathSeparators);
-			if (parts.Any(parts => parts.Length == 0))
-			{
-				error = Strings.SaveErrorBlankSeg;
-			}
-			else if (parts.Any(p => p.StartsWith(' ') || p.EndsWith(' ')))
-			{
-				error = Strings.SaveErrorSpace;
-			}
-			else if (parts.Any(p => p.Intersect(Path.GetInvalidFileNameChars()).Any()))
-			{
-				error = Strings.SaveErrorBadChars;
-			}
-		}
-		SaveReportFeedback = error;
-		IsSaveNameValid = _saveReportFeedback == null;
-	}
-
-	/// <summary>
 	/// The only leaf nodes in the TOCs are currently Table nodes. Selecting one causes
 	/// everything known about the report to be loaded and generated.
 	/// </summary>
@@ -755,6 +765,15 @@ sealed partial class MainController : INotifyPropertyChanged
 		AlertTitle = title;
 		AlertDetail = detail;
 		closeAlertTime = DateTime.Now.AddSeconds(closeSeconds);
+		// WORKAROUND Hide the WebView2 control when an alert is shown.
+		// The following statement is a terrible workaround to prevent the WebView2 control from overlaying
+		// everything underneath it when it's visible. This 'airgap' problem is described here:
+		// https://github.com/MicrosoftEdge/WebView2Feedback/issues/286
+		// https://github.com/MicrosoftEdge/WebView2Feedback/blob/main/specs/WPF_WebView2CompositionControl.md
+		// The last link suggests using the WebView2CompositionControl, which I tried, but it has dependencies on specific
+		// Windows SDK versions and despite valiant attempts I could not get the control to work. The workaround is to hide
+		// the contents of the TabItem containing the WebView2 control when there's an alert.
+		ReportTabIndex = 0;
 	}
 
 	#region Logging

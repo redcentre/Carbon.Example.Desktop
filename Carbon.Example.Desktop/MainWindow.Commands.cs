@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
@@ -46,7 +46,7 @@ partial class MainWindow
 	void LaunchSaveReportCanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true; // WORKAROUND (same as GenerateReport)
 	void LaunchSaveReportExecute(object sender, ExecutedRoutedEventArgs e) => TrapLaunchSaveReport();
 
-	void SaveReportCanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = Controller.IsSaveNameValid;
+	void SaveReportCanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = Controller.IsValidSaveName;
 	async void SaveReportExecute(object sender, ExecutedRoutedEventArgs e) => await Controller.SaveReport();
 
 	void DeleteReportCanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = Controller.SelectedNode?.Type == Model.AppNodeType.Table;
@@ -69,12 +69,12 @@ partial class MainWindow
 		string user = segs[2];
 		if (string.Compare(user, Controller.Licence!.Name, StringComparison.OrdinalIgnoreCase) != 0)
 		{
-			MessageBox.Show(Strings.DeleteTableNotOwner.Format(Controller.Licence!.Name), Application.Current.MainWindow.Title, MessageBoxButton.OK, MessageBoxImage.Information);
+			MessageBox.Show(Strings.DeleteTableNotOwner.Format(Controller.Licence!.Name), Strings.AppTitle, MessageBoxButton.OK, MessageBoxImage.Information);
 			return;
 		}
 		string relname = AppUtility.UserRelativeName(Controller.SelectedNode!.Key!);
 		string message = Strings.DeleteTableConfirmPrompt.Format(relname);
-		if (MessageBox.Show(message, Application.Current.MainWindow.Title, MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes)
+		if (MessageBox.Show(message, Strings.AppTitle, MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes)
 		{
 			await Controller.DeleteReport();
 		}

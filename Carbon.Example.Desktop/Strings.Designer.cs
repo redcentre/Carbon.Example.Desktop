@@ -61,6 +61,15 @@ namespace Carbon.Example.Desktop {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Carbon WPF Example .
+        /// </summary>
+        public static string AppTitle {
+            get {
+                return ResourceManager.GetString("AppTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Timeout must be between 10 and 60 seconds..
         /// </summary>
         public static string AuthErrorBadTimeout {
@@ -466,7 +475,7 @@ namespace Carbon.Example.Desktop {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid characters.
+        ///   Looks up a localized string similar to Invalid characters: {0}.
         /// </summary>
         public static string SaveErrorBadChars {
             get {
@@ -502,7 +511,7 @@ namespace Carbon.Example.Desktop {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The report name can be a plain name like &apos;My&amp;#xa0;Report&apos; or it can be prefixed with a path like &apos;Billing/June/My&amp;#xa0;Report&apos;. Any existing report with the same name will overwritten..
+        ///   Looks up a localized string similar to The report name can be a plain name like &apos;Sales Report&apos; or it can be prefixed with a path like &apos;Billing/June/Sales Report&apos;. Any existing report with the same name will overwritten..
         /// </summary>
         public static string SaveInstruct {
             get {

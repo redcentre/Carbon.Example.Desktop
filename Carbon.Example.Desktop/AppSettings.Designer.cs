@@ -49,7 +49,7 @@ namespace Carbon.Example.Desktop {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("free")]
         public string UserName {
             get {
                 return ((string)(this["UserName"]));
@@ -85,7 +85,7 @@ namespace Carbon.Example.Desktop {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("free")]
         public string Password {
             get {
                 return ((string)(this["Password"]));
@@ -109,7 +109,7 @@ namespace Carbon.Example.Desktop {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://rcsapps.azurewebsites.net/licensing2test/")]
         public string RcsLicBaseAddress {
             get {
                 return ((string)(this["RcsLicBaseAddress"]));

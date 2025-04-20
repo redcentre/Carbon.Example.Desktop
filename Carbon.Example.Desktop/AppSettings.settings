@@ -9,7 +9,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="UserName" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">free</Value>
     </Setting>
     <Setting Name="WindowBounds" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
@@ -18,13 +18,13 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Password" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">free</Value>
     </Setting>
     <Setting Name="RememberMe" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="RcsLicBaseAddress" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">https://rcsapps.azurewebsites.net/licensing2test/</Value>
     </Setting>
     <Setting Name="RcsLicApiKey" Type="System.String" Scope="User">
       <Value Profile="(Default)" />

@@ -1,4 +1,4 @@
-﻿<main:BaseControl x:Class="Carbon.Example.Desktop.AuthenticateControl"
+<main:BaseControl x:Class="Carbon.Example.Desktop.AuthenticateControl"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,6 +7,7 @@
         xmlns:kit="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         x:ClassModifier="internal"
+        FontSize="{Binding AppFontSize}"
         Background="White"
         d:DesignWidth="900">
 
