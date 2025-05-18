@@ -106,7 +106,7 @@
                             </ItemsControl>
                         </Border>
                         <StackPanel Orientation="Horizontal" Visibility="{Binding AuthData.AnyErrors,Converter={StaticResource MainVerter},ConverterParameter=FalseVisible}">
-                            <Button Content="{x:Static main:Strings.AuthLabelGetLic}" Padding="20,6" Margin="16,0,0,0" HorizontalAlignment="Left" Command="main:MainCommands.GetLicence"/>
+                            <Button Content="{x:Static main:Strings.AuthLabelGetLic}" Padding="20,6" Margin="16,0,0,0" HorizontalAlignment="Left" Command="{Binding GetLicenceCommand}"/>
                             <StackPanel Orientation="Horizontal" Visibility="{Binding AuthenticatingMessage,Converter={StaticResource MainVerter},ConverterParameter=SomeVisible}">
                                 <Image Grid.Column="1" Source="Images/BusySpin.png" Width="42" Margin="16,0,0,0" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center">
                                     <Image.RenderTransform>

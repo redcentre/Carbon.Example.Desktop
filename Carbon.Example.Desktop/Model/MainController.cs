@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -9,6 +9,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using Carbon.Example.Desktop.Model.Extensions;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using RCS.Carbon.Licensing.Example;
 using RCS.Carbon.Licensing.RedCentre;
 using RCS.Carbon.Licensing.Shared;
@@ -36,10 +38,9 @@ public enum CredentialType
 /// <summary>
 /// For more information about this project see: https://github.com/redcentre/Carbon.Example.Desktop
 /// </summary>
-sealed partial class MainController : INotifyPropertyChanged
+sealed partial class MainController : ObservableObject
 {
 	public AppSettings Settings { get; private set; }
-	public AuthenticateData AuthData { get; private set; } = new AuthenticateData();
 	DateTime? closeAlertTime;
 	int newReportSequence;
 	long[] expandNodeIds;
@@ -77,7 +78,7 @@ sealed partial class MainController : INotifyPropertyChanged
 	public void AppClosing()
 	{
 		// Save the Ids of all navigation tree expanded nodes.
-		expandNodeIds = [.. AppUtility.WalkNodes(_obsNodes).Where(n => n.IsExpanded).Select(n => n.Id)];
+		expandNodeIds = [.. AppUtility.WalkNodes(ObsNodes).Where(n => n.IsExpanded).Select(n => n.Id)];
 		Settings.ExpandNodeIds ??= [];
 		Settings.ExpandNodeIds.Clear();
 		Settings.ExpandNodeIds.AddRange([.. expandNodeIds.Select(n => n.ToString(NumberFormatInfo.InvariantInfo))]);
@@ -104,7 +105,8 @@ sealed partial class MainController : INotifyPropertyChanged
 	/// specific licnsing service provider and returns a licence object containing detailed information about
 	/// the user's account and the customers and jobs they are connected to.
 	/// </summary>
-	public async Task GetLicence()
+	[RelayCommand(CanExecute = nameof(CanGetLicence))]
+	async Task GetLicence()
 	{
 		AuthenticatingMessage = Strings.BusyAuthenticating;
 		AuthError = null;
@@ -135,12 +137,12 @@ sealed partial class MainController : INotifyPropertyChanged
 			if (AuthData.ActiveCredType == CredentialType.Id)
 			{
 				Licence = await engine.GetLicenceId(AuthData.CredentialId!, AuthData.Password!);
-				LogEngine($"GetLicenceId({AuthData.CredentialId},{AuthData.Password}) -> {_licence!.Name}");
+				LogEngine($"GetLicenceId({AuthData.CredentialId},{AuthData.Password}) -> {Licence!.Name}");
 			}
 			else
 			{
 				Licence = await engine.GetLicenceName(AuthData.CredentialName!, AuthData.Password!);
-				LogEngine($"GetLicenceName({AuthData.CredentialName},{AuthData.Password}) -> {_licence!.Id}");
+				LogEngine($"GetLicenceName({AuthData.CredentialName},{AuthData.Password}) -> {Licence!.Id}");
 			}
 			Engine = engine;
 			Provider = prov;
@@ -157,7 +159,10 @@ sealed partial class MainController : INotifyPropertyChanged
 		}
 	}
 
-	public void CloseLicence()
+	bool CanGetLicence() => !AuthData.AnyErrors && AuthenticatingMessage == null && Engine == null;
+
+	[RelayCommand(CanExecute = nameof(CanCloseLicence))]
+	void CloseLicence()
 	{
 		ClearReport();
 		OpenReportNode = null;
@@ -168,43 +173,49 @@ sealed partial class MainController : INotifyPropertyChanged
 		Provider = null;
 	}
 
-	public void CloseAlert()
+	bool CanCloseLicence() => Engine != null;
+
+	[RelayCommand(CanExecute = nameof(CanCloseAlert))]
+	void CloseAlert()
 	{
 		AlertTitle = null;
 		AlertDetail = null;
 		closeAlertTime = null;
 	}
 
-	public async Task GenerateReport()
+	bool CanCloseAlert() => AlertTitle != null;
+
+	[RelayCommand(CanExecute = nameof(CanGenerateReport))]
+	async Task GenerateReport()
 	{
 		await WrapWork(Strings.WorkTitleGentab, async () =>
 		{
-			_reportProps!.Output.Format = _selectedOutputFormat;
-			Settings.LastOutputFormat = _selectedOutputFormat.ToString();
+			ReportProps!.Output.Format = SelectedOutputFormat;
+			Settings.LastOutputFormat = SelectedOutputFormat.ToString();
 			Settings.Save();
-			await Task.Run(() => _engine!.SetProps(_reportProps!));
+			await Task.Run(() => Engine!.SetProps(ReportProps!));
 			LogEngine("SetProps");
 			ReportHtmlBody = null;
-			switch (_reportProps!.Output.Format)
+			switch (ReportProps!.Output.Format)
 			{
 				// The Excel output format is a special case that can't be display in a WPF
 				// without the use of Office or 3rd-party controls. It's simply printed as
 				// lines of hex dump of the document.
 				case XOutputFormat.XLSX:
 					ReportTabIndex = 0;
-					byte[] workbook = await Task.Run(() => _engine!.GenTabAsXLSX(null, _reportTop!, _reportSide!, _reportFilter, _reportWeight, _reportSpec!.SpecProperties, _reportProps));
+					byte[] workbook = await Task.Run(() => Engine!.GenTabAsXLSX(null, ReportTop!, ReportSide!, ReportFilter, ReportWeight, ReportSpec!.SpecProperties, ReportProps));
 					var lines = MainUtility.HexToLines(workbook).ToArray();
 					ReportTextBody = string.Join(Environment.NewLine, lines);
-					LogEngine($"GenTabAsXLSX({_reportTop},{_reportSide},{_reportFilter},{_reportWeight}) {_reportProps.Output.Format} -> {workbook.Length} bytes ({lines.Length} lines)");
+					LogEngine($"GenTabAsXLSX({ReportTop},{ReportSide},{ReportFilter},{ReportWeight}) {ReportProps.Output.Format} -> {workbook.Length} bytes ({lines.Length} lines)");
 					break;
 				// All of the remaining report formats can be displayed as plain text.
 				// The HTML output format can ALSO be displayed in a WebView2 control.
 				default:
-					ReportTextBody = await Task.Run(() => _engine!.GenTab(null, _reportTop!, _reportSide!, _reportFilter, _reportWeight, _reportSpec!.SpecProperties, _reportProps));
-					LogEngine($"GenTab({_reportTop},{_reportSide},{_reportFilter},{_reportWeight}) {_reportProps.Output.Format} -> ({_reportTextBody!.Length} lines)");
-					if (_reportProps.Output.Format == XOutputFormat.HTML)
+					ReportTextBody = await Task.Run(() => Engine!.GenTab(null, ReportTop!, ReportSide!, ReportFilter, ReportWeight, ReportSpec!.SpecProperties, ReportProps));
+					LogEngine($"GenTab({ReportTop},{ReportSide},{ReportFilter},{ReportWeight}) {ReportProps.Output.Format} -> ({ReportTextBody!.Length} lines)");
+					if (ReportProps.Output.Format == XOutputFormat.HTML)
 					{
-						ReportHtmlBody = _reportTextBody;
+						ReportHtmlBody = ReportTextBody;
 						ReportTabIndex = 1;
 					}
 					else
@@ -216,12 +227,15 @@ sealed partial class MainController : INotifyPropertyChanged
 		});
 	}
 
-	public async Task NewReport()
+	bool CanGenerateReport() => ReportTop != null & ReportSide != null;
+
+	[RelayCommand(CanExecute = nameof(CanNewReport))]
+	async Task NewReport()
 	{
 		await WrapWork(Strings.WorkTitleNewReport, async () =>
 		{
 			++newReportSequence;
-			ReportSpec = await Task.Run(() => _engine!.GetNewSpec());
+			ReportSpec = await Task.Run(() => Engine!.GetNewSpec());
 			LogEngine("GetNewSpec()");
 			ReportProps = new XDisplayProperties();
 			ReportTop = null;
@@ -234,12 +248,14 @@ sealed partial class MainController : INotifyPropertyChanged
 		});
 	}
 
+	bool CanNewReport() => OpenJobNode != null;
+
 	public void PrepareSaveReport()
 	{
 		// Set nice defaults for the save report name. Guard against no node being selected
 		// or no report being open, which can happen if a job is opened then a Top and Side
 		// are manually entered and a report generated.
-		if (_isNewReport || _selectedNode == null || _openReportNode == null)
+		if (IsNewReport || SelectedNode == null || OpenReportNode == null)
 		{
 			SaveReportName = Strings.NewReportName.Format(newReportSequence);
 		}
@@ -250,7 +266,7 @@ sealed partial class MainController : INotifyPropertyChanged
 			// 'Tables/User/henry/Path-1/Path-2/SubReport.cbt'
 			// Note that the Path segments can zero or more. Skip the three prefix segments and join
 			// the optional path segments with a plain name. Both / and \ can be segment separators.
-			string[] allsegs = _selectedNode!.Key!.Split(Constants.PathSeparators);
+			string[] allsegs = SelectedNode!.Key!.Split(Constants.PathSeparators);
 			var pathsegs = allsegs[..^1];
 			var name = Path.GetFileNameWithoutExtension(allsegs[^1]);
 			SaveReportName = string.Join('/', pathsegs.Concat([name]));
@@ -260,18 +276,21 @@ sealed partial class MainController : INotifyPropertyChanged
 	/// <summary>
 	/// The entered save name will be a full job relative path and name (without extension).
 	/// </summary>
-	public async Task SaveReport()
+	[RelayCommand(CanExecute = nameof(CanSaveReport))]
+	async Task SaveReport()
 	{
 		await WrapWork(Strings.WorkTitleSaveReport, async () =>
 		{
-			var segs = _saveReportName!.Split(Constants.PathSeparators);
+			var segs = SaveReportName!.Split(Constants.PathSeparators);
 			var path = string.Join("/", segs[..^1]);
 			var name = segs.Last();
-			await Task.Run(() => _engine!.SaveTableUserTOC(name, path, true));
+			await Task.Run(() => Engine!.SaveTableUserTOC(name, path, true));
 			LogEngine($"TableSaveCBT({name},{path})");
 			await ReloadTocs();
 		});
 	}
+
+	bool CanSaveReport() => IsValidSaveName;
 
 	// The default bad file (and path) characters are C1 (0x00-0x1F) and " < > : * ? \ /
 	// Some extra ones are added for conservative safety.
@@ -282,13 +301,13 @@ sealed partial class MainController : INotifyPropertyChanged
 		get
 		{
 			string? error = null;
-			if (_saveReportName == null)
+			if (SaveReportName == null)
 			{
 				error = Strings.SaveErrorRequired;
 			}
 			else
 			{
-				string[] segments = _saveReportName.Split(Constants.PathSeparators);
+				string[] segments = SaveReportName.Split(Constants.PathSeparators);
 				// A char array array of bad characters in each segment.
 				char[][] badSegChars = [.. segments.Select(p => p.ToCharArray().Intersect(BadSaveChars).ToArray())];
 				if (segments.Any(s => s.Length == 0))
@@ -307,17 +326,21 @@ sealed partial class MainController : INotifyPropertyChanged
 				}
 			}
 			SaveReportFeedback = error;
-			return _saveReportFeedback == null;
+			return SaveReportFeedback == null;
 		}
 	}
 
-	public async Task DeleteReport()
+	public Func<LicenceInfo?, AppNode?, bool>? DeleteReportCallback { get; set; }
+
+	[RelayCommand(CanExecute = nameof(CanDeleteReport))]
+	async Task DeleteReport()
 	{
+		if (!DeleteReportCallback!(Licence, SelectedNode)) return;
 		await WrapWork(Strings.WorkTitleSaveReport, async () =>
 		{
 			string? message = null;
-			bool success = await Task.Run(() => _engine!.DeleteInUserTOC(_selectedNode!.Key!, true, out message));
-			LogEngine($"DeleteInUserTOC({_selectedNode!.Key}) -> {success}");
+			bool success = await Task.Run(() => Engine!.DeleteInUserTOC(SelectedNode!.Key!, true, out message));
+			LogEngine($"DeleteInUserTOC({SelectedNode!.Key}) -> {success}");
 			if (!success)
 			{
 				string msg = string.IsNullOrEmpty(message) ? "No details are available." : message;
@@ -325,6 +348,14 @@ sealed partial class MainController : INotifyPropertyChanged
 			}
 			await ReloadTocs();
 		});
+	}
+
+	bool CanDeleteReport()
+	{
+		if (SelectedNode?.Type != AppNodeType.Table) return false;
+		string[] segs = SelectedNode!.Key!.Split(Constants.PathSeparators);
+		string user = segs[2];
+		return string.Compare(user, Licence!.Name, StringComparison.OrdinalIgnoreCase) == 0;
 	}
 
 	/// <summary>
@@ -335,16 +366,16 @@ sealed partial class MainController : INotifyPropertyChanged
 	/// </summary>
 	async Task ReloadTocs()
 	{
-		GenNode[] fullTocNodes = await Task.Run(() => _engine!.FullTOCGenNodes());
-		var fullParent = _openJobNode!.Children.FirstOrDefault(n => n.Type == AppNodeType.FullToc)!;
+		GenNode[] fullTocNodes = await Task.Run(() => Engine!.FullTOCGenNodes());
+		var fullParent = OpenJobNode!.Children.FirstOrDefault(n => n.Type == AppNodeType.FullToc)!;
 		fullParent.Children.Clear();
 		AddGenNodes(fullParent, fullTocNodes);
-		GenNode[] execTocNodes = await Task.Run(() => _engine!.ExecUserTOCGenNodes());
-		var execParent = _openJobNode!.Children.FirstOrDefault(n => n.Type == AppNodeType.ExecToc)!;
+		GenNode[] execTocNodes = await Task.Run(() => Engine!.ExecUserTOCGenNodes());
+		var execParent = OpenJobNode!.Children.FirstOrDefault(n => n.Type == AppNodeType.ExecToc)!;
 		execParent.Children.Clear();
 		AddGenNodes(execParent, execTocNodes);
-		GenNode[] simpleTocNodes = await Task.Run(() => _engine!.SimpleTOCGenNodes());
-		var simpleParent = _openJobNode!.Children.FirstOrDefault(n => n.Type == AppNodeType.SimpleToc)!;
+		GenNode[] simpleTocNodes = await Task.Run(() => Engine!.SimpleTOCGenNodes());
+		var simpleParent = OpenJobNode!.Children.FirstOrDefault(n => n.Type == AppNodeType.SimpleToc)!;
 		simpleParent.Children.Clear();
 		AddGenNodes(simpleParent, simpleTocNodes);
 		LogEngine($"ReloadTocs() -> {GenNode.WalkNodes(fullTocNodes).Count()} full nodes, {GenNode.WalkNodes(execTocNodes).Count()} exec nodes, {GenNode.WalkNodes(simpleTocNodes).Count()} simple nodes");
@@ -362,9 +393,9 @@ sealed partial class MainController : INotifyPropertyChanged
 	void FillTree()
 	{
 		ObsNodes.Clear();
-		var lnode = new LicenceNode(_licence!);
-		_obsNodes.Add(lnode);
-		foreach (var cust in _licence!.Customers.OrderBy(c => c.Name.ToUpper()))
+		var lnode = new LicenceNode(Licence!);
+		ObsNodes.Add(lnode);
+		foreach (var cust in Licence!.Customers.OrderBy(c => c.Name.ToUpper()))
 		{
 			var cnode = new CustomerNode(cust);
 			AddChild(lnode, cnode);
@@ -413,47 +444,47 @@ sealed partial class MainController : INotifyPropertyChanged
 	/// </summary>
 	async Task AfterNodeSelectAsync()
 	{
-		if (_selectedNode == null) return;
-		if (_selectedNode.Type == AppNodeType.Job)
+		if (SelectedNode == null) return;
+		if (SelectedNode.Type == AppNodeType.Job)
 		{
 			MainTabIndex = 0;
 			await WrapWork(Strings.WorkTitleOpenLoadJob, async () =>
 			{
-				var jnode = (JobNode)_selectedNode;
+				var jnode = (JobNode)SelectedNode;
 				await GuardedOpenJob(jnode);
 				await GuardedDeepLoadJob(jnode);
 			});
 		}
-		else if (_selectedNode.Type == AppNodeType.Customer)
+		else if (SelectedNode.Type == AppNodeType.Customer)
 		{
 			MainTabIndex = 0;
 		}
-		else if (_selectedNode.Type == AppNodeType.RealVartree)
+		else if (SelectedNode.Type == AppNodeType.RealVartree)
 		{
 			await WrapWork(Strings.WorkTitleLoadVartree, async () =>
 			{
-				await GuardedDeepLoadRealVartree(_selectedNode);
+				await GuardedDeepLoadRealVartree(SelectedNode);
 			});
 		}
-		else if (_selectedNode.Type == AppNodeType.Axis)
+		else if (SelectedNode.Type == AppNodeType.Axis)
 		{
 			await WrapWork(Strings.WorkTitleLoadAxis, async () =>
 			{
-				await GuardedDeepLoadAxis(_selectedNode);
+				await GuardedDeepLoadAxis(SelectedNode);
 			});
 		}
-		else if (_selectedNode.Type == AppNodeType.VartreeVariable)
+		else if (SelectedNode.Type == AppNodeType.VartreeVariable)
 		{
 			await WrapWork(Strings.WorkTitleLoadVar, async () =>
 			{
-				await GuardedDeepLoadVariable(_selectedNode);
+				await GuardedDeepLoadVariable(SelectedNode);
 			});
 		}
-		else if (_selectedNode.Type == AppNodeType.Table)
+		else if (SelectedNode.Type == AppNodeType.Table)
 		{
 			await WrapWork(Strings.WorkTitleLoadLines, async () =>
 			{
-				await LoadAndGenerateReport((TocLeafNode)_selectedNode);
+				await LoadAndGenerateReport((TocLeafNode)SelectedNode);
 			});
 		}
 	}
@@ -539,10 +570,10 @@ sealed partial class MainController : INotifyPropertyChanged
 	/// </summary>
 	async Task GuardedOpenJob(JobNode jnode)
 	{
-		if (jnode.Job.Id == _openJobNode?.Job.Id) return;
+		if (jnode.Job.Id == OpenJobNode?.Job.Id) return;
 		string custName = jnode.CustomerParentNode.Customer.Name;
 		string jobName = jnode!.Job.Name;
-		await Task.Run(() => _engine!.OpenJob(custName, jobName));
+		await Task.Run(() => Engine!.OpenJob(custName, jobName));
 		LogEngine($"OpenJob({custName},{jobName})");
 		OpenJobNode = jnode;
 		OpenCustomerNode = jnode.CustomerParentNode;
@@ -562,20 +593,20 @@ sealed partial class MainController : INotifyPropertyChanged
 		GenNode[] simpleTocNodes = [];
 		await Task.Run(() =>
 		{
-			vartreeNames = [.. _engine!.ListVartreeNames()];
+			vartreeNames = [.. Engine!.ListVartreeNames()];
 			LogEngine($"ListVartreeNames() -> {vartreeNames.Length}");
-			axisNames = [.. _engine.Job.GetAxisNames()];
+			axisNames = [.. Engine.Job.GetAxisNames()];
 			LogEngine($"GetAxisNames() -> {axisNames.Length}");
-			fullTocNodes = _engine.FullTOCGenNodes();
+			fullTocNodes = Engine.FullTOCGenNodes();
 			LogEngine($"FullTOCGenNodes() -> {GenNode.WalkNodes(fullTocNodes).Count()} nodes]");
-			execTocNodes = _engine.ExecUserTOCGenNodes();
+			execTocNodes = Engine.ExecUserTOCGenNodes();
 			LogEngine($"ExecUserTOCGenNodes() -> {GenNode.WalkNodes(execTocNodes).Count()} nodes]");
-			simpleTocNodes = _engine.SimpleTOCGenNodes();
+			simpleTocNodes = Engine.SimpleTOCGenNodes();
 			LogEngine($"SimpleTOCGenNodes() -> {GenNode.WalkNodes(simpleTocNodes).Count()} nodes]");
-			ReportProps = _engine.GetProps();
-			LogEngine($"GetProps() -> Decimals[{_reportProps!.Decimals.Frequencies},{_reportProps!.Decimals.Percents},{_reportProps!.Decimals.Statistics},{_reportProps!.Decimals.Expressions}]");
-			ReportSpec = _engine.GetEditSpec();
-			LogEngine($"GetEditSpec() -> {GenNode.WalkNodes(_reportSpec!.TopAxis).Count()} top nodes - {GenNode.WalkNodes(_reportSpec!.SideAxis).Count()} side nodes");
+			ReportProps = Engine.GetProps();
+			LogEngine($"GetProps() -> Decimals[{ReportProps!.Decimals.Frequencies},{ReportProps!.Decimals.Percents},{ReportProps!.Decimals.Statistics},{ReportProps!.Decimals.Expressions}]");
+			ReportSpec = Engine.GetEditSpec();
+			LogEngine($"GetEditSpec() -> {GenNode.WalkNodes(ReportSpec!.TopAxis).Count()} top nodes - {GenNode.WalkNodes(ReportSpec!.SideAxis).Count()} side nodes");
 
 		});
 		var vtsnode = new AppNode(AppNodeType.Folder, "VTNameFolder", Strings.NodeLabelVtNamed, null);
@@ -623,12 +654,12 @@ sealed partial class MainController : INotifyPropertyChanged
 	{
 		JobNode jnode = AppUtility.FindAncestorNodeByType<JobNode>(node, AppNodeType.Job);
 		await GuardedOpenJob(jnode);
-		_engine!.SetTreeNames(node.Key!);
+		Engine!.SetTreeNames(node.Key!);
 		LogEngine($"SetTreeNames({node.Key!}) in GuardedDeepLoadVartree");
 		OpenVartreeName = node.Label;
 		if (!node.IsLoaded)
 		{
-			GenNode[] gnodes = await Task.Run(() => _engine!.VarTreeAsNodes());
+			GenNode[] gnodes = await Task.Run(() => Engine!.VarTreeAsNodes());
 			LogEngine($"VarTreeAsNodes() -> {GenNode.WalkNodes(gnodes).Count()} nodes");
 			AddGenNodes(node, gnodes);
 			node.IsLoaded = true;
@@ -645,12 +676,12 @@ sealed partial class MainController : INotifyPropertyChanged
 		var rvtnode = AppUtility.FindAncestorNodeByType<AppNode>(node, AppNodeType.RealVartree);
 		var jnode = AppUtility.FindAncestorNodeByType<JobNode>(rvtnode, AppNodeType.Job);
 		await GuardedOpenJob(jnode);
-		_engine!.SetTreeNames(rvtnode.Label);
+		Engine!.SetTreeNames(rvtnode.Label);
 		LogEngine($"SetTreeNames({node.Key!}) in GuardedDeepLoadVariable");
 		OpenVartreeName = rvtnode.Label;
 		if (!node.IsLoaded)
 		{
-			GenNode[] gnodes = await Task.Run(() => _engine!.VarAsNodes(node.Key!));
+			GenNode[] gnodes = await Task.Run(() => Engine!.VarAsNodes(node.Key!));
 			LogEngine($"VarAsNodes({node.Key}) -> {GenNode.WalkNodes(gnodes).Count()} nodes");
 			// There might be no children (eg Weights)
 			if (gnodes.FirstOrDefault()?.Children == null) return;
@@ -670,12 +701,12 @@ sealed partial class MainController : INotifyPropertyChanged
 	{
 		JobNode jnode = AppUtility.FindAncestorNodeByType<JobNode>(node, AppNodeType.Job);
 		await GuardedOpenJob(jnode);
-		_engine!.SetTreeNames(node.Key!);
+		Engine!.SetTreeNames(node.Key!);
 		LogEngine($"SetTreeNames({node.Key!}) in GuardedDeepLoadAxis");
 		OpenVartreeName = node.Label;
 		if (!node.IsLoaded)
 		{
-			GenNode[] gnodes = await Task.Run(() => _engine!.AxisTreeAsNodes());
+			GenNode[] gnodes = await Task.Run(() => Engine!.AxisTreeAsNodes());
 			LogEngine($"VarAsNodes({node.Key}) -> {GenNode.WalkNodes(gnodes).Count()} nodes");
 			AddGenNodes(node, gnodes);
 			node.IsLoaded = true;
@@ -694,22 +725,22 @@ sealed partial class MainController : INotifyPropertyChanged
 		JobNode jnode = AppUtility.FindAncestorNodeByType<JobNode>(node, AppNodeType.Job);
 		await GuardedOpenJob(jnode);
 		// Read the raw lines for browsing display.
-		TextLines = await Task.Run(() => _engine!.ReadFileLines(node.Key!).ToArray());
-		LogEngine($"ReadFileLines({node.Key}) -> {_textLines!.Length}");
+		TextLines = await Task.Run(() => Engine!.ReadFileLines(node.Key!).ToArray());
+		LogEngine($"ReadFileLines({node.Key}) -> {TextLines!.Length}");
 		// Set the report as the active one in the engine.
-		await Task.Run(() => _engine!.TableLoadCBT(node.Key!));
+		await Task.Run(() => Engine!.TableLoadCBT(node.Key!));
 		LogEngine($"TableLoadCBT({node.Key})");
 		// Get the report properties and set defaults.
-		ReportProps = await Task.Run(() => _engine!.GetProps());
-		LogEngine($"GetProps() -> {_reportProps}");
+		ReportProps = await Task.Run(() => Engine!.GetProps());
+		LogEngine($"GetProps() -> {ReportProps}");
 		// Get the report specification.
-		ReportSpec = await Task.Run(() => _engine!.GetEditSpec());
-		LogEngine($"GetEditSpec() -> {_reportSpec}");
+		ReportSpec = await Task.Run(() => Engine!.GetEditSpec());
+		LogEngine($"GetEditSpec() -> {ReportSpec}");
 		// The current report syntax needs to be retrieved separately.
 		// This obscure call was made for the Platinum UI and hasn't
 		// been added to the engine API yet. It comes back as an unusual
 		// joined key=value lines which need clumsy parsing.
-		string syntax = _engine!.Job.DisplayTable.TableSpec.AsSyntax();
+		string syntax = Engine!.Job.DisplayTable.TableSpec.AsSyntax();
 		LogEngine($"Job.DisplayTable.TableSpec.AsSyntax() -> {syntax.Replace("\n", "\xb6")}");
 		string[] synparts = syntax.Split('\n');
 		foreach (string part in synparts)
@@ -726,7 +757,7 @@ sealed partial class MainController : INotifyPropertyChanged
 		OpenReportNode = node;
 		IsNewReport = false;
 		MainTabIndex = 1;
-		MainCommands.GenerateReport.Execute(null, null);
+		GenerateReportCommand.Execute(null);
 	}
 
 	void ClearReport()
@@ -787,11 +818,11 @@ sealed partial class MainController : INotifyPropertyChanged
 		var row = new LogRow(DateTime.Now, category, Environment.CurrentManagedThreadId, message);
 		if (Application.Current.Dispatcher.CheckAccess())
 		{
-			_obsLog.Insert(0, row);
+			ObsLog.Insert(0, row);
 			Trace.WriteLine(row.ToString());
-			if (_obsLog.Count > 200)
+			if (ObsLog.Count > 200)
 			{
-				_obsLog.RemoveAt(200);
+				ObsLog.RemoveAt(200);
 			}
 		}
 		else

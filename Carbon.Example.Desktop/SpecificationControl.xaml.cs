@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using Carbon.Example.Desktop.Model;
 
 namespace Carbon.Example.Desktop;

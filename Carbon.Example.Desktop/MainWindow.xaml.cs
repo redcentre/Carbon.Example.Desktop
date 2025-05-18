@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows;
 using System.Windows.Threading;
 using Carbon.Example.Desktop.Model;
@@ -27,6 +27,7 @@ partial class MainWindow : Window
 		};
 		mainTimer.Start();
 		LoadWindowBounds();
+		Controller.DeleteReportCallback = (lic, node) => DeleteReportHandler(lic, node);
 	}
 
 	void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)

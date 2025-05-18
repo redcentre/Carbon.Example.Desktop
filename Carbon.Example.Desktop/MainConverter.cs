@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -13,19 +13,19 @@ internal class MainConverter : IValueConverter
 		string arg = (string)parameter;
 		if (arg == "None")
 		{
-			return value == null;
+			return (value is string s && s.Length == 0) || value == null;
 		}
 		if (arg == "Some")
 		{
-			return value != null;
-		}
-		if (arg == "SomeVisible")
-		{
-			return value != null ? Visibility.Visible : Visibility.Collapsed;
+			return (value is string s && s.Length > 0) || value != null;
 		}
 		if (arg == "NoneVisible")
 		{
-			return value == null ? Visibility.Visible : Visibility.Collapsed;
+			return (value is string s && s.Length == 0) || value == null ? Visibility.Visible : Visibility.Collapsed;
+		}
+		if (arg == "SomeVisible")
+		{
+			return (value is string s && s.Length > 0) || value != null ? Visibility.Visible : Visibility.Collapsed;
 		}
 		if (arg == "TrueVisible")
 		{

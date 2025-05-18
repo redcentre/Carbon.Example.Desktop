@@ -1,4 +1,4 @@
-﻿namespace Carbon.Example.Desktop.Model.Extensions;
+namespace Carbon.Example.Desktop.Model.Extensions;
 
 /// <summary>
 /// The compiler nags if extension methods aren't put in a separate namespace and matching folder.

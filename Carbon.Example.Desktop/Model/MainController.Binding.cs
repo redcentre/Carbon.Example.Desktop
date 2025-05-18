@@ -1,19 +1,17 @@
-﻿using System.ComponentModel;
+using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Windows;
+using CommunityToolkit.Mvvm.ComponentModel;
+using RCS.Carbon.Licensing.Shared;
 using RCS.Carbon.Shared;
+using RCS.Carbon.Tables;
 
 namespace Carbon.Example.Desktop.Model;
 
 partial class MainController : INotifyPropertyChanged
 {
-	public event PropertyChangedEventHandler? PropertyChanged;
-
-	void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
-	public bool IsBusy => _busyMessage != null;
-
-	public bool IsIdle => _busyMessage == null;
-
 	string? webBuffer;
 	bool webActivated;
 	const string NoHtml = """
@@ -88,4 +86,126 @@ partial class MainController : INotifyPropertyChanged
 		XSigType.RefRow,
 		XSigType.RowGroups
 	];
+
+	public bool IsBusy => !string.IsNullOrEmpty(BusyMessage);
+
+	public bool IsIdle => string.IsNullOrEmpty(BusyMessage);
+
+	[ObservableProperty]
+	[NotifyPropertyChangedFor(nameof(IsBusy))]
+	[NotifyPropertyChangedFor(nameof(IsIdle))]
+	string? _busyMessage;
+
+	[ObservableProperty]
+	[NotifyCanExecuteChangedFor(nameof(DeleteReportCommand))]
+	AppNode? _selectedNode;
+
+	partial void OnSelectedNodeChanged(AppNode? value) => Application.Current.Dispatcher.InvokeAsync(async () => await AfterNodeSelectAsync());
+
+	[ObservableProperty]
+	string? _statusMessage;
+
+	[ObservableProperty]
+	XOutputFormat _selectedOutputFormat = XOutputFormat.CSV;
+
+	[ObservableProperty]
+	int _appFontSize = 13;
+
+	[ObservableProperty]
+	int _mainTabIndex;
+
+	[ObservableProperty]
+	string? _statusTime = "Loading...";
+
+	[ObservableProperty]
+	string? _alertTitle;
+
+	[ObservableProperty]
+	string? _alertDetail;
+
+	[ObservableProperty]
+	[NotifyCanExecuteChangedFor(nameof(GetLicenceCommand))]
+	string? _authenticatingMessage;
+
+	[ObservableProperty]
+	[NotifyCanExecuteChangedFor(nameof(GetLicenceCommand))]
+	AuthenticateData _authData = new();
+
+	[ObservableProperty]
+	Exception? _authError;
+
+	[ObservableProperty]
+	ILicensingProvider? _provider;
+
+	[ObservableProperty]
+	[NotifyCanExecuteChangedFor(nameof(GetLicenceCommand))]
+	[NotifyCanExecuteChangedFor(nameof(CloseLicenceCommand))]
+	CrossTabEngine? _engine;
+
+	[ObservableProperty]
+	[NotifyCanExecuteChangedFor(nameof(GetLicenceCommand))]
+	LicenceInfo? _licence;
+
+	[ObservableProperty]
+	ObservableCollection<AppNode> _obsNodes = [];
+
+	[ObservableProperty]
+	ObservableCollection<LogRow> _obsLog = [];
+
+	[ObservableProperty]
+	CustomerNode? _openCustomerNode;
+
+	[ObservableProperty]
+	string? _openVartreeName;
+
+	[ObservableProperty]
+	JobNode? _openJobNode;
+
+	[ObservableProperty]
+	TocLeafNode? _openReportNode;
+
+	[ObservableProperty]
+	TableSpec? _reportSpec;
+
+	[ObservableProperty]
+	XDisplayProperties? _reportProps;
+
+	[ObservableProperty]
+	[NotifyCanExecuteChangedFor(nameof(GenerateReportCommand))]
+	string? _reportTop;
+
+	[ObservableProperty]
+	[NotifyCanExecuteChangedFor(nameof(GenerateReportCommand))]
+	string? _reportSide;
+
+	[ObservableProperty]
+	string? _reportFilter;
+
+	[ObservableProperty]
+	string? _reportWeight;
+
+	[ObservableProperty]
+	bool _filterActive;
+
+	[ObservableProperty]
+	bool _weightActive;
+
+	[ObservableProperty]
+	string[]? _textLines;
+
+	[ObservableProperty]
+	string? _reportTextBody;
+
+	[ObservableProperty]
+	int _reportTabIndex;
+
+	[ObservableProperty]
+	bool _isNewReport;
+
+	[ObservableProperty]
+	string? _saveReportName;
+
+	[ObservableProperty]
+	string? _saveReportFeedback;
+
 }

@@ -78,23 +78,14 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="1" Grid.ColumnSpan="3" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,6">
-            <Button Content="New Report" Padding="0,7" Width="130" Command="main:MainCommands.NewReport" Margin="0,0,12,0"/>
-            <!-- enabled workaround -->
-            <Button Content="Generate Report" Padding="0,7" Width="130" Command="main:MainCommands.GenerateReport" Margin="0,0,12,0">
-                <Button.IsEnabled>
-                    <MultiBinding Converter="{StaticResource MainMultiVerter}" ConverterParameter="AllNotNull">
-                        <Binding Path="ReportTop"/>
-                        <Binding Path="ReportSide"/>
-                    </MultiBinding>
-                </Button.IsEnabled>
-            </Button>
-            <!-- enabled workaround -->
+            <Button Content="New Report" Padding="0,7" Width="130" Command="{Binding NewReportCommand}" Margin="0,0,12,0"/>
+            <Button Content="Generate Report" Padding="0,7" Width="130" Command="{Binding GenerateReportCommand}" Margin="0,0,12,0"/>
             <Button Margin="0,0,12,0" Padding="5,3" VerticalAlignment="Center" ToolTip="Save the report" Command="main:MainCommands.LaunchSaveReport" IsEnabled="{Binding ReportTextBody,Converter={StaticResource MainVerter},ConverterParameter=Some}">
                 <Button.Content>
                     <Image Source="Images/Save16.png" Style="{StaticResource Icon16Style}"/>
                 </Button.Content>
             </Button>
-            <Button Margin="0,0,12,0" Padding="5,3" VerticalAlignment="Center" ToolTip="Save the report" Command="main:MainCommands.DeleteReport">
+            <Button Margin="0,0,12,0" Padding="5,3" VerticalAlignment="Center" ToolTip="Delete the report" Command="{Binding DeleteReportCommand}">
                 <Button.Content>
                     <Image Source="Images/Delete16.png" Style="{StaticResource Icon16Style}"/>
                 </Button.Content>

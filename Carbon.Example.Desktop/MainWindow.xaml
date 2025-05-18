@@ -19,14 +19,7 @@
     <Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Help" Executed="HelpExecute" CanExecute="HelpCanExecute"/>
         <CommandBinding Command="ApplicationCommands.Close" CanExecute="CloseCanExecute" Executed="CloseExecute"/>
-        <CommandBinding Command="main:MainCommands.GetLicence" CanExecute="GetLicenceCanExecute" Executed="GetLicenceExecute"/>
-        <CommandBinding Command="main:MainCommands.CloseLicence" CanExecute="CloseLicenceCanExecute" Executed="CloseLicenceExecute"/>
-        <CommandBinding Command="main:MainCommands.CloseAlert" CanExecute="CloseAlertCanExecute" Executed="CloseAlertExecute"/>
-        <CommandBinding Command="main:MainCommands.GenerateReport" CanExecute="GenerateReportCanExecute" Executed="GenerateReportExecute"/>
-        <CommandBinding Command="main:MainCommands.NewReport" CanExecute="NewReportCanExecute" Executed="NewReportExecute"/>
         <CommandBinding Command="main:MainCommands.LaunchSaveReport" CanExecute="LaunchSaveReportCanExecute" Executed="LaunchSaveReportExecute"/>
-        <CommandBinding Command="main:MainCommands.SaveReport" CanExecute="SaveReportCanExecute" Executed="SaveReportExecute"/>
-        <CommandBinding Command="main:MainCommands.DeleteReport" CanExecute="DeleteReportCanExecute" Executed="DeleteReportExecute"/>
     </Window.CommandBindings>
 
     <Grid>
@@ -38,8 +31,8 @@
 
         <Menu Padding="2,2,2,3">
             <MenuItem Header="{x:Static main:Strings.MenuFileText}">
-                <MenuItem Header="{x:Static main:Strings.MenuFileGetLicText}" Command="main:MainCommands.GetLicence"/>
-                <MenuItem Header="{x:Static main:Strings.MenuFileCloseLicText}" Command="main:MainCommands.CloseLicence"/>
+                <MenuItem Header="{x:Static main:Strings.MenuFileGetLicText}" Command="{Binding GetLicenceCommand}"/>
+                <MenuItem Header="{x:Static main:Strings.MenuFileCloseLicText}" Command="{Binding CloseLicenceCommand}"/>
                 <Separator/>
                 <MenuItem Header="{x:Static main:Strings.MenuFileExitText}" Command="ApplicationCommands.Close"/>
             </MenuItem>
@@ -63,7 +56,7 @@
                         <TextBlock TextWrapping="Wrap" Foreground="MistyRose" FontSize="16" FontWeight="Bold" Text="{Binding AlertTitle}"/>
                         <TextBlock TextWrapping="Wrap" Foreground="Snow" Text="{Binding AlertDetail}"/>
                     </StackPanel>
-                    <Button Grid.Column="2" Content="OK" VerticalAlignment="Center" Padding="12,4" Margin="10,0,0,0" Command="main:MainCommands.CloseAlert"/>
+                    <Button Grid.Column="2" Content="OK" VerticalAlignment="Center" Padding="12,4" Margin="10,0,0,0" Command="{Binding CloseAlertCommand}"/>
                 </Grid>
             </Border>
         </Grid>

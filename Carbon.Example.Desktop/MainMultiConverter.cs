@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -25,10 +25,6 @@ internal class MainMultiConverter : IMultiValueConverter
 			if (values[4] is string vtname) list.Add(vtname);
 			if (list.Count == 0) return "Not authenticated";
 			return string.Join(" \u25fe ", list);
-		}
-		if (arg == "AllNotNull")
-		{
-			return values.All(v => v != null);
 		}
 		if (arg == "ReportTitle")
 		{
