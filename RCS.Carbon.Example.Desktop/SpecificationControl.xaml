@@ -1,0 +1,172 @@
+<main:BaseControl x:Class="RCS.Carbon.Example.Desktop.SpecificationControl"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:main="clr-namespace:RCS.Carbon.Example.Desktop"
+        xmlns:model="clr-namespace:RCS.Carbon.Example.Desktop.Model"
+        xmlns:kit="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        mc:Ignorable="d"
+        x:ClassModifier="internal"
+        FontSize="{Binding AppFontSize}"
+        Background="#f2f2f2"
+        d:DesignHeight="500" d:DesignWidth="800">
+
+    <main:BaseControl.Resources>
+        <Style x:Key="SpecTabItem1" TargetType="TabItem">
+            <Setter Property="Width" Value="90"/>
+            <Setter Property="Height" Value="26"/>
+        </Style>
+        <Style x:Key="SpecLabel1" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="SpecLabel2" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="SpecCheck1" TargetType="CheckBox">
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="SpecCheck2" TargetType="CheckBox">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="SpecText1" TargetType="TextBox">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="2,2,2,3"/>
+        </Style>
+        <Style x:Key="SpecCombo1" TargetType="ComboBox">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="SpecSpin1" TargetType="kit:IntegerUpDown">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Width" Value="50"/>
+            <Setter Property="Minimum" Value="0"/>
+            <Setter Property="Maximum" Value="6"/>
+        </Style>
+        <Style x:Key="SpecSpin2" TargetType="kit:DoubleUpDown">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Width" Value="50"/>
+            <Setter Property="Minimum" Value="0"/>
+            <Setter Property="Maximum" Value="100"/>
+        </Style>
+        <Style x:Key="SpecBorder1" TargetType="Border">
+            <Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="0,5,0,5"/>
+            <Setter Property="Padding" Value="8,6,8,6"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Background" Value="#f8f8f8"/>
+        </Style>
+    </main:BaseControl.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="1" Grid.ColumnSpan="3" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,6">
+            <Button Content="New Report" Padding="0,7" Width="130" Command="{Binding NewReportCommand}" Margin="0,0,12,0"/>
+            <Button Content="Generate Report" Padding="0,7" Width="130" Command="{Binding GenerateReportCommand}" Margin="0,0,12,0"/>
+            <Button Margin="0,0,12,0" Padding="5,3" VerticalAlignment="Center" ToolTip="Save the report" Command="main:MainCommands.LaunchSaveReport" IsEnabled="{Binding ReportTextBody,Converter={StaticResource MainVerter},ConverterParameter=Some}">
+                <Button.Content>
+                    <Image Source="Images/Save16.png" Style="{StaticResource Icon16Style}"/>
+                </Button.Content>
+            </Button>
+            <Button Margin="0,0,12,0" Padding="5,3" VerticalAlignment="Center" ToolTip="Delete the report" Command="{Binding DeleteReportCommand}">
+                <Button.Content>
+                    <Image Source="Images/Delete16.png" Style="{StaticResource Icon16Style}"/>
+                </Button.Content>
+            </Button>
+            <TextBlock Text="Format" Style="{StaticResource SpecLabel1}" Margin="0,0,6,0"/>
+            <ComboBox ItemsSource="{Binding FormatPicks}" SelectedItem="{Binding SelectedOutputFormat,Mode=TwoWay}" Width="100" Style="{StaticResource SpecCombo1}" Margin="0,0,12,0"/>
+            <TextBlock VerticalAlignment="Center" Foreground="SteelBlue" FontSize="14">
+                <TextBlock.Text>
+                    <MultiBinding  Converter="{StaticResource MainMultiVerter}" ConverterParameter="ReportTitle">
+                        <Binding Path="IsNewReport"/>
+                        <Binding Path="SelectedNode"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
+        </StackPanel>
+        <TextBlock Grid.Row="1" Text="Top" Style="{StaticResource SpecLabel1}" Margin="10,0,6,0"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Margin="0,4,0,4" Style="{StaticResource SpecText1}" Text="{Binding ReportTop,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                     AllowDrop="True" PreviewDragOver="Top_PreviewDragOver" Drop="Top_Drop"/>
+        <CheckBox Grid.Row="1" Grid.Column="2" Content="Filter" Style="{StaticResource SpecCheck1}" Margin="0,0,6,0" IsChecked="{Binding ReportSpec.UseFilter,Mode=TwoWay}"/>
+        <TextBox Grid.Row="1" Grid.Column="4" Margin="0,4,0,4" Style="{StaticResource SpecText1}" Text="{Binding ReportFilter,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBlock Grid.Row="2" Text="Side" Style="{StaticResource SpecLabel1}" Margin="12,0,6,0"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource SpecText1}" Text="{Binding ReportSide,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                     AllowDrop="True" PreviewDragOver="Side_PreviewDragOver" Drop="Side_Drop"/>
+        <CheckBox Grid.Row="2" Grid.Column="2" Content="Weight" Style="{StaticResource SpecCheck1}" Margin="12,0,6,0"  IsChecked="{Binding ReportSpec.UseWeight,Mode=TwoWay}"/>
+        <TextBox Grid.Row="2" Grid.Column="3" Style="{StaticResource SpecText1}" Text="{Binding ReportWeight,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBlock Grid.Row="3" Text="Bands" Style="{StaticResource SpecLabel1}" Margin="0,0,6,0"/>
+        <Border Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Style="{StaticResource SpecBorder1}">
+            <StackPanel Orientation="Horizontal">
+                <CheckBox Content="Frequency" Style="{StaticResource SpecCheck2}" Margin="0,0,12,0" IsChecked="{Binding ReportProps.Cells.Frequencies.Visible,Mode=TwoWay}"/>
+                <CheckBox Content="Column %" Style="{StaticResource SpecCheck2}" Margin="0,0,12,0" IsChecked="{Binding ReportProps.Cells.ColumnPercents.Visible,Mode=TwoWay}"/>
+                <CheckBox Content="Row %" Style="{StaticResource SpecCheck2}" Margin="0,0,12,0" IsChecked="{Binding ReportProps.Cells.RowPercents.Visible,Mode=TwoWay}"/>
+                <CheckBox Content="Significance" Style="{StaticResource SpecCheck2}" IsChecked="{Binding ReportProps.Significance.Visible,Mode=TwoWay}"/>
+            </StackPanel>
+        </Border>
+        <TextBlock Grid.Row="4" Text="Decimals" Style="{StaticResource SpecLabel1}" Margin="0,0,6,0"/>
+        <Border Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Style="{StaticResource SpecBorder1}">
+            <StackPanel Orientation="Horizontal">
+                <kit:IntegerUpDown Style="{StaticResource SpecSpin1}" Margin="0,0,6,0" Value="{Binding ReportProps.Decimals.Frequencies}"/>
+                <TextBlock Text="Frequency" Margin="0,0,12,0" Style="{StaticResource SpecLabel2}"/>
+                <kit:IntegerUpDown Style="{StaticResource SpecSpin1}" Margin="0,0,6,0" Value="{Binding ReportProps.Decimals.Percents}"/>
+                <TextBlock Text="Percents" Margin="0,0,12,0" Style="{StaticResource SpecLabel2}"/>
+                <kit:IntegerUpDown Style="{StaticResource SpecSpin1}" Margin="0,0,6,0" Value="{Binding ReportProps.Decimals.Statistics}"/>
+                <TextBlock Text="Stats" Margin="0,0,12,0" Style="{StaticResource SpecLabel2}"/>
+                <kit:IntegerUpDown Style="{StaticResource SpecSpin1}" Margin="0,0,6,0" Value="{Binding ReportProps.Decimals.Expressions}"/>
+                <TextBlock Text="Expressions" Style="{StaticResource SpecLabel2}"/>
+            </StackPanel>
+        </Border>
+        <TextBlock Grid.Row="5" Text="Significance" Style="{StaticResource SpecLabel1}" Margin="0,0,6,0"/>
+        <Border Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3" Style="{StaticResource SpecBorder1}">
+            <StackPanel Orientation="Horizontal">
+                <CheckBox Content="Letters 64" Style="{StaticResource SpecCheck2}" Margin="0,0,12,0" IsChecked="{Binding ReportProps.Significance.Letters64,Mode=TwoWay}"/>
+                <ComboBox Width="90" Margin="0,0,12,0" ItemsSource="{Binding SigTypePicks}" SelectedValue="{Binding ReportProps.Significance.Type,Mode=TwoWay}" Style="{StaticResource SpecCombo1}"/>
+                <kit:DoubleUpDown Style="{StaticResource SpecSpin2}" Margin="0,0,6,0" Value="{Binding ReportProps.Significance.SigLevel1.Threshold,Mode=TwoWay}"/>
+                <TextBlock Text="Sig 1" Style="{StaticResource SpecLabel2}" Margin="0,0,12,0"/>
+                <kit:DoubleUpDown Style="{StaticResource SpecSpin2}" Margin="0,0,6,0" Value="{Binding ReportProps.Significance.SigLevel2.Threshold,Mode=TwoWay}"/>
+                <TextBlock Text="Sig 2" Style="{StaticResource SpecLabel2}" Margin="0,0,12,0"/>
+                <kit:DoubleUpDown Style="{StaticResource SpecSpin2}" Margin="0,0,6,0" Value="{Binding ReportProps.Significance.SigLevel3.Threshold,Mode=TwoWay}"/>
+                <TextBlock Text="Sig 3" Style="{StaticResource SpecLabel2}"/>
+            </StackPanel>
+        </Border>
+        <TabControl Grid.Row="6" Grid.ColumnSpan="4" SelectedIndex="{Binding ReportTabIndex,Mode=TwoWay}" Margin="0,6,0,0">
+            <TabItem Style="{StaticResource SpecTabItem1}">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="Images/FormatText.png" Width="16"/>
+                        <TextBlock Text="Text" Margin="6,0,0,0"/>
+                    </StackPanel>
+                </TabItem.Header>
+                <TextBox Grid.Row="6" Grid.ColumnSpan="4" IsReadOnly="True"
+                         Text="{Binding ReportTextBody}"
+                         FontFamily="Consolas" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
+            </TabItem>
+            <TabItem Style="{StaticResource SpecTabItem1}">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="Images/FormatHtml.png" Width="16"/>
+                        <TextBlock Text="HTML" Margin="6,0,0,0"/>
+                    </StackPanel>
+                </TabItem.Header>
+                <wv2:WebView2 x:Name="WebViewCtl" main:BrowserSourceBehavior.Html="{Binding ReportHtmlBody}"/>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</main:BaseControl>

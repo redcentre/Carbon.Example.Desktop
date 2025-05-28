@@ -1,0 +1,138 @@
+<main:BaseControl x:Class="RCS.Carbon.Example.Desktop.AuthenticateControl"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:main="clr-namespace:RCS.Carbon.Example.Desktop"
+        xmlns:kit="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        x:ClassModifier="internal"
+        FontSize="{Binding AppFontSize}"
+        Background="White"
+        d:DesignWidth="900">
+
+    <main:BaseControl.Resources>
+        <main:MainConverter x:Key="MainVerter"/>
+        <Style x:Key="Group1Style" TargetType="GroupBox">
+            <Setter Property="Padding" Value="20,16,20,18"/>
+            <Setter Property="Background" Value="#f8f8f8"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+        <Style x:Key="LicLabelStyle" TargetType="TextBlock">
+            <Setter Property="Margin" Value="8,0,0,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="AuthLabelStyle" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,4,0,2"/>
+        </Style>
+        <Style x:Key="AuthRadioStyle" TargetType="RadioButton">
+        </Style>
+        <Style x:Key="AuthTextStyle" TargetType="TextBox">
+            <Setter Property="Padding" Value="2,2,2,3"/>
+            <Setter Property="Margin" Value="0,2,0,0"/>
+        </Style>
+    </main:BaseControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid>
+            <Grid.Background>
+                <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
+                    <GradientStop Color="#FF6F88A0" Offset="1"/>
+                    <GradientStop Color="#FFEDF5FF"/>
+                </LinearGradientBrush>
+            </Grid.Background>
+            <StackPanel Orientation="Vertical" Width="600" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="20,20,0,0" IsEnabled="{Binding AuthenticatingMessage,Converter={StaticResource MainVerter},ConverterParameter=None}">
+                <GroupBox Header="{x:Static main:Strings.AuthHeadLicProv}" Style="{StaticResource Group1Style}">
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                            <RadioButton IsChecked="{Binding AuthData.ActiveLicensingType,Mode=TwoWay,Converter={StaticResource MainVerter},ConverterParameter='EnumBool|RedCentre'}">
+                                <RadioButton.Content>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="/Images/RubyLogo24.png"/>
+                                        <TextBlock Text="{x:Static main:Strings.AuthLabelRCS}" Style="{StaticResource LicLabelStyle}"/>
+                                    </StackPanel>
+                                </RadioButton.Content>
+                            </RadioButton>
+                            <RadioButton IsChecked="{Binding AuthData.ActiveLicensingType,Mode=TwoWay,Converter={StaticResource MainVerter},ConverterParameter='EnumBool|BayesPrice'}" Margin="20,0,0,0">
+                                <RadioButton.Content>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="/Images/BayesPrice24.png"/>
+                                        <TextBlock Text="{x:Static main:Strings.AuthLabelBPr}" Style="{StaticResource LicLabelStyle}"/>
+                                    </StackPanel>
+                                </RadioButton.Content>
+                            </RadioButton>
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" Visibility="{Binding AuthData.ActiveLicensingType,Converter={StaticResource MainVerter},ConverterParameter='EnumVisible|RedCentre'}">
+                            <TextBlock Text="{x:Static main:Strings.AuthLabelBaseUri}" Style="{StaticResource AuthLabelStyle}"/>
+                            <TextBox HorizontalAlignment="Left" x:Name="TextBaseAddr" Width="400" Text="{Binding AuthData.RcsLicBaseAddress,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Delay=400}" Style="{StaticResource AuthTextStyle}"/>
+                            <TextBlock Text="{x:Static main:Strings.AuthLabelApiKey}" Style="{StaticResource AuthLabelStyle}"/>
+                            <TextBox Width="120" HorizontalAlignment="Left" Text="{Binding AuthData.RcsLicApiKey,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Delay=400}" Style="{StaticResource AuthTextStyle}"/>
+                            <TextBlock Text="{x:Static main:Strings.AuthLabelTimeout}" Style="{StaticResource AuthLabelStyle}"/>
+                            <kit:IntegerUpDown Width="80" Minimum="10" Maximum="60" HorizontalAlignment="Left" Value="{Binding AuthData.RcsLicTimeout,Mode=TwoWay}"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" Visibility="{Binding AuthData.ActiveLicensingType,Converter={StaticResource MainVerter},ConverterParameter='EnumVisible|BayesPrice'}">
+                            <TextBlock Text="{x:Static main:Strings.AuthLabelProdKey}" Style="{StaticResource AuthLabelStyle}"/>
+                            <TextBox x:Name="TextProductKey" Width="120" HorizontalAlignment="Left" Text="{Binding AuthData.BPrLicProductKey,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Delay=400}" Style="{StaticResource AuthTextStyle}"/>
+                            <TextBlock Text="{x:Static main:Strings.AuthlabelAdoConnect}" Style="{StaticResource AuthLabelStyle}"/>
+                            <TextBox x:Name="TextAdoConnect" Text="{Binding AuthData.BPrLicAdoConnect,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Delay=400}" Height="110" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Style="{StaticResource AuthTextStyle}"/>
+
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="{x:Static main:Strings.AuthHeadLicCreds}" Margin="0,16,0,0" Style="{StaticResource Group1Style}" IsEnabled="{Binding AuthenticatingMessage,Converter={StaticResource MainVerter},ConverterParameter=None}">
+                    <StackPanel Orientation="Vertical">
+                        <RadioButton x:Name="RadioId" Content="{x:Static main:Strings.AuthLabelUserId}" IsChecked="{Binding AuthData.ActiveCredType,Mode=TwoWay,Converter={StaticResource MainVerter},ConverterParameter='EnumBool|Id'}" Style="{StaticResource AuthRadioStyle}"/>
+                        <TextBox x:Name="TextId" Width="400" HorizontalAlignment="Left" Text="{Binding AuthData.CredentialId,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Delay=400}" Style="{StaticResource AuthTextStyle}" IsEnabled="{Binding ElementName=RadioId,Path=IsChecked}"/>
+                        <RadioButton x:Name="RadioName" Content="{x:Static main:Strings.AuthLabelUserName}" IsChecked="{Binding AuthData.ActiveCredType,Mode=TwoWay,Converter={StaticResource MainVerter},ConverterParameter='EnumBool|Name'}" Style="{StaticResource AuthRadioStyle}" Margin="0,12,0,0"/>
+                        <TextBox x:Name="TextName" Width="400" HorizontalAlignment="Left" Text="{Binding AuthData.CredentialName,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Delay=400}" Style="{StaticResource AuthTextStyle}" IsEnabled="{Binding ElementName=RadioName,Path=IsChecked}"/>
+                        <TextBlock Text="{x:Static main:Strings.AuthLabelPass}" Style="{StaticResource AuthLabelStyle}" Margin="0,12,0,0"/>
+                        <TextBox x:Name="TextPassword" Width="400" HorizontalAlignment="Left" Text="{Binding AuthData.Password,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged,Delay=400}" Style="{StaticResource AuthTextStyle}"/>
+                        <CheckBox Content="{x:Static main:Strings.AuthLabelRemember}" IsChecked="{Binding AuthData.RememberMe,Mode=TwoWay}" Margin="0,12,0,0"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <Grid Margin="0,16,0,10">
+                    <StackPanel Orientation="Vertical">
+                        <Border Style="{StaticResource AlertWarning}" Visibility="{Binding AuthData.AnyErrors,Converter={StaticResource MainVerter},ConverterParameter=TrueVisible}">
+                            <ItemsControl ItemsSource="{Binding AuthData.ErrorMessages}" BorderThickness="0" Background="Transparent" Foreground="{StaticResource AlertWarningFore}" IsTabStop="False">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="Images/Warning16.png" Style="{StaticResource Icon16Style}" Margin="0,0,6,0"/>
+                                            <TextBlock Text="{Binding}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Border>
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding AuthData.AnyErrors,Converter={StaticResource MainVerter},ConverterParameter=FalseVisible}">
+                            <Button Content="{x:Static main:Strings.AuthLabelGetLic}" Padding="20,6" Margin="16,0,0,0" HorizontalAlignment="Left" Command="{Binding GetLicenceCommand}"/>
+                            <StackPanel Orientation="Horizontal" Visibility="{Binding AuthenticatingMessage,Converter={StaticResource MainVerter},ConverterParameter=SomeVisible}">
+                                <Image Grid.Column="1" Source="Images/BusySpin.png" Width="42" Margin="16,0,0,0" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center">
+                                    <Image.RenderTransform>
+                                        <RotateTransform x:Name="SpinTransform" Angle="0"/>
+                                    </Image.RenderTransform>
+                                    <Image.Triggers>
+                                        <EventTrigger RoutedEvent="FrameworkElement.Loaded">
+                                            <EventTrigger.Actions>
+                                                <BeginStoryboard>
+                                                    <Storyboard>
+                                                        <DoubleAnimation Storyboard.TargetName="SpinTransform" Storyboard.TargetProperty="(RotateTransform.Angle)" From="0.0" To="360" BeginTime="0:0:0" Duration="0:0:1" RepeatBehavior="Forever" />
+                                                    </Storyboard>
+                                                </BeginStoryboard>
+                                            </EventTrigger.Actions>
+                                        </EventTrigger>
+                                    </Image.Triggers>
+                                </Image>
+                                <TextBlock Text="{Binding AuthenticatingMessage}" Style="{StaticResource LabelInfo}" Margin="16,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <Border Margin="0,14,0,0" Style="{StaticResource AlertDanger}" Visibility="{Binding AuthError,Converter={StaticResource MainVerter},ConverterParameter=SomeVisible}">
+                            <TextBlock Text="{Binding AuthError.Message}" Style="{StaticResource LabelDanger}"/>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</main:BaseControl>
