@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>9.1.23</Version>
-    <InformationalVersion>2025-05-18 10:35 GMT+10</InformationalVersion>
+    <Version>9.1.33</Version>
+    <InformationalVersion>2025-05-31 11:55 GMT+10</InformationalVersion>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <TargetFramework>net8.0-windows</TargetFramework>
@@ -52,7 +52,7 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="RCS.Carbon.Licensing.Example" Version="9.1.26" />
-    <PackageReference Include="RCS.Carbon.Tables" Version="9.1.31" />
+    <PackageReference Include="RCS.Carbon.Tables" Version="9.1.33" />
     <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.124" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3240.44" />
   </ItemGroup>
