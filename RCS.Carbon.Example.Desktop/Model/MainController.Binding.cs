@@ -129,21 +129,23 @@ partial class MainController : INotifyPropertyChanged
 
 	[ObservableProperty]
 	[NotifyCanExecuteChangedFor(nameof(GetLicenceCommand))]
+	int _authErrorCount;
+
+	[ObservableProperty]
 	AuthenticateData _authData = new();
 
 	[ObservableProperty]
 	Exception? _authError;
 
 	[ObservableProperty]
+	[NotifyCanExecuteChangedFor(nameof(GetLicenceCommand))]
+	[NotifyCanExecuteChangedFor(nameof(CloseLicenceCommand))]
 	ILicensingProvider? _provider;
 
 	[ObservableProperty]
-	[NotifyCanExecuteChangedFor(nameof(GetLicenceCommand))]
-	[NotifyCanExecuteChangedFor(nameof(CloseLicenceCommand))]
 	CrossTabEngine? _engine;
 
 	[ObservableProperty]
-	[NotifyCanExecuteChangedFor(nameof(GetLicenceCommand))]
 	LicenceInfo? _licence;
 
 	[ObservableProperty]

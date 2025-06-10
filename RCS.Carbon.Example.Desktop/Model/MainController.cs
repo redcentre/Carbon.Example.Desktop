@@ -8,12 +8,12 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using RCS.Carbon.Example.Desktop.Model.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using RCS.Carbon.Licensing.Example;
+using RCS.Carbon.Example.Desktop.Model.Extensions;
 using RCS.Carbon.Shared;
 using RCS.Carbon.Tables;
+using RCS.Licensing.Example.Provider;
 using RCS.Licensing.Provider;
 using RCS.Licensing.Provider.Shared;
 
@@ -54,8 +54,14 @@ sealed partial class MainController : ObservableObject
 		ReloadSettings();
 		AuthData.PropertyChanged += (s, e) =>
 		{
-			Trace.WriteLine($"#### AuthData.PropertyChanged {e.PropertyName}");
-			OnPropertyChanged(nameof(AuthData));
+			if (e.PropertyName == nameof(AuthenticateData.AnyErrors))
+			{
+				// The MVVM toolkit logic can't declare that a command enable depends
+				// on a property of some class other than the binding source object.
+				// This hack listens for changes to the auto values object and updates
+				// a simple controller property on changes.
+				AuthErrorCount = AuthData.ErrorMessages.Count;
+			}
 		};
 	}
 
@@ -164,7 +170,7 @@ sealed partial class MainController : ObservableObject
 		}
 	}
 
-	bool CanGetLicence() => !AuthData.AnyErrors && AuthenticatingMessage == null && Engine == null;
+	bool CanGetLicence() => AuthErrorCount == 0 && AuthenticatingMessage == null && Provider == null;
 
 	[RelayCommand(CanExecute = nameof(CanCloseLicence))]
 	void CloseLicence()
@@ -178,7 +184,7 @@ sealed partial class MainController : ObservableObject
 		Provider = null;
 	}
 
-	bool CanCloseLicence() => Engine != null;
+	bool CanCloseLicence() => Provider != null;
 
 	[RelayCommand(CanExecute = nameof(CanCloseAlert))]
 	void CloseAlert()

@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
 using RCS.Carbon.Example.Desktop.Model;
 
@@ -8,6 +9,10 @@ namespace RCS.Carbon.Example.Desktop;
 /// <summary>
 /// Encapsulates all of the authentication values and their validation states for easy binding.
 /// </summary>
+/// <remarks>
+/// Putting all the properties in here means the MVVM toolkit can't directly use their changes
+/// as part of the relay command enabling. See the note in MainController ctor.
+/// </remarks>
 internal partial class AuthenticateData : INotifyPropertyChanged
 {
 	public event PropertyChangedEventHandler? PropertyChanged;
@@ -242,6 +247,7 @@ internal partial class AuthenticateData : INotifyPropertyChanged
 		{
 			ErrorMessages.Add(Strings.AuthErrorNeedPass);
 		}
+		Trace.WriteLine($"#### AnyErrors {ErrorMessages.Count}");
 		OnPropertyChanged(nameof(AnyErrors));
 	}
 
