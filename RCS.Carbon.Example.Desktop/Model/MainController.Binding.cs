@@ -69,7 +69,6 @@ partial class MainController : INotifyPropertyChanged
 		XOutputFormat.CSV,
 		XOutputFormat.SSV,
 		XOutputFormat.XLSX,
-		XOutputFormat.XML,
 		XOutputFormat.HTML,
 		XOutputFormat.OXT,
 		XOutputFormat.Pandas
