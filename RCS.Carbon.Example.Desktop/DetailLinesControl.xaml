@@ -14,9 +14,6 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBox Grid.Row="1" IsReadOnly="True"
-                         Text="{Binding TextLines,Converter={StaticResource MainVerter},ConverterParameter=LinesToBody}"
-                         FontSize="{Binding AppFontSize}"
-                         FontFamily="Consolas" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
+        <TextBox Grid.Row="1" IsReadOnly="True" Text="{Binding TextLines,Converter={StaticResource MainVerter},ConverterParameter=LinesToBody}" FontSize="{Binding AppFontSize}" FontFamily="Consolas" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
     </Grid>
 </main:BaseControl>

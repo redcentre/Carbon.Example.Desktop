@@ -71,6 +71,7 @@ partial class MainController : INotifyPropertyChanged
 		XOutputFormat.XLSX,
 		XOutputFormat.HTML,
 		XOutputFormat.OXT,
+		XOutputFormat.Platinum,
 		XOutputFormat.Pandas
 	];
 
@@ -109,6 +110,9 @@ partial class MainController : INotifyPropertyChanged
 
 	[ObservableProperty]
 	int _appFontSize = 13;
+
+	[ObservableProperty]
+	object? _propertySource;
 
 	[ObservableProperty]
 	int _mainTabIndex;

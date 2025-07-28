@@ -6,6 +6,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -45,12 +47,14 @@ sealed partial class MainController : ObservableObject
 	int newReportSequence;
 	long[] expandNodeIds;
 	readonly PropertyChangedEventHandler jobChangeHandler;
+	readonly JsonSerializerOptions JsonPlatopts = new JsonSerializerOptions() { WriteIndented = true };
 
 	#region Lifetime
 
 	public MainController()
 	{
 		jobChangeHandler = new PropertyChangedEventHandler(JobNode_PropertyChanged);
+		JsonPlatopts.Converters.Add(new JsonStringEnumConverter());
 		ReloadSettings();
 		AuthData.PropertyChanged += (s, e) =>
 		{
@@ -207,6 +211,7 @@ sealed partial class MainController : ObservableObject
 			await Task.Run(() => Engine!.SetProps(ReportProps!));
 			LogEngine("SetProps");
 			ReportHtmlBody = null;
+			PropertySource = null;
 			switch (ReportProps!.Output.Format)
 			{
 				// The Excel output format is a special case that can't be display in a WPF
@@ -218,6 +223,17 @@ sealed partial class MainController : ObservableObject
 					var lines = MainUtility.HexToLines(workbook).ToArray();
 					ReportTextBody = string.Join(Environment.NewLine, lines);
 					LogEngine($"GenTabAsXLSX({ReportTop},{ReportSide},{ReportFilter},{ReportWeight}) {ReportProps.Output.Format} -> {workbook.Length} bytes ({lines.Length} lines)");
+					break;
+				// Platinum is a special case data format which can be serialized as
+				// pretty JSON as a crude way of showing its shape and contents.
+				case XOutputFormat.Platinum:
+					ReportTabIndex = 0;
+					ReportProps.Output.Format = XOutputFormat.None;
+					await Task.Run(() => Engine!.GenTab(null, ReportTop!, ReportSide!, ReportFilter, ReportWeight, ReportSpec!.SpecProperties, ReportProps));
+					PlatinumData pdata = Engine!.TableAsPlatinum();
+					PropertySource = pdata;
+					string json = JsonSerializer.Serialize(pdata, JsonPlatopts);
+					ReportTextBody = json;
 					break;
 				// All of the remaining report formats can be displayed as plain text.
 				// The HTML output format can ALSO be displayed in a WebView2 control.

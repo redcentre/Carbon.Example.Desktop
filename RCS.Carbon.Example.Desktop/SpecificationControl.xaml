@@ -102,13 +102,11 @@
             </TextBlock>
         </StackPanel>
         <TextBlock Grid.Row="1" Text="Top" Style="{StaticResource SpecLabel1}" Margin="10,0,6,0"/>
-        <TextBox Grid.Row="1" Grid.Column="1" Margin="0,4,0,4" Style="{StaticResource SpecText1}" Text="{Binding ReportTop,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
-                     AllowDrop="True" PreviewDragOver="Top_PreviewDragOver" Drop="Top_Drop"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Margin="0,4,0,4" Style="{StaticResource SpecText1}" Text="{Binding ReportTop,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" AllowDrop="True" PreviewDragOver="Top_PreviewDragOver" Drop="Top_Drop"/>
         <CheckBox Grid.Row="1" Grid.Column="2" Content="Filter" Style="{StaticResource SpecCheck1}" Margin="0,0,6,0" IsChecked="{Binding ReportSpec.UseFilter,Mode=TwoWay}"/>
         <TextBox Grid.Row="1" Grid.Column="4" Margin="0,4,0,4" Style="{StaticResource SpecText1}" Text="{Binding ReportFilter,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
         <TextBlock Grid.Row="2" Text="Side" Style="{StaticResource SpecLabel1}" Margin="12,0,6,0"/>
-        <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource SpecText1}" Text="{Binding ReportSide,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
-                     AllowDrop="True" PreviewDragOver="Side_PreviewDragOver" Drop="Side_Drop"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource SpecText1}" Text="{Binding ReportSide,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" AllowDrop="True" PreviewDragOver="Side_PreviewDragOver" Drop="Side_Drop"/>
         <CheckBox Grid.Row="2" Grid.Column="2" Content="Weight" Style="{StaticResource SpecCheck1}" Margin="12,0,6,0"  IsChecked="{Binding ReportSpec.UseWeight,Mode=TwoWay}"/>
         <TextBox Grid.Row="2" Grid.Column="3" Style="{StaticResource SpecText1}" Text="{Binding ReportWeight,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
         <TextBlock Grid.Row="3" Text="Bands" Style="{StaticResource SpecLabel1}" Margin="0,0,6,0"/>
@@ -154,9 +152,7 @@
                         <TextBlock Text="Text" Margin="6,0,0,0"/>
                     </StackPanel>
                 </TabItem.Header>
-                <TextBox Grid.Row="6" Grid.ColumnSpan="4" IsReadOnly="True"
-                         Text="{Binding ReportTextBody}"
-                         FontFamily="Consolas" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
+                <TextBox Grid.Row="6" Grid.ColumnSpan="4" IsReadOnly="True" Text="{Binding ReportTextBody}" FontFamily="Consolas" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"/>
             </TabItem>
             <TabItem Style="{StaticResource SpecTabItem1}">
                 <TabItem.Header>
@@ -167,6 +163,19 @@
                 </TabItem.Header>
                 <wv2:WebView2 x:Name="WebViewCtl" main:BrowserSourceBehavior.Html="{Binding ReportHtmlBody}"/>
             </TabItem>
+            <!--
+                The following was a failed experiment to display the contents of an arbitrary object like a PlatinumData response.
+                Some kind of JSON-to-Tree utility is required to allow the JSON to fold nicely like it does in the VS editor.
+            -->
+            <!--<TabItem Style="{StaticResource SpecTabItem1}">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="Images/FormatHtml.png" Width="16"/>
+                        <TextBlock Text="Object" Margin="6,0,0,0"/>
+                    </StackPanel>
+                </TabItem.Header>
+                <kit:PropertyGrid SelectedObject="{Binding PropertySource}" ShowSearchBox="False" ShowSortOptions="False"/>
+            </TabItem>-->
         </TabControl>
     </Grid>
 </main:BaseControl>
