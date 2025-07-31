@@ -51,10 +51,10 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="RCS.Carbon.Tables" Version="9.1.45" />
+    <PackageReference Include="RCS.Carbon.Tables" Version="9.1.48" />
     <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" Version="5.0.124" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3351.48" />
-    <PackageReference Include="RCS.Licensing.Example.Provider" Version="9.2.4" />
+    <PackageReference Include="RCS.Licensing.Example.Provider" Version="9.2.5" />
   </ItemGroup>
 
   <ItemGroup>

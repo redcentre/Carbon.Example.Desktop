@@ -219,7 +219,7 @@ sealed partial class MainController : ObservableObject
 				// lines of hex dump of the document.
 				case XOutputFormat.XLSX:
 					ReportTabIndex = 0;
-					byte[] workbook = await Task.Run(() => Engine!.GenTabAsXLSX(null, ReportTop!, ReportSide!, ReportFilter, ReportWeight, ReportSpec!.SpecProperties, ReportProps));
+					byte[] workbook = await Task.Run(() => Engine!.GenTabAsExcelBlob(null, ReportTop!, ReportSide!, ReportFilter, ReportWeight, ReportSpec!.SpecProperties, ReportProps));
 					var lines = MainUtility.HexToLines(workbook).ToArray();
 					ReportTextBody = string.Join(Environment.NewLine, lines);
 					LogEngine($"GenTabAsXLSX({ReportTop},{ReportSide},{ReportFilter},{ReportWeight}) {ReportProps.Output.Format} -> {workbook.Length} bytes ({lines.Length} lines)");
